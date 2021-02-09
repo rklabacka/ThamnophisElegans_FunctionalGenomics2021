@@ -39,7 +39,6 @@ function loadModules {
   module load bwa/0.7.15
   module load samtools/1.3.1
   module load picard/2.4.1
-  module load bcftools/1.3.2
   module load hybpiper/1
   module load xz/5.2.2
   module load htslib/1.3.3
@@ -827,9 +826,6 @@ function combine-VCF {
     sed -i.bak "s/SUM19/SUM6263/" JustSNPs_DNA.vcf
     sed -i.bak "s/SUM20/SUM6432/" JustSNPs_DNA.vcf
     sed -i.bak "s/SUM21/SUMRP534/" JustSNPs_DNA.vcf
-    cp $WorkingDirectory/variantFiltration/JustSNPs_DNA.vcf $WorkingDirectory/variantFiltration/JustSNPs_DNA_copy.vcf
-    cp $WorkingDirectory/variantFiltration/JustSNPs_RNA.vcf $WorkingDirectory/variantFiltration/JustSNPs_RNA_copy.vcf
-    cd $WorkingDirectory/variantFiltration/
     bgzip JustSNPs_DNA.vcf
     bgzip JustSNPs_RNA.vcf
     bcftools index JustSNPs_DNA.vcf.gz
@@ -838,73 +834,78 @@ function combine-VCF {
 }
 
 function removeRNAedits {
-  vcftools --vcf $1 --non-ref-af 1 \
+  vcftools --vcf "$1".vcf --non-ref-af 1 \
   --recode --recode-INFO-all --out Substitutions.vcf
   mv Substitutions.vcf.recode.vcf Substitutions.vcf
   grep -v "#" Substitutions.vcf | cut -f 1,2 > Substitutions.txt
-  vcftools --vcf $1 --exclude-positions Substitutions.txt \
+  vcftools --vcf "$1".vcf --exclude-positions Substitutions.txt \
   --recode --recode-INFO-all --out removedRNAedits
   mv removedRNAedits.recode.vcf removedRNAedits.vcf
   echo "RNA edits removed variants: $(grep -v "^#" removedRNAedits.vcf | wc -l)" >> Log.txt
 }
 
+function getNetworkFasta {
+ # Extract genes from exons used for probe design
+ cd $WorkingDirectory/References
+ python ~/SeqCap/pythonScripts/filterExons.py Exons_2021.fa "$1".txt "$1"TargetGenes.fa Extract"$1"GenesFromExons_log.txt
+}
+
+
+function probes2gff {
+ ## ANNOTATE FILTERED VARIANT FILES FOR SEQCAP DATA
+ cd $WorkingDirectory/References
+ #+ COMPLETED #+ DONE # Make blast database from T. elegans genome
+ #+ COMPLETED #+ makeblastdb -in TelagGenome.fasta -parse_seqids -dbtype nucl -out Genome.db
+ # Use Blast with Exons_2021.fa (the exons used for probe design) to filter the genome
+ blastn -db Genome.db -query "$1" -outfmt "7 qseqid sseqid evalue qstart qend sstart send" -out BlastResults_"$2".txt
+ # Delete "^#" lines from blast output
+ cp BlastResults_"$2".txt BlastResults_"$2"_original.txt
+ sed -i.bak '/^#/d' BlastResults_"$2".txt
+ sed -i.bak "s/ref|//" BlastResults_"$2".txt
+ sed -i.bak "s/|//" BlastResults_"$2".txt
+ # Use filtered genome results (blast output) to pull out targeted genes and create filtered gff
+ python ~/SeqCap/pythonScripts/shrinkGFF_v5.py BlastResults_"$2".txt TelagGenome.gff "$2"_CapturedGenes.gff "$2"_CapturedExons.gff "$2"_CapturedCDS.gff Pull"$2"CapturedGenes_log.txt
+ # Use bedops to convert gff to bed
+ gff2bed < "$2"_CapturedGenes.gff > "$2"_CapturedGenes.bed
+ gff2bed < "$2"_CapturedExons.gff > "$2"_CapturedExons.bed
+ gff2bed < "$2"_CapturedCDS.gff > "$2"_CapturedCDS.bed
+ # bgzip bed file
+ bgzip -f "$2"_CapturedGenes.bed "$2"_CapturedGenes.bed.gz
+ bgzip -f "$2"_CapturedExons.bed "$2"_CapturedExons.bed.gz
+ bgzip -f "$2"_CapturedCDS.bed "$2"_CapturedCDS.bed.gz
+ # tabix index .bed.gz file
+ tabix -f -p bed "$2"_CapturedGenes.bed.gz
+ tabix -f -p bed "$2"_CapturedExons.bed.gz
+ tabix -f -p bed "$2"_CapturedCDS.bed.gz
+}
+
 function annotateVariants {
-  ## ANNOTATE FILTERED VARIANT FILES FOR SEQCAP DATA
-  ## ANNOTATE FILTERED VARIANT FILES FOR SEQCAP DATA
-  cd $WorkingDirectory/References
-  #+ DONE # Make blast database from T. elegans genome
-  #+ makeblastdb -in TelagGenome.fasta -parse_seqids -dbtype nucl -out Genome.db
-  # Extract genes from exons used for probe design
-  python ~/SeqCap/pythonScripts/filterExons.py Exons_2021.fa "$2".txt "$2"TargetGenes.fa Extract"$2"GenesFromExons_log.txt
-  # Use Blast with Exons_2021.fa (the exons used for probe design) to filter the genome
-  blastn -db Genome.db -query "$2"TargetGenes.fa -outfmt "7 qseqid sseqid evalue qstart qend sstart send" -out BlastResults_"$2".txt
-  # Delete "^#" lines from blast output
-  cp BlastResults_"$2".txt BlastResults_"$2"_original.txt
-  sed -i.bak '/^#/d' BlastResults_"$2".txt
-  sed -i.bak "s/ref|//" BlastResults_"$2".txt
-  sed -i.bak "s/|//" BlastResults_"$2".txt
-  # Use filtered genome results (blast output) to pull out targeted genes and create filtered gff
-  python ~/SeqCap/pythonScripts/shrinkGFF_v4.py BlastResults_"$2".txt TelagGenome.gff "$2"_TargetGenes.gff Pull"$2"TargetGenes_log.txt
-  # Use bedops to convert gff to bed
-  gff2bed < "$2"TargetGenes.gff > "$2"TargetGenes.bed
-  # bgzip bed file
-  bgzip -f "$2"TargetGenes.bed "$2"TargetGenes.bed.gz
-  # tabix index .bed.gz file
-  tabix -f -p bed "$2"TargetGenes.bed.gz
   # Annotate SNP file make sure "$1".vcf is in this directory
   cd $WorkingDirectory/variantFiltration
   bcftools annotate \
-  	-a $WorkingDirectory/References/"$2"TargetGenes.bed.gz \
+  	-a $WorkingDirectory/References/"$2"_CapturedGenes.bed.gz \
   	-c CHROM,FROM,TO,GENE \
         -o "$2"_Annotated_Init.vcf \
   	-O v \
   	-h <(echo '##INFO=<ID=GENE,Number=1,Type=String,Description="Gene name">') \
   	"$1".vcf
   awk '/^#|GENE=/' "$2"_Annotated_Init.vcf > "$2"_Annotated.vcf
-  echo "Annotated "$2" variants: $(grep -v "^#" "$2"_Annotated.vcf | wc -l)" >> Log.txt
+  echo "Annotated "$2" variants: $(grep -v "^#" "$2"_Annotated.vcf | wc -l)" >> AnnotationLog.txt
 }  
 
-function getCDSVariants {
-  cd $WorkingDirectory/References/
-  python ~/SeqCap/pythonScripts/shrinkGFF_CDS.py BlastResults_"$1".txt TelagGenome.gff "$1"TargetCDS.gff Pull"$1"TargetCDS_log.txt
-  # Use bedops to convert gff to bed
-  gff2bed < "$1"TargetCDS.gff > "$1"TargetCDS.bed
-  # bgzip bed file
-  bgzip -f "$1"TargetCDS.bed "$1"TargetCDS.bed.gz
-  # tabix index .bed.gz file
-  tabix -f -p bed "$1"TargetCDS.bed.gz
+function getSpecificVariants {
   # Annotate SNP file make sure "$1".vcf is in this directory
   cd $WorkingDirectory/variantFiltration
   bcftools annotate -x INFO/GENE "$1"_HardFilterStep3.vcf > "$1"_Deannotated.vcf
   bcftools annotate \
-  	-a $WorkingDirectory/References/"$1"TargetCDS.bed.gz \
+  	-a $WorkingDirectory/References/"$1"_Captured"$2".bed.gz \
   	-c CHROM,FROM,TO,GENE \
-        -o "$1"_CDS_Init.vcf \
+        -o "$1"_"$2"_Init.vcf \
   	-O v \
   	-h <(echo '##INFO=<ID=GENE,Number=1,Type=String,Description="Gene name">') \
   	"$1"_Deannotated.vcf
-  awk '/^#|GENE=/' "$1"_CDS_Init.vcf > "$1"_CDS.vcf
-  echo "CDS "$1" variants: $(grep -v "^#" "$1"_CDS.vcf | wc -l)" >> Log.txt
+  awk '/^#|GENE=/' "$1"_"$2"_Init.vcf > "$1"_"$2".vcf
+  echo "CDS "$1" variants: $(grep -v "^#" "$1"_"$2".vcf | wc -l)" >> Log.txt
 }
 
 function filterByPopulation {
@@ -1063,60 +1064,22 @@ createWorkingEnvironment
 #+ COMPLETED get-just-SNPs 2
 #+ COMPLETED use-BaseRecalibrator 2 RNA
 #+ COMPLETED use-AnalyzeCovariates 1 2 RNA
-#+ COMPLETED ## -- Merge RNA and DNA data
+## -- Merge RNA and DNA data
 #+ COMPLETED combine-VCF
-#+ COMPLETED cd $WorkingDirectory/variantFiltration 
-#+ COMPLETED ## -- Eliminate potential RNA editing sites
+cd $WorkingDirectory/variantFiltration 
+## -- Eliminate potential RNA editing sites
 #+ COMPLETED removeRNAedits Merged
 ## -- Annotate variants
-#+ COMPLETED annotateVariants removedRNAedits SeqCap
-#+ COMPLETED annotateVariants removedRNAedits IILS
-#+ NEEDED annotateVariants removedRNAedits Mito
-#+ NEEDED annotateVariants removedRNAedits ETC
-#+ NEEDED annotateVariants removedRNAedits Stress
-#+ NEEDED #+ WAIT annotateVariants Merged Random
-#+ COMPLETED plotVariants IILS_Annotated.vcf
-#+ NEEDED plotVariants ETC_Annotated.vcf
-#+ NEEDED plotVariants Mito_Annotated.vcf
-#+ NEEDED plotVariants Stress_Annotated.vcf
-#+ COMPLETED plotVariants SeqCap_Annotated.vcf
+#+ COMPLETED getNetworkFasta IILS
+#+ COMPLETED probes2gff Exons_2021.fa SeqCap
+#+ COMPLETED probes2gff IILSTargetGenes.fa IILS
+annotateVariants removedRNAedits SeqCap
 ## -- Initial Filter Variants
-#+ COMPLETED initial-VariantFiltration IILS_Annotated.vcf IILS_InitialFiltered
-#+ NEEDED initial-VariantFiltration ETC_Annotated.vcf ETC_InitialFiltered
-#+ NEEDED initial-VariantFiltration Mito_Annotated.vcf Mito_InitialFiltered
-#+ NEEDED initial-VariantFiltration Stress_Annotated.vcf Stress_InitialFiltered
-#+ COMPLETED initial-VariantFiltration SeqCap_Annotated.vcf SeqCap_InitialFiltered
-#+ NEEDED #+ WAIT initial-VariantFiltration Random_popFiltered.vcf Random_InitialFiltered
-## -- Examine Initial Filtered Variants
-#+ COMPLETED plotVariants IILS_InitialFiltered.vcf
-#+ NEEDED plotVariants ETC_InitialFiltered.vcf
-#+ NEEDED plotVariants Mito_InitialFiltered.vcf
-#+ NEEDED plotVariants Stress_InitialFiltered.vcf
-#+ COMPLETED plotVariants SeqCap_InitialFiltered.vcf
+initial-VariantFiltration SeqCap_Annotated.vcf SeqCap_InitialFiltered
 ## -- Perform Hard Filtering
-#+ COMPLETED hard-VariantFiltration IILS_InitialFiltered IILS
-#+ NEEDED hard-VariantFiltration ETC_InitialFiltered ETC
-#+ NEEDED hard-VariantFiltration Mito_InitialFiltered Mito
-#+ NEEDED hard-VariantFiltration Stress_InitialFiltered Stress
-#+ COMPLETED hard-VariantFiltration SeqCap_InitialFiltered SeqCap
-#+ NEEDED #+ WAIT hard-VariantFiltration Random_InitialFiltered Random
-## -- Examine Hard Filtered Variants
-#+ COMPLETED plotVariants IILS_HardFilterStep3.vcf
-#+ NEEDED plotVariants ETC_HardFilterStep3.vcf
-#+ NEEDED plotVariants Mito_HardFilterStep3.vcf
-#+ NEEDED plotVariants Stress_HardFilterStep3.vcf
-#+ COMPLETED plotVariants SeqCap_HardFilterStep3.vcf
-#+ NEEDED ## -- Examine Hard Filtered Variants
-#+ COMPLETED plotVariants IILS_popFiltered.vcf
-#+ NEEDED plotVariants ETC_popFiltered.vcf
-#+ NEEDED plotVariants Mito_popFiltered.vcf
-#+ NEEDED plotVariants Stress_popFiltered.vcf
-#+ COMPLETED plotVariants SeqCap_popFiltered.vcf
+hard-VariantFiltration SeqCap_InitialFiltered SeqCap
 
-getCDSVariants IILS
-#+ NEEDED getCDSVariants ETC
-#+ NEEDED getCDSVariants Mito
-#+ NEEDED getCDSVariants Stress
-#+ NEEDED getCDSVariants SeqCap
+getSpecificVariants SeqCap CDS
+getSpecificVariants SeqCap Exons
 
 #+ COMPLETED renameSortedBAMs
