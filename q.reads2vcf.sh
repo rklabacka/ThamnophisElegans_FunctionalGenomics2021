@@ -73,6 +73,8 @@ function createWorkingEnvironment {
     mkdir -p $WorkingDirectory/GATKRNA
     mkdir -p $WorkingDirectory/SNPTablesRNA
     mkdir -p $WorkingDirectory/SequenceTablesRNA
+  # Joint
+    mkdir -p $WorkingDirectory/mappedReadsAll
   # Utilities
     mkdir -p $WorkingDirectory/References
     echo "RLK_report: directory created: $WorkingDirectory with rawReads and cleanReads sub directories"
@@ -472,6 +474,144 @@ function prepForVariantCalling {
   done<$WorkingDirectory/mappedReads"$1"/samList
 }
 
+function renameSortedBAMs {
+# Purpose of this function: to have sampling-based naming convention be the same for both VCF and BAM files
+# This aids in performing read-based masking of the fasta files
+
+cd $WorkingDirectory/mappedReadsDNA
+    mv $WorkingDirectory/mappedReadsDNA/ELF01_sorted.bam $WorkingDirectory/mappedReadsAll/ELFRA567.bam
+    mv $WorkingDirectory/mappedReadsDNA/ELF02_sorted.bam $WorkingDirectory/mappedReadsAll/ELFRA607.bam
+    mv $WorkingDirectory/mappedReadsDNA/ELF03_sorted.bam $WorkingDirectory/mappedReadsAll/ELFRP540.bam
+    mv $WorkingDirectory/mappedReadsDNA/ELF04_sorted.bam $WorkingDirectory/mappedReadsAll/ELFRP541.bam
+    mv $WorkingDirectory/mappedReadsDNA/ELF05_sorted.bam $WorkingDirectory/mappedReadsAll/ELF5581.bam
+    mv $WorkingDirectory/mappedReadsDNA/ELF06_sorted.bam $WorkingDirectory/mappedReadsAll/ELF56513.bam
+    mv $WorkingDirectory/mappedReadsDNA/ELF07_sorted.bam $WorkingDirectory/mappedReadsAll/ELF565115.bam
+    mv $WorkingDirectory/mappedReadsDNA/ELF08_sorted.bam $WorkingDirectory/mappedReadsAll/ELF5683.bam
+    mv $WorkingDirectory/mappedReadsDNA/ELF09_sorted.bam $WorkingDirectory/mappedReadsAll/ELF54603.bam
+    mv $WorkingDirectory/mappedReadsDNA/ELF10_sorted.bam $WorkingDirectory/mappedReadsAll/ELF54701.bam
+    mv $WorkingDirectory/mappedReadsDNA/ELF11_sorted.bam $WorkingDirectory/mappedReadsAll/ELF60503.bam
+    mv $WorkingDirectory/mappedReadsDNA/ELF12_sorted.bam $WorkingDirectory/mappedReadsAll/ELF6225.bam
+    mv $WorkingDirectory/mappedReadsDNA/ELF13_sorted.bam $WorkingDirectory/mappedReadsAll/ELF6363.bam
+    mv $WorkingDirectory/mappedReadsDNA/ELF14_sorted.bam $WorkingDirectory/mappedReadsAll/ELFRA567dup.bam
+    mv $WorkingDirectory/mappedReadsDNA/ELF15_sorted.bam $WorkingDirectory/mappedReadsAll/ELFRP54.1.bam
+    mv $WorkingDirectory/mappedReadsDNA/ELF16_sorted.bam $WorkingDirectory/mappedReadsAll/ELFRP54.bam
+    mv $WorkingDirectory/mappedReadsDNA/MAH01_sorted.bam $WorkingDirectory/mappedReadsAll/MAH351.bam
+    mv $WorkingDirectory/mappedReadsDNA/MAH02_sorted.bam $WorkingDirectory/mappedReadsAll/MAH52002.bam
+    mv $WorkingDirectory/mappedReadsDNA/MAH03_sorted.bam $WorkingDirectory/mappedReadsAll/MAH53901.bam
+    mv $WorkingDirectory/mappedReadsDNA/MAH04_sorted.bam $WorkingDirectory/mappedReadsAll/MAH54007.bam
+    mv $WorkingDirectory/mappedReadsDNA/MAH05_sorted.bam $WorkingDirectory/mappedReadsAll/MAH54101.bam
+    mv $WorkingDirectory/mappedReadsDNA/MAH06_sorted.bam $WorkingDirectory/mappedReadsAll/MAH54201.bam
+    mv $WorkingDirectory/mappedReadsDNA/MAH07_sorted.bam $WorkingDirectory/mappedReadsAll/MAH54301.bam
+    mv $WorkingDirectory/mappedReadsDNA/MAH08_sorted.bam $WorkingDirectory/mappedReadsAll/MAHRA620.bam
+    mv $WorkingDirectory/mappedReadsDNA/MAH09_sorted.bam $WorkingDirectory/mappedReadsAll/MAHRA641.bam
+    mv $WorkingDirectory/mappedReadsDNA/MAH10_sorted.bam $WorkingDirectory/mappedReadsAll/MAHRP47.7.bam
+    mv $WorkingDirectory/mappedReadsDNA/MAH11_sorted.bam $WorkingDirectory/mappedReadsAll/MAHRP4710.bam
+    mv $WorkingDirectory/mappedReadsDNA/MAH12_sorted.bam $WorkingDirectory/mappedReadsAll/MAHRP475.bam
+    mv $WorkingDirectory/mappedReadsDNA/MAH13_sorted.bam $WorkingDirectory/mappedReadsAll/MAHRP478.bam
+    mv $WorkingDirectory/mappedReadsDNA/MAH14_sorted.bam $WorkingDirectory/mappedReadsAll/MAHRP479.bam
+    mv $WorkingDirectory/mappedReadsDNA/MAH15_sorted.bam $WorkingDirectory/mappedReadsAll/MAHRP476.bam
+    mv $WorkingDirectory/mappedReadsDNA/MAR01_sorted.bam $WorkingDirectory/mappedReadsAll/MARRP6771.bam
+    mv $WorkingDirectory/mappedReadsDNA/MAR02_sorted.bam $WorkingDirectory/mappedReadsAll/MARRP686.bam
+    mv $WorkingDirectory/mappedReadsDNA/MAR03_sorted.bam $WorkingDirectory/mappedReadsAll/MAR3682.bam
+    mv $WorkingDirectory/mappedReadsDNA/MAR04_sorted.bam $WorkingDirectory/mappedReadsAll/MAR3664.bam
+    mv $WorkingDirectory/mappedReadsDNA/MAR05_sorted.bam $WorkingDirectory/mappedReadsAll/MARRA379.bam
+    mv $WorkingDirectory/mappedReadsDNA/MAR06_sorted.bam $WorkingDirectory/mappedReadsAll/MAR1794.bam
+    mv $WorkingDirectory/mappedReadsDNA/MAR07_sorted.bam $WorkingDirectory/mappedReadsAll/MAR1572T.bam
+    mv $WorkingDirectory/mappedReadsDNA/MAR08_sorted.bam $WorkingDirectory/mappedReadsAll/MARRA605.bam
+    mv $WorkingDirectory/mappedReadsDNA/MAR09_sorted.bam $WorkingDirectory/mappedReadsAll/MARRA630.bam
+    mv $WorkingDirectory/mappedReadsDNA/MAR10_sorted.bam $WorkingDirectory/mappedReadsAll/MAR2633.bam
+    mv $WorkingDirectory/mappedReadsDNA/PAP01_sorted.bam $WorkingDirectory/mappedReadsAll/PAP5614.bam
+    mv $WorkingDirectory/mappedReadsDNA/PAP02_sorted.bam $WorkingDirectory/mappedReadsAll/PAP5621.bam
+    mv $WorkingDirectory/mappedReadsDNA/PAP03_sorted.bam $WorkingDirectory/mappedReadsAll/PAP5642.bam
+    mv $WorkingDirectory/mappedReadsDNA/PAP04_sorted.bam $WorkingDirectory/mappedReadsAll/PAP5693.bam
+    mv $WorkingDirectory/mappedReadsDNA/PAP05_sorted.bam $WorkingDirectory/mappedReadsAll/PAP501005.bam
+    mv $WorkingDirectory/mappedReadsDNA/PAP06_sorted.bam $WorkingDirectory/mappedReadsAll/PAP502102.bam
+    mv $WorkingDirectory/mappedReadsDNA/PAP07_sorted.bam $WorkingDirectory/mappedReadsAll/PAP50501.bam
+    mv $WorkingDirectory/mappedReadsDNA/PAP08_sorted.bam $WorkingDirectory/mappedReadsAll/PAP51602.bam
+    mv $WorkingDirectory/mappedReadsDNA/PAP09_sorted.bam $WorkingDirectory/mappedReadsAll/PAP524101.bam
+    mv $WorkingDirectory/mappedReadsDNA/PAP10_sorted.bam $WorkingDirectory/mappedReadsAll/PAP281.bam
+    mv $WorkingDirectory/mappedReadsDNA/PAP11_sorted.bam $WorkingDirectory/mappedReadsAll/PAPRA434.bam
+    mv $WorkingDirectory/mappedReadsDNA/PAP12_sorted.bam $WorkingDirectory/mappedReadsAll/PAPRA647.bam
+    mv $WorkingDirectory/mappedReadsDNA/PAP13_sorted.bam $WorkingDirectory/mappedReadsAll/PAPRA648.bam
+    mv $WorkingDirectory/mappedReadsDNA/PAP14_sorted.bam $WorkingDirectory/mappedReadsAll/PAPRA649.bam
+    mv $WorkingDirectory/mappedReadsDNA/PAP15_sorted.bam $WorkingDirectory/mappedReadsAll/PAPRP16.bam
+    mv $WorkingDirectory/mappedReadsDNA/STO01_sorted.bam $WorkingDirectory/mappedReadsAll/STORP697.bam
+    mv $WorkingDirectory/mappedReadsDNA/STO02_sorted.bam $WorkingDirectory/mappedReadsAll/STORP698.bam
+    mv $WorkingDirectory/mappedReadsDNA/STO03_sorted.bam $WorkingDirectory/mappedReadsAll/STORA530.bam
+    mv $WorkingDirectory/mappedReadsDNA/STO04_sorted.bam $WorkingDirectory/mappedReadsAll/STORA549.bam
+    mv $WorkingDirectory/mappedReadsDNA/STO05_sorted.bam $WorkingDirectory/mappedReadsAll/STORP22.bam
+    mv $WorkingDirectory/mappedReadsDNA/STO06_sorted.bam $WorkingDirectory/mappedReadsAll/STO271.bam
+    mv $WorkingDirectory/mappedReadsDNA/STO07_sorted.bam $WorkingDirectory/mappedReadsAll/STO275.bam
+    mv $WorkingDirectory/mappedReadsDNA/STO08_sorted.bam $WorkingDirectory/mappedReadsAll/STO43113.bam
+    mv $WorkingDirectory/mappedReadsDNA/STO09_sorted.bam $WorkingDirectory/mappedReadsAll/STO43115.bam
+    mv $WorkingDirectory/mappedReadsDNA/STO10_sorted.bam $WorkingDirectory/mappedReadsAll/STO43125.bam
+    mv $WorkingDirectory/mappedReadsDNA/STO11_sorted.bam $WorkingDirectory/mappedReadsAll/STO4376.bam
+    mv $WorkingDirectory/mappedReadsDNA/STO12_sorted.bam $WorkingDirectory/mappedReadsAll/STO4377.bam
+    mv $WorkingDirectory/mappedReadsDNA/STO13_sorted.bam $WorkingDirectory/mappedReadsAll/STO4378.bam
+    mv $WorkingDirectory/mappedReadsDNA/STO14_sorted.bam $WorkingDirectory/mappedReadsAll/STO4374.bam
+    mv $WorkingDirectory/mappedReadsDNA/STO15_sorted.bam $WorkingDirectory/mappedReadsAll/STO4375.bam
+    mv $WorkingDirectory/mappedReadsDNA/STO17_sorted.bam $WorkingDirectory/mappedReadsAll/STO3310.bam
+    mv $WorkingDirectory/mappedReadsDNA/STO18_sorted.bam $WorkingDirectory/mappedReadsAll/STO5602.bam
+    mv $WorkingDirectory/mappedReadsDNA/STO19_sorted.bam $WorkingDirectory/mappedReadsAll/STO5283.bam
+    mv $WorkingDirectory/mappedReadsDNA/STO20_sorted.bam $WorkingDirectory/mappedReadsAll/STO5591.bam
+    mv $WorkingDirectory/mappedReadsDNA/STO21_sorted.bam $WorkingDirectory/mappedReadsAll/STO33272.bam
+    mv $WorkingDirectory/mappedReadsDNA/SUM01_sorted.bam $WorkingDirectory/mappedReadsAll/SUM41103.bam
+    mv $WorkingDirectory/mappedReadsDNA/SUM02_sorted.bam $WorkingDirectory/mappedReadsAll/SUM41104.bam
+    mv $WorkingDirectory/mappedReadsDNA/SUM03_sorted.bam $WorkingDirectory/mappedReadsAll/SUMRA645.bam
+    mv $WorkingDirectory/mappedReadsDNA/SUM04_sorted.bam $WorkingDirectory/mappedReadsAll/SUMRP31.bam
+    mv $WorkingDirectory/mappedReadsDNA/SUM05_sorted.bam $WorkingDirectory/mappedReadsAll/SUM53255.bam
+    mv $WorkingDirectory/mappedReadsDNA/SUM06_sorted.bam $WorkingDirectory/mappedReadsAll/SUM53252.bam
+    mv $WorkingDirectory/mappedReadsDNA/SUM07_sorted.bam $WorkingDirectory/mappedReadsAll/SUM53253.bam
+    mv $WorkingDirectory/mappedReadsDNA/SUM08_sorted.bam $WorkingDirectory/mappedReadsAll/SUM53256.bam
+    mv $WorkingDirectory/mappedReadsDNA/SUM09_sorted.bam $WorkingDirectory/mappedReadsAll/SUMRP531.bam
+    mv $WorkingDirectory/mappedReadsDNA/SUM10_sorted.bam $WorkingDirectory/mappedReadsAll/SUM6442.bam
+    mv $WorkingDirectory/mappedReadsDNA/SUM11_sorted.bam $WorkingDirectory/mappedReadsAll/SUMRP5313.bam
+    mv $WorkingDirectory/mappedReadsDNA/SUM12_sorted.bam $WorkingDirectory/mappedReadsAll/SUMRP5314.bam
+    mv $WorkingDirectory/mappedReadsDNA/SUM13_sorted.bam $WorkingDirectory/mappedReadsAll/SUMRP535.bam
+    mv $WorkingDirectory/mappedReadsDNA/SUM15_sorted.bam $WorkingDirectory/mappedReadsAll/SUMRP538.bam
+    mv $WorkingDirectory/mappedReadsDNA/SUM16_sorted.bam $WorkingDirectory/mappedReadsAll/SUMRP539.bam
+    mv $WorkingDirectory/mappedReadsDNA/SUM17_sorted.bam $WorkingDirectory/mappedReadsAll/SUM6241.bam
+    mv $WorkingDirectory/mappedReadsDNA/SUM18_sorted.bam $WorkingDirectory/mappedReadsAll/SUM6251.bam
+    mv $WorkingDirectory/mappedReadsDNA/SUM19_sorted.bam $WorkingDirectory/mappedReadsAll/SUM6263.bam
+    mv $WorkingDirectory/mappedReadsDNA/SUM20_sorted.bam $WorkingDirectory/mappedReadsAll/SUM6432.bam
+    mv $WorkingDirectory/mappedReadsDNA/SUM21_sorted.bam $WorkingDirectory/mappedReadsAll/SUMRP534.bam
+
+cd $WorkingDirectory/mappedReadsRNA
+    mv $WorkingDirectory/mappedReadsRNA/SRR497737_sorted.bam $WorkingDirectory/mappedReadsAll/ELF52309.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR497738_sorted.bam $WorkingDirectory/mappedReadsAll/ELF52319.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR497739_sorted.bam $WorkingDirectory/mappedReadsAll/ELF517112.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR497740_sorted.bam $WorkingDirectory/mappedReadsAll/PAP50905.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR497741_sorted.bam $WorkingDirectory/mappedReadsAll/PAP51303.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR497742_sorted.bam $WorkingDirectory/mappedReadsAll/ELF52503.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR497743_sorted.bam $WorkingDirectory/mappedReadsAll/ELF54403.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR497744_sorted.bam $WorkingDirectory/mappedReadsAll/PAP53202.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR497745_sorted.bam $WorkingDirectory/mappedReadsAll/PAP53307.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR497746_sorted.bam $WorkingDirectory/mappedReadsAll/PAP53205.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR497747_sorted.bam $WorkingDirectory/mappedReadsAll/ELF517102.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR497749_sorted.bam $WorkingDirectory/mappedReadsAll/PAP50403.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629599_sorted.bam $WorkingDirectory/mappedReadsAll/MAH6372.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629651_sorted.bam $WorkingDirectory/mappedReadsAll/MAR6271.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629652_sorted.bam $WorkingDirectory/mappedReadsAll/MAR6287.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629653_sorted.bam $WorkingDirectory/mappedReadsAll/MAR276.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629654_sorted.bam $WorkingDirectory/mappedReadsAll/MAR6299.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629655_sorted.bam $WorkingDirectory/mappedReadsAll/NAM2064.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629656_sorted.bam $WorkingDirectory/mappedReadsAll/MAR6326.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629657_sorted.bam $WorkingDirectory/mappedReadsAll/MAR6326dup.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629658_sorted.bam $WorkingDirectory/mappedReadsAll/NAM60603.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629659_sorted.bam $WorkingDirectory/mappedReadsAll/MAR6463.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629660_sorted.bam $WorkingDirectory/mappedReadsAll/NAM6193.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629661_sorted.bam $WorkingDirectory/mappedReadsAll/NAM6153.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629662_sorted.bam $WorkingDirectory/mappedReadsAll/MAR6099.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629663_sorted.bam $WorkingDirectory/mappedReadsAll/NAM6161.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629664_sorted.bam $WorkingDirectory/mappedReadsAll/MAR6311.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629665_sorted.bam $WorkingDirectory/mappedReadsAll/MAR6341.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629666_sorted.bam $WorkingDirectory/mappedReadsAll/MAH252.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629667_sorted.bam $WorkingDirectory/mappedReadsAll/MAR6503.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629668_sorted.bam $WorkingDirectory/mappedReadsAll/MAH2811.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629669_sorted.bam $WorkingDirectory/mappedReadsAll/MAH6084.bam
+
+}
+
 # -- PREPARE FOR SNP CALLING -- ##
 # •••••••••••• Functions for obtaining SNP convergence in bqsr ••••••••••••• #
 # •••••••••• The input parameter is the current replicate number ••••••••••• #
@@ -697,6 +837,16 @@ function combine-VCF {
     bcftools merge JustSNPs_RNA.vcf.gz JustSNPs_DNA.vcf.gz -O v -o Merged.vcf
 }
 
+function removeRNAedits {
+  vcftools --vcf $1 --non-ref-af 1 \
+  --recode --recode-INFO-all --out Substitutions.vcf
+  mv Substitutions.vcf.recode.vcf Substitutions.vcf
+  grep -v "#" Substitutions.vcf | cut -f 1,2 > Substitutions.txt
+  vcftools --vcf $1 --exclude-positions Substitutions.txt \
+  --recode --recode-INFO-all --out removedRNAedits
+  mv removedRNAedits.recode.vcf removedRNAedits.vcf
+  echo "RNA edits removed variants: $(grep -v "^#" removedRNAedits.vcf | wc -l)" >> Log.txt
+}
 
 function annotateVariants {
   ## ANNOTATE FILTERED VARIANT FILES FOR SEQCAP DATA
@@ -705,8 +855,8 @@ function annotateVariants {
   #+ DONE # Make blast database from T. elegans genome
   #+ makeblastdb -in TelagGenome.fasta -parse_seqids -dbtype nucl -out Genome.db
   # Extract genes from exons used for probe design
-  python ~/SeqCap/pythonScripts/filterExons.py Exons.fa "$2".txt "$2"TargetGenes.fa Extract"$2"GenesFromExons_log.txt
-  # Use Blast with Exons.fa (the exons used for probe design) to filter the genome
+  python ~/SeqCap/pythonScripts/filterExons.py Exons_2021.fa "$2".txt "$2"TargetGenes.fa Extract"$2"GenesFromExons_log.txt
+  # Use Blast with Exons_2021.fa (the exons used for probe design) to filter the genome
   blastn -db Genome.db -query "$2"TargetGenes.fa -outfmt "7 qseqid sseqid evalue qstart qend sstart send" -out BlastResults_"$2".txt
   # Delete "^#" lines from blast output
   cp BlastResults_"$2".txt BlastResults_"$2"_original.txt
@@ -714,7 +864,7 @@ function annotateVariants {
   sed -i.bak "s/ref|//" BlastResults_"$2".txt
   sed -i.bak "s/|//" BlastResults_"$2".txt
   # Use filtered genome results (blast output) to pull out targeted genes and create filtered gff
-  python ~/SeqCap/pythonScripts/shrinkGFF_v2.py BlastResults_"$2".txt TelagGenome.gff "$2"TargetGenes.gff Pull"$2"TargetGenes_log.txt
+  python ~/SeqCap/pythonScripts/shrinkGFF_v4.py BlastResults_"$2".txt TelagGenome.gff "$2"_TargetGenes.gff Pull"$2"TargetGenes_log.txt
   # Use bedops to convert gff to bed
   gff2bed < "$2"TargetGenes.gff > "$2"TargetGenes.bed
   # bgzip bed file
@@ -733,6 +883,29 @@ function annotateVariants {
   awk '/^#|GENE=/' "$2"_Annotated_Init.vcf > "$2"_Annotated.vcf
   echo "Annotated "$2" variants: $(grep -v "^#" "$2"_Annotated.vcf | wc -l)" >> Log.txt
 }  
+
+function getCDSVariants {
+  cd $WorkingDirectory/References/
+  python ~/SeqCap/pythonScripts/shrinkGFF_CDS.py BlastResults_"$1".txt TelagGenome.gff "$1"TargetCDS.gff Pull"$1"TargetCDS_log.txt
+  # Use bedops to convert gff to bed
+  gff2bed < "$1"TargetCDS.gff > "$1"TargetCDS.bed
+  # bgzip bed file
+  bgzip -f "$1"TargetCDS.bed "$1"TargetCDS.bed.gz
+  # tabix index .bed.gz file
+  tabix -f -p bed "$1"TargetCDS.bed.gz
+  # Annotate SNP file make sure "$1".vcf is in this directory
+  cd $WorkingDirectory/variantFiltration
+  bcftools annotate -x INFO/GENE "$1"_HardFilterStep3.vcf > "$1"_Deannotated.vcf
+  bcftools annotate \
+  	-a $WorkingDirectory/References/"$1"TargetCDS.bed.gz \
+  	-c CHROM,FROM,TO,GENE \
+        -o "$1"_CDS_Init.vcf \
+  	-O v \
+  	-h <(echo '##INFO=<ID=GENE,Number=1,Type=String,Description="Gene name">') \
+  	"$1"_Deannotated.vcf
+  awk '/^#|GENE=/' "$1"_CDS_Init.vcf > "$1"_CDS.vcf
+  echo "CDS "$1" variants: $(grep -v "^#" "$1"_CDS.vcf | wc -l)" >> Log.txt
+}
 
 function filterByPopulation {
   cd $WorkingDirectory/variantFiltration
@@ -832,8 +1005,8 @@ function hard-VariantFiltration {
 
 ### *** MAIN *** ###
 loadModules
-#+ COMPLETED createWorkingEnvironment
 WorkingDirectory=/scratch/rlk0015/Telag/May2020/WorkingDirectory
+createWorkingEnvironment
 #+ COMPLETED copyRawReadsDNA
 #+ COMPLETED performFASTQC rawReadsDNA
 #+ COMPLETED performTrimmingPE DNA
@@ -873,7 +1046,7 @@ WorkingDirectory=/scratch/rlk0015/Telag/May2020/WorkingDirectory
 #+ COMPLETED use-AnalyzeCovariates 1 2 DNA
 #+ COMPLETED 
 #+ COMPLETED # Perform bqsr-'bootstraping', SNP calling, and hard filtration on RNA-seq data
-cd $WorkingDirectory/GATKRNA
+#+ COMPLETED cd $WorkingDirectory/GATKRNA
 #+ COMPLETED ## Replicate 1
 #+ COMPLETED use-HaplotypeCaller 0 RNA
 #+ COMPLETED get-just-SNPs 0
@@ -890,59 +1063,60 @@ cd $WorkingDirectory/GATKRNA
 #+ COMPLETED get-just-SNPs 2
 #+ COMPLETED use-BaseRecalibrator 2 RNA
 #+ COMPLETED use-AnalyzeCovariates 1 2 RNA
-## -- Merge RNA and DNA data
-combine-VCF
+#+ COMPLETED ## -- Merge RNA and DNA data
+#+ COMPLETED combine-VCF
+#+ COMPLETED cd $WorkingDirectory/variantFiltration 
+#+ COMPLETED ## -- Eliminate potential RNA editing sites
+#+ COMPLETED removeRNAedits Merged
 ## -- Annotate variants
-annotateVariants Merged SeqCap
-annotateVariants Merged IILS
-annotateVariants Merged Mito
-annotateVariants Merged ETC
-annotateVariants Merged Stress
-annotateVariants Merged Random
-cp SeqCap_Annotated_Init.vcf All_Annotated.vcf
-cd $WorkingDirectory/variantFiltration
-plotVariants IILS_Annotated.vcf
-plotVariants ETC_Annotated.vcf
-plotVariants Mito_Annotated.vcf
-plotVariants Stress_Annotated.vcf
-plotVariants SeqCap_Annotated.vcf
-plotVariants All_Annotated.vcf
+#+ COMPLETED annotateVariants removedRNAedits SeqCap
+#+ COMPLETED annotateVariants removedRNAedits IILS
+#+ NEEDED annotateVariants removedRNAedits Mito
+#+ NEEDED annotateVariants removedRNAedits ETC
+#+ NEEDED annotateVariants removedRNAedits Stress
+#+ NEEDED #+ WAIT annotateVariants Merged Random
+#+ COMPLETED plotVariants IILS_Annotated.vcf
+#+ NEEDED plotVariants ETC_Annotated.vcf
+#+ NEEDED plotVariants Mito_Annotated.vcf
+#+ NEEDED plotVariants Stress_Annotated.vcf
+#+ COMPLETED plotVariants SeqCap_Annotated.vcf
 ## -- Initial Filter Variants
-initial-VariantFiltration IILS_popFiltered.vcf IILS_InitialFiltered
-initial-VariantFiltration ETC_popFiltered.vcf ETC_InitialFiltered
-initial-VariantFiltration Mito_popFiltered.vcf Mito_InitialFiltered
-initial-VariantFiltration Stress_popFiltered.vcf Stress_InitialFiltered
-initial-VariantFiltration SeqCap_popFiltered.vcf SeqCap_InitialFiltered
-initial-VariantFiltration All_popFiltered.vcf All_InitialFiltered
-initial-VariantFiltration Random_popFiltered.vcf Random_InitialFiltered
-mkdir -p originalPopFiltration
-mv *popFiltered* originalPopFiltration
+#+ COMPLETED initial-VariantFiltration IILS_Annotated.vcf IILS_InitialFiltered
+#+ NEEDED initial-VariantFiltration ETC_Annotated.vcf ETC_InitialFiltered
+#+ NEEDED initial-VariantFiltration Mito_Annotated.vcf Mito_InitialFiltered
+#+ NEEDED initial-VariantFiltration Stress_Annotated.vcf Stress_InitialFiltered
+#+ COMPLETED initial-VariantFiltration SeqCap_Annotated.vcf SeqCap_InitialFiltered
+#+ NEEDED #+ WAIT initial-VariantFiltration Random_popFiltered.vcf Random_InitialFiltered
 ## -- Examine Initial Filtered Variants
-plotVariants IILS_InitialFiltered.vcf
-plotVariants ETC_InitialFiltered.vcf
-plotVariants Mito_InitialFiltered.vcf
-plotVariants Stress_InitialFiltered.vcf
-plotVariants SeqCap_InitialFiltered.vcf
-plotVariants All_InitialFiltered.vcf
+#+ COMPLETED plotVariants IILS_InitialFiltered.vcf
+#+ NEEDED plotVariants ETC_InitialFiltered.vcf
+#+ NEEDED plotVariants Mito_InitialFiltered.vcf
+#+ NEEDED plotVariants Stress_InitialFiltered.vcf
+#+ COMPLETED plotVariants SeqCap_InitialFiltered.vcf
 ## -- Perform Hard Filtering
-hard-VariantFiltration IILS_InitialFiltered IILS
-hard-VariantFiltration ETC_InitialFiltered ETC
-hard-VariantFiltration Mito_InitialFiltered Mito
-hard-VariantFiltration Stress_InitialFiltered Stress
-hard-VariantFiltration SeqCap_InitialFiltered SeqCap
-hard-VariantFiltration All_InitialFiltered All
-hard-VariantFiltration Random_InitialFiltered Random
+#+ COMPLETED hard-VariantFiltration IILS_InitialFiltered IILS
+#+ NEEDED hard-VariantFiltration ETC_InitialFiltered ETC
+#+ NEEDED hard-VariantFiltration Mito_InitialFiltered Mito
+#+ NEEDED hard-VariantFiltration Stress_InitialFiltered Stress
+#+ COMPLETED hard-VariantFiltration SeqCap_InitialFiltered SeqCap
+#+ NEEDED #+ WAIT hard-VariantFiltration Random_InitialFiltered Random
 ## -- Examine Hard Filtered Variants
-plotVariants IILS_HardFilterStep3.vcf
-plotVariants ETC_HardFilterStep3.vcf
-plotVariants Mito_HardFilterStep3.vcf
-plotVariants Stress_HardFilterStep3.vcf
-plotVariants SeqCap_HardFilterStep3.vcf
-plotVariants All_HardFilterStep3.vcf
-## -- Examine Hard Filtered Variants
-plotVariants IILS_popFiltered.vcf
-plotVariants ETC_popFiltered.vcf
-plotVariants Mito_popFiltered.vcf
-plotVariants Stress_popFiltered.vcf
-plotVariants SeqCap_popFiltered.vcf
-plotVariants All_popFiltered.vcf
+#+ COMPLETED plotVariants IILS_HardFilterStep3.vcf
+#+ NEEDED plotVariants ETC_HardFilterStep3.vcf
+#+ NEEDED plotVariants Mito_HardFilterStep3.vcf
+#+ NEEDED plotVariants Stress_HardFilterStep3.vcf
+#+ COMPLETED plotVariants SeqCap_HardFilterStep3.vcf
+#+ NEEDED ## -- Examine Hard Filtered Variants
+#+ COMPLETED plotVariants IILS_popFiltered.vcf
+#+ NEEDED plotVariants ETC_popFiltered.vcf
+#+ NEEDED plotVariants Mito_popFiltered.vcf
+#+ NEEDED plotVariants Stress_popFiltered.vcf
+#+ COMPLETED plotVariants SeqCap_popFiltered.vcf
+
+getCDSVariants IILS
+#+ NEEDED getCDSVariants ETC
+#+ NEEDED getCDSVariants Mito
+#+ NEEDED getCDSVariants Stress
+#+ NEEDED getCDSVariants SeqCap
+
+#+ COMPLETED renameSortedBAMs
