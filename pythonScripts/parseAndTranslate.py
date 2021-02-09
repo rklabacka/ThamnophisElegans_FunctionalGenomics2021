@@ -18,6 +18,7 @@ for line in fna_in:
         fna_out.write(header + cds) 
         fna_out.close()
         Seq_cds = Seq(cds)
+	Seq_cds
         pepseq = Seq_cds.translate()
         faa_out.write(header + str(pepseq))
         faa_out.close()
