@@ -11,7 +11,7 @@
 #-- Hopper's standard compute nodes have a total of 20 cores each
 #-- so, to use all the processors on a single machine, set your
 #-- ppn (processors per node) to 20.
-#PBS -l nodes=3:ppn=10,walltime=05:00:00:00
+#PBS -l nodes=1:ppn=10,walltime=05:00:00:00
 #-- Indicate if\when you want to receive email about your job
 #-- The directive below sends email if the job is (a) aborted, 
 #-- when it (b) begins, and when it (e) ends
@@ -494,7 +494,7 @@ do
     -O "$i"_"$1".g.vcf \
     -ERC GVCF
   echo "$i"$'\t'"$i""_""$1"".g.vcf" >> cohort.sample_map_"$1"
-done<$WorkingDirectory/mappedReads"$2"/samList
+done<$WorkingDirectory/mappedReads"$2"/samList2
 }
 
 function get-just-SNPs {
@@ -551,8 +551,8 @@ done<$WorkingDirectory/mappedReads"$3"/samList
 }
 
 function combine-VCF {
-    cp $WorkingDirectory/GATKDNA/JustSNPs_2.vcf $WorkingDirectory/variantFiltration/JustSNPs_DNA.vcf
-    cp $WorkingDirectory/GATKRNA/JustSNPs_2.vcf $WorkingDirectory/variantFiltration/JustSNPs_RNA.vcf
+    cp $WorkingDirectory/GATKDNA/JustSNPs_1.vcf $WorkingDirectory/variantFiltration/JustSNPs_DNA.vcf
+    cp $WorkingDirectory/GATKRNA/JustSNPs_1.vcf $WorkingDirectory/variantFiltration/JustSNPs_RNA.vcf
     cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/variantFiltration
     # Change names:
     # DNA
@@ -703,29 +703,11 @@ function combine-VCF {
     cd isec
     bgzip 0003.vcf
     bcftools index 0003.vcf.gz
+    cp 0003.vcf.gz* ..
+    cd ..
     bcftools merge 0003.vcf.gz JustSNPs_DNA.vcf.gz -O v -o Merged.vcf
-    mv Merged.vcf ..
-
 }
 
-function filterByPopulation {
-  cd $WorkingDirectory/variantFiltration
-  #Create list for each population
-  echo "ELF" >> Pops; echo "MAH" >> Pops; echo "MAR" >> Pops; echo "NAM" >> Pops; echo "PAP" >> Pops; echo "STO" >> Pops; echo "SUM" >> Pops
-  while read i
-  do
-    #Create VCF for each population  
-    bcftools view --samples-file $WorkingDirectory/References/"$i".txt "$1" > "$2"_"$i".vcf
-    #Get number of individuals for each vcf
-    n="$(awk '{if ($1 == "#CHROM"){print NF-9; exit}}' "$2"_"$i".vcf)"
-    min=$(expr $n - 1)
-    #Filter missing data- 
-    vcftools --max-missing-count $min --vcf "$2"_"$i".vcf  --recode --recode-INFO-all --out "$2"_"$i"_popFiltered.vcf
-    mv "$2"_"$i"_popFiltered.vcf.recode.vcf "$2"_"$i"_popFiltered.vcf
-  done<Pops
-  bcftools merge "$2"*popFiltered.vcf -O v -o "$2"_popFiltered.vcf
-  echo "Filtered by Population IILS variants: $(grep -v "^#" "$1" | wc -l)" >> Log.txt
-}
 
 function annotateVariants {
   ## ANNOTATE FILTERED VARIANT FILES FOR SEQCAP DATA
@@ -760,14 +742,35 @@ function annotateVariants {
   	-h <(echo '##INFO=<ID=GENE,Number=1,Type=String,Description="Gene name">') \
   	"$1".vcf
   awk '/^#|GENE=/' "$2"_Annotated_Init.vcf > "$2"_Annotated.vcf
+  echo "Annotated "$2" variants: $(grep -v "^#" "$2"_Annotated.vcf | wc -l)" >> Log.txt
 }  
+
+function filterByPopulation {
+  cd $WorkingDirectory/variantFiltration
+  #Create list for each population
+  echo "ELF" >> Pops; echo "MAH" >> Pops; echo "MAR" >> Pops; echo "NAM" >> Pops; echo "PAP" >> Pops; echo "STO" >> Pops; echo "SUM" >> Pops
+  while read i
+  do
+    #Create VCF for each population  
+    bcftools view --samples-file $WorkingDirectory/References/"$i".txt "$1" > "$2"_"$i".vcf
+    #Get number of individuals for each vcf
+    n="$(awk '{if ($1 == "#CHROM"){print NF-9; exit}}' "$2"_"$i".vcf)"
+    min=$(expr $n - 1)
+    #Filter missing data- 
+    vcftools --max-missing-count $min --vcf "$2"_"$i".vcf  --recode --recode-INFO-all --out "$2"_"$i"_popFiltered.vcf
+    mv "$2"_"$i"_popFiltered.vcf.recode.vcf "$2"_"$i"_popFiltered.vcf
+    bgzip "$2"_"$i"_popFiltered.vcf
+    bcftools index -f "$2"_"$i"_popFiltered.vcf.gz
+  done<Pops
+  bcftools merge "$2"*popFiltered.vcf.gz -O v -o "$2"_popFiltered.vcf
+  echo "Filtered by Population "$2" variants: $(grep -v "^#" "$2"_popFiltered.vcf | wc -l)" >> Log.txt
+}
 
 function plotVariants {
 source /home/rlk0015/miniconda3/etc/profile.d/conda.sh
 conda activate vcfEnv
 python ~/SeqCap/pythonScripts/vcf2table.py "$1" "$1"_table
 ~/SeqCap/RScripts/plotvcftable.R -I "$1"_table -O "$1"_plot.pdf
-echo "Initial annotated IILS variants: $(grep -v "^#" "$1" | wc -l)" >> Log.txt
 }
 
 function initial-VariantFiltration {
@@ -793,8 +796,8 @@ function initial-VariantFiltration {
 	    # Estimate strand bias without penalizing reads that occur at the end of exons *FS is biased to penalize
   /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" VariantFiltration \
 	-R $WorkingDirectory/References/TelagGenome.fasta \
-	-V "$1".vcf \
-        -O "$2"Init.vcf \
+	-V "$1" \
+        -O filtered_"$2"Init.vcf \
 	--filter-name "SOR" \
 	--filter-expression "SOR > 3.0" \
 	--filter-name "QD" \
@@ -807,8 +810,9 @@ function initial-VariantFiltration {
 	--filter-expression "FS > 60.0" \
 	--filter-name "ReadPosRankSum" \
 	--filter-expression "ReadPosRankSum < -5.0"
-  awk '/^#/||$7=="PASS"' "$2"Init.vcf > "$2".vcf
-  echo "Initial filtration IILS variants: $(grep -v "^#" "$2".vcf | wc -l)" >> Log.txt
+  # don't do the following for filtered_0.vcf, just get rid of the Init suffix
+  awk '/^#/||$7=="PASS"' filtered_"$2"Init.vcf > filtered_"$2".vcf
+  echo "Initial filtration "$2" variants: $(grep -v "^#" filtered_"$2".vcf | wc -l)" >> Log.txt
 } 
 
 function hard-VariantFiltration {
@@ -819,7 +823,7 @@ function hard-VariantFiltration {
   #+   echo "Depth filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep1.vcf | wc -l)" >> Log.txt
   #+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Step 4: Get rid of low-quality (mean) genotyping:
-    bcftools view  -i  'MIN(FMT/GQ>20)'   "$1".vcf > "$2"_HardFilterStep1.vcf
+    bcftools view  -i  'MIN(FMT/GQ>20)'   filtered_"$1".vcf > "$2"_HardFilterStep1.vcf
     echo "Genotype Quality filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep1.vcf | wc -l)" >> Log.txt
   # Step 2: Get rid of multiallelic SNPs (more than 2 alleles):
     bcftools view -m2 -M2 -v snps "$2"_HardFilterStep1.vcf > "$2"_HardFilterStep2.vcf
@@ -839,7 +843,7 @@ function hard-VariantFiltration {
 
 ### *** MAIN *** ###
 loadModules
-createWorkingEnvironment
+#+ COMPLETED createWorkingEnvironment
 WorkingDirectory=/scratch/rlk0015/Telag/May2020/WorkingDirectory
 #+ COMPLETED copyRawReadsDNA
 #+ COMPLETED performFASTQC rawReadsDNA
@@ -865,7 +869,7 @@ WorkingDirectory=/scratch/rlk0015/Telag/May2020/WorkingDirectory
 #+ COMPLETED ## Replicate 1
 #+ COMPLETED use-HaplotypeCaller 0 DNA
 #+ COMPLETED get-just-SNPs 0 
-#+ COMPLETED initial-VariantFiltration 0
+#+ COMPLETED initial-VariantFiltration JustSNPs_0.vcf 0
 #+ COMPLETED use-BaseRecalibrator 0 DNA
 #+ COMPLETED use-BQSR 0 1 DNA
 #+ COMPLETED use-HaplotypeCaller 1 DNA
@@ -883,76 +887,89 @@ WorkingDirectory=/scratch/rlk0015/Telag/May2020/WorkingDirectory
 cd $WorkingDirectory/GATKRNA
 #+ COMPLETED ## Replicate 1
 #+ COMPLETED use-HaplotypeCaller 0 RNA
-get-just-SNPs 0
-initial-VariantFiltration 0
-use-BaseRecalibrator 0 RNA
-use-BQSR 0 1 RNA
-use-HaplotypeCaller 1 RNA
-get-just-SNPs 1
-use-BaseRecalibrator 1 RNA
-use-AnalyzeCovariates 0 1 RNA
-## -- Replicate 2
-use-BQSR 1 2 RNA
-use-HaplotypeCaller 2 RNA
-get-just-SNPs 2
-use-BaseRecalibrator 2 RNA
-use-AnalyzeCovariates 1 2 RNA
-## -- Merge RNA and DNA data
-combine-VCF
-## -- Annotate variants
-annotateVariants Merged SeqCap
-annotateVariants Merged IILS
-annotateVariants Merged Mito
-annotateVariants Merged ETC
-annotateVariants Merged Stress
-annotateVariants Merged Random
-cp SeqCap_Annotated_Init.vcf All_Annotated.vcf
+#+ COMPLETED get-just-SNPs 0
+#+ COMPLETED initial-VariantFiltration JustSNPs_0.vcf 0
+#+ COMPLETED use-BaseRecalibrator 0 RNA
+#+ COMPLETED use-BQSR 0 1 RNA
+#+ COMPLETED use-HaplotypeCaller 1 RNA
+#+ COMPLETED get-just-SNPs 1
+#+ COMPLETED use-BaseRecalibrator 1 RNA
+#+ COMPLETED use-AnalyzeCovariates 0 1 RNA
+#+ COMPLETED ## -- Replicate 2
+#+ COMPLETED use-BQSR 1 2 RNA
+#+ COMPLETED use-HaplotypeCaller 2 RNA
+#+ COMPLETED get-just-SNPs 2
+#+ COMPLETED use-BaseRecalibrator 2 RNA
+#+ COMPLETED use-AnalyzeCovariates 1 2 RNA
+#+ COMPLETED ## -- Merge RNA and DNA data
+#+ COMPLETED combine-VCF
+#+ COMPLETED ## -- Annotate variants
+#+ COMPLETED annotateVariants Merged SeqCap
+#+ COMPLETED annotateVariants Merged IILS
+#+ COMPLETED annotateVariants Merged Mito
+#+ COMPLETED annotateVariants Merged ETC
+#+ COMPLETED annotateVariants Merged Stress
+#+ COMPLETED annotateVariants Merged Random
+#+ COMPLETED cp SeqCap_Annotated_Init.vcf All_Annotated.vcf
 cd $WorkingDirectory/variantFiltration
-plotVariants IILS_Annotated.vcf
-plotVariants ETC_Annotated.vcf
-plotVariants Mito_Annotated.vcf
-plotVariants Stress_Annotated.vcf
-plotVariants SeqCap_Annotated.vcf
-plotVariants All_Annotated.vcf
-## -- Filter by Population
-filterByPopulation IILS_Annotated.vcf IILS
-filterByPopulation ETC_Annotated.vcf ETC
-filterByPopulation Mito_Annotated.vcf Mito
-filterByPopulation Stress_Annotated.vcf Stress
-filterByPopulation SeqCap_Annotated.vcf SeqCap
-filterByPopulation All_Annotated.vcf All
-## -- Initial Filter Variants
-initial-VariantFiltration IILS_popFiltered IILS_InitialFiltered
-initial-VariantFiltration ETC_popFiltered ETC_InitialFiltered
-initial-VariantFiltration Mito_popFiltered Mito_InitialFiltered
-initial-VariantFiltration Stress_popFiltered Stress_InitialFiltered
-initial-VariantFiltration SeqCap_popFiltered SeqCap_InitialFiltered
-initial-VariantFiltration All_popFiltered All_InitialFiltered
-## -- Examine Initial Filtered Variants
-plotVariants IILS_InitialFiltered.vcf
-plotVariants ETC_InitialFiltered.vcf
-plotVariants Mito_InitialFiltered.vcf
-plotVariants Stress_InitialFiltered.vcf
-plotVariants SeqCap_InitialFiltered.vcf
-plotVariants All_InitialFiltered.vcf
-## -- Perform Hard Filtering
-hard-VariantFiltration IILS_InitialFiltered IILS
-hard-VariantFiltration ETC_InitialFiltered ETC
-hard-VariantFiltration Mito_InitialFiltered Mito
-hard-VariantFiltration Stress_InitialFiltered Stress
-hard-VariantFiltration SeqCap_InitialFiltered SeqCap
-hard-VariantFiltration All_InitialFiltered All
-## -- Examine Hard Filtered Variants
-plotVariants IILS_HardFiltered.vcf
-plotVariants ETC_HardFiltered.vcf
-plotVariants Mito_HardFiltered.vcf
-plotVariants Stress_HardFiltered.vcf
-plotVariants SeqCap_HardFiltered.vcf
-plotVariants All_HardFiltered.vcf
-## -- Filter by population for a final time
-filterByPopulation IILS_HardFiltered.vcf IILS
-filterByPopulation ETC_HardFiltered.vcf ETC
-filterByPopulation Mito_HardFiltered.vcf Mito
-filterByPopulation Stress_HardFiltered.vcf Stress
-filterByPopulation SeqCap_HardFiltered.vcf SeqCap
-filterByPopulation All_HardFiltered.vcf All
+#+ COMPLETED plotVariants IILS_Annotated.vcf
+#+ COMPLETED plotVariants ETC_Annotated.vcf
+#+ COMPLETED plotVariants Mito_Annotated.vcf
+#+ COMPLETED plotVariants Stress_Annotated.vcf
+#+ COMPLETED plotVariants SeqCap_Annotated.vcf
+#+ COMPLETED plotVariants All_Annotated.vcf
+#+ COMPLETED ## -- Filter by Population
+#+ COMPLETED filterByPopulation IILS_Annotated.vcf IILS
+#+ COMPLETED filterByPopulation ETC_Annotated.vcf ETC
+#+ COMPLETED filterByPopulation Mito_Annotated.vcf Mito
+#+ COMPLETED filterByPopulation Stress_Annotated.vcf Stress
+#+ COMPLETED filterByPopulation SeqCap_Annotated.vcf SeqCap
+#+ COMPLETED filterByPopulation Random_Annotated.vcf Random
+#+ COMPLETED filterByPopulation All_Annotated.vcf All
+#+ COMPLETED ## -- Initial Filter Variants
+#+ COMPLETED initial-VariantFiltration IILS_popFiltered.vcf IILS_InitialFiltered
+#+ COMPLETED initial-VariantFiltration ETC_popFiltered.vcf ETC_InitialFiltered
+#+ COMPLETED initial-VariantFiltration Mito_popFiltered.vcf Mito_InitialFiltered
+#+ COMPLETED initial-VariantFiltration Stress_popFiltered.vcf Stress_InitialFiltered
+#+ COMPLETED initial-VariantFiltration SeqCap_popFiltered.vcf SeqCap_InitialFiltered
+#+ COMPLETED initial-VariantFiltration All_popFiltered.vcf All_InitialFiltered
+#+ COMPLETED initial-VariantFiltration Random_popFiltered.vcf Random_InitialFiltered
+#+ COMPLETED mkdir -p originalPopFiltration
+#+ COMPLETED mv *popFiltered* originalPopFiltration
+#+ COMPLETED ## -- Examine Initial Filtered Variants
+#+ COMPLETED plotVariants IILS_InitialFiltered.vcf
+#+ COMPLETED plotVariants ETC_InitialFiltered.vcf
+#+ COMPLETED plotVariants Mito_InitialFiltered.vcf
+#+ COMPLETED plotVariants Stress_InitialFiltered.vcf
+#+ COMPLETED plotVariants SeqCap_InitialFiltered.vcf
+#+ COMPLETED plotVariants All_InitialFiltered.vcf
+#+ COMPLETED ## -- Perform Hard Filtering
+#+ COMPLETED hard-VariantFiltration IILS_InitialFiltered IILS
+#+ COMPLETED hard-VariantFiltration ETC_InitialFiltered ETC
+#+ COMPLETED hard-VariantFiltration Mito_InitialFiltered Mito
+#+ COMPLETED hard-VariantFiltration Stress_InitialFiltered Stress
+#+ COMPLETED hard-VariantFiltration SeqCap_InitialFiltered SeqCap
+#+ COMPLETED hard-VariantFiltration All_InitialFiltered All
+#+ COMPLETED hard-VariantFiltration Random_InitialFiltered Random
+#+ COMPLETED ## -- Examine Hard Filtered Variants
+#+ COMPLETED plotVariants IILS_HardFilterStep3.vcf
+#+ COMPLETED plotVariants ETC_HardFilterStep3.vcf
+#+ COMPLETED plotVariants Mito_HardFilterStep3.vcf
+#+ COMPLETED plotVariants Stress_HardFilterStep3.vcf
+#+ COMPLETED plotVariants SeqCap_HardFilterStep3.vcf
+#+ COMPLETED plotVariants All_HardFilterStep3.vcf
+#+ COMPLETED ## -- Filter by population for a final time
+#+ COMPLETED filterByPopulation IILS_HardFilterStep3.vcf IILS
+#+ COMPLETED filterByPopulation ETC_HardFilterStep3.vcf ETC
+#+ COMPLETED filterByPopulation Mito_HardFilterStep3.vcf Mito
+#+ COMPLETED filterByPopulation Stress_HardFilterStep3.vcf Stress
+#+ COMPLETED filterByPopulation SeqCap_HardFilterStep3.vcf SeqCap
+filterByPopulation All_HardFilterStep3.vcf All
+#+ COMPLETED filterByPopulation Random_HardFilterStep3.vcf Random
+#+ COMPLETED ## -- Examine Hard Filtered Variants
+#+ COMPLETED plotVariants IILS_popFiltered.vcf
+#+ COMPLETED plotVariants ETC_popFiltered.vcf
+#+ COMPLETED plotVariants Mito_popFiltered.vcf
+#+ COMPLETED plotVariants Stress_popFiltered.vcf
+#+ COMPLETED plotVariants SeqCap_popFiltered.vcf
+#+ COMPLETED plotVariants All_popFiltered.vcf
