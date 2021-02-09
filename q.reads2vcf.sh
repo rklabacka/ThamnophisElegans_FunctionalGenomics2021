@@ -600,7 +600,10 @@ samtools index $WorkingDirectory/GATKDNA/dupsRemoved.bam
 /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" BaseRecalibrator \
 	-R $WorkingDirectory/References/TelagGenome.fasta \
 	-I $WorkingDirectory/GATKDNA/dupsRemoved.bam \
-	--known-sites $WorkingDirectory/GATKDNA/JustSNPs_0.vcf
+	--known-sites $WorkingDirectory/GATKDNA/JustSNPs_0.vcf \
+	-o $WorkingDirectory/GATKDNA/recal_data_1.table
+
+
 	
 #  # realign indels
 #  java -Xmx16g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
