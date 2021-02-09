@@ -694,18 +694,7 @@ function combine-VCF {
     bgzip JustSNPs_RNA.vcf
     bcftools index JustSNPs_DNA.vcf.gz
     bcftools index JustSNPs_RNA.vcf.gz
-    # Find variant intersections between datasets
-    bcftools isec JustSNPs_DNA.vcf.gz JustSNPs_RNA.vcf.gz -p isec
-    # Move into isec directory
-    ## -- This directory contains the output from the isec command
-    ## -- Look at the README to understand the files output from isec
-    ## -- 0003 is the records from just RNA shared by both DNA and RNA
-    cd isec
-    bgzip 0003.vcf
-    bcftools index 0003.vcf.gz
-    cp 0003.vcf.gz* ..
-    cd ..
-    bcftools merge 0003.vcf.gz JustSNPs_DNA.vcf.gz -O v -o Merged.vcf
+    bcftools merge JustSNPs_RNA.vcf.gz JustSNPs_DNA.vcf.gz -O v -o Merged.vcf
 }
 
 
@@ -901,75 +890,59 @@ cd $WorkingDirectory/GATKRNA
 #+ COMPLETED get-just-SNPs 2
 #+ COMPLETED use-BaseRecalibrator 2 RNA
 #+ COMPLETED use-AnalyzeCovariates 1 2 RNA
-#+ COMPLETED ## -- Merge RNA and DNA data
-#+ COMPLETED combine-VCF
-#+ COMPLETED ## -- Annotate variants
-#+ COMPLETED annotateVariants Merged SeqCap
-#+ COMPLETED annotateVariants Merged IILS
-#+ COMPLETED annotateVariants Merged Mito
-#+ COMPLETED annotateVariants Merged ETC
-#+ COMPLETED annotateVariants Merged Stress
-#+ COMPLETED annotateVariants Merged Random
-#+ COMPLETED cp SeqCap_Annotated_Init.vcf All_Annotated.vcf
+## -- Merge RNA and DNA data
+combine-VCF
+## -- Annotate variants
+annotateVariants Merged SeqCap
+annotateVariants Merged IILS
+annotateVariants Merged Mito
+annotateVariants Merged ETC
+annotateVariants Merged Stress
+annotateVariants Merged Random
+cp SeqCap_Annotated_Init.vcf All_Annotated.vcf
 cd $WorkingDirectory/variantFiltration
-#+ COMPLETED plotVariants IILS_Annotated.vcf
-#+ COMPLETED plotVariants ETC_Annotated.vcf
-#+ COMPLETED plotVariants Mito_Annotated.vcf
-#+ COMPLETED plotVariants Stress_Annotated.vcf
-#+ COMPLETED plotVariants SeqCap_Annotated.vcf
-#+ COMPLETED plotVariants All_Annotated.vcf
-#+ COMPLETED ## -- Filter by Population
-#+ COMPLETED filterByPopulation IILS_Annotated.vcf IILS
-#+ COMPLETED filterByPopulation ETC_Annotated.vcf ETC
-#+ COMPLETED filterByPopulation Mito_Annotated.vcf Mito
-#+ COMPLETED filterByPopulation Stress_Annotated.vcf Stress
-#+ COMPLETED filterByPopulation SeqCap_Annotated.vcf SeqCap
-#+ COMPLETED filterByPopulation Random_Annotated.vcf Random
-#+ COMPLETED filterByPopulation All_Annotated.vcf All
-#+ COMPLETED ## -- Initial Filter Variants
-#+ COMPLETED initial-VariantFiltration IILS_popFiltered.vcf IILS_InitialFiltered
-#+ COMPLETED initial-VariantFiltration ETC_popFiltered.vcf ETC_InitialFiltered
-#+ COMPLETED initial-VariantFiltration Mito_popFiltered.vcf Mito_InitialFiltered
-#+ COMPLETED initial-VariantFiltration Stress_popFiltered.vcf Stress_InitialFiltered
-#+ COMPLETED initial-VariantFiltration SeqCap_popFiltered.vcf SeqCap_InitialFiltered
-#+ COMPLETED initial-VariantFiltration All_popFiltered.vcf All_InitialFiltered
-#+ COMPLETED initial-VariantFiltration Random_popFiltered.vcf Random_InitialFiltered
-#+ COMPLETED mkdir -p originalPopFiltration
-#+ COMPLETED mv *popFiltered* originalPopFiltration
-#+ COMPLETED ## -- Examine Initial Filtered Variants
-#+ COMPLETED plotVariants IILS_InitialFiltered.vcf
-#+ COMPLETED plotVariants ETC_InitialFiltered.vcf
-#+ COMPLETED plotVariants Mito_InitialFiltered.vcf
-#+ COMPLETED plotVariants Stress_InitialFiltered.vcf
-#+ COMPLETED plotVariants SeqCap_InitialFiltered.vcf
-#+ COMPLETED plotVariants All_InitialFiltered.vcf
-#+ COMPLETED ## -- Perform Hard Filtering
-#+ COMPLETED hard-VariantFiltration IILS_InitialFiltered IILS
-#+ COMPLETED hard-VariantFiltration ETC_InitialFiltered ETC
-#+ COMPLETED hard-VariantFiltration Mito_InitialFiltered Mito
-#+ COMPLETED hard-VariantFiltration Stress_InitialFiltered Stress
-#+ COMPLETED hard-VariantFiltration SeqCap_InitialFiltered SeqCap
-#+ COMPLETED hard-VariantFiltration All_InitialFiltered All
-#+ COMPLETED hard-VariantFiltration Random_InitialFiltered Random
-#+ COMPLETED ## -- Examine Hard Filtered Variants
-#+ COMPLETED plotVariants IILS_HardFilterStep3.vcf
-#+ COMPLETED plotVariants ETC_HardFilterStep3.vcf
-#+ COMPLETED plotVariants Mito_HardFilterStep3.vcf
-#+ COMPLETED plotVariants Stress_HardFilterStep3.vcf
-#+ COMPLETED plotVariants SeqCap_HardFilterStep3.vcf
-#+ COMPLETED plotVariants All_HardFilterStep3.vcf
-#+ COMPLETED ## -- Filter by population for a final time
-#+ COMPLETED filterByPopulation IILS_HardFilterStep3.vcf IILS
-#+ COMPLETED filterByPopulation ETC_HardFilterStep3.vcf ETC
-#+ COMPLETED filterByPopulation Mito_HardFilterStep3.vcf Mito
-#+ COMPLETED filterByPopulation Stress_HardFilterStep3.vcf Stress
-#+ COMPLETED filterByPopulation SeqCap_HardFilterStep3.vcf SeqCap
-filterByPopulation All_HardFilterStep3.vcf All
-#+ COMPLETED filterByPopulation Random_HardFilterStep3.vcf Random
-#+ COMPLETED ## -- Examine Hard Filtered Variants
-#+ COMPLETED plotVariants IILS_popFiltered.vcf
-#+ COMPLETED plotVariants ETC_popFiltered.vcf
-#+ COMPLETED plotVariants Mito_popFiltered.vcf
-#+ COMPLETED plotVariants Stress_popFiltered.vcf
-#+ COMPLETED plotVariants SeqCap_popFiltered.vcf
-#+ COMPLETED plotVariants All_popFiltered.vcf
+plotVariants IILS_Annotated.vcf
+plotVariants ETC_Annotated.vcf
+plotVariants Mito_Annotated.vcf
+plotVariants Stress_Annotated.vcf
+plotVariants SeqCap_Annotated.vcf
+plotVariants All_Annotated.vcf
+## -- Initial Filter Variants
+initial-VariantFiltration IILS_popFiltered.vcf IILS_InitialFiltered
+initial-VariantFiltration ETC_popFiltered.vcf ETC_InitialFiltered
+initial-VariantFiltration Mito_popFiltered.vcf Mito_InitialFiltered
+initial-VariantFiltration Stress_popFiltered.vcf Stress_InitialFiltered
+initial-VariantFiltration SeqCap_popFiltered.vcf SeqCap_InitialFiltered
+initial-VariantFiltration All_popFiltered.vcf All_InitialFiltered
+initial-VariantFiltration Random_popFiltered.vcf Random_InitialFiltered
+mkdir -p originalPopFiltration
+mv *popFiltered* originalPopFiltration
+## -- Examine Initial Filtered Variants
+plotVariants IILS_InitialFiltered.vcf
+plotVariants ETC_InitialFiltered.vcf
+plotVariants Mito_InitialFiltered.vcf
+plotVariants Stress_InitialFiltered.vcf
+plotVariants SeqCap_InitialFiltered.vcf
+plotVariants All_InitialFiltered.vcf
+## -- Perform Hard Filtering
+hard-VariantFiltration IILS_InitialFiltered IILS
+hard-VariantFiltration ETC_InitialFiltered ETC
+hard-VariantFiltration Mito_InitialFiltered Mito
+hard-VariantFiltration Stress_InitialFiltered Stress
+hard-VariantFiltration SeqCap_InitialFiltered SeqCap
+hard-VariantFiltration All_InitialFiltered All
+hard-VariantFiltration Random_InitialFiltered Random
+## -- Examine Hard Filtered Variants
+plotVariants IILS_HardFilterStep3.vcf
+plotVariants ETC_HardFilterStep3.vcf
+plotVariants Mito_HardFilterStep3.vcf
+plotVariants Stress_HardFilterStep3.vcf
+plotVariants SeqCap_HardFilterStep3.vcf
+plotVariants All_HardFilterStep3.vcf
+## -- Examine Hard Filtered Variants
+plotVariants IILS_popFiltered.vcf
+plotVariants ETC_popFiltered.vcf
+plotVariants Mito_popFiltered.vcf
+plotVariants Stress_popFiltered.vcf
+plotVariants SeqCap_popFiltered.vcf
+plotVariants All_popFiltered.vcf
