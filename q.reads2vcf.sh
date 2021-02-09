@@ -32,413 +32,459 @@ echo PBS: current home directory is $PBS_O_HOME
 echo PBS: PATH = $PBS_O_PATH
 echo ------------------------------------------------------
 
-module load fastqc/11.5
-module load gnu-parallel/20160322 
-module load trimmomatic/0.36
-module load bwa/0.7.15
-module load samtools/1.3.1
-module load picard/2.4.1
-module load bcftools/1.3.2
-module load hybpiper/1
-module load xz/5.2.2
-module load htslib/1.3.3
-module load python/3.6.4
-module load gatk/4.1.7.0
-module load R/3.6.0
-module load bedtools/2.29.0
-module load ncbi-blast/2.9.0+
-module load bcftools/1.3.2
-module load vcftools/v0.1.17
+function loadModules {
+  module load fastqc/11.5
+  module load gnu-parallel/20160322 
+  module load trimmomatic/0.36
+  module load bwa/0.7.15
+  module load samtools/1.3.1
+  module load picard/2.4.1
+  module load bcftools/1.3.2
+  module load hybpiper/1
+  module load xz/5.2.2
+  module load htslib/1.3.3
+  module load python/3.6.4
+  module load gatk/4.1.7.0
+  module load R/3.6.0
+  module load bedtools/2.29.0
+  module load ncbi-blast/2.9.0+
+  module load bcftools/1.3.2
+  module load vcftools/v0.1.17
+  module load hisat/2.1.0
+  module load stringtie/1.3.3b
+}
 
-#+   ++++++++++++++++++++++++ Done June 29: 1994303 & 1994412 ++++++++++++++++++++++++   +#
-#+   #create working directory ###
-#+   mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory 
-WorkingDirectory=/scratch/rlk0015/Telag/May2020/WorkingDirectory
-#+   # DNA
-#+   mkdir -p $WorkingDirectory/rawReadsDNA
-#+   mkdir -p $WorkingDirectory/cleanReadsDNA
-#+   mkdir -p $WorkingDirectory/mappedReadsDNA
-#+   mkdir -p $WorkingDirectory/StatsDNA
-#+   mkdir -p $WorkingDirectory/GATKDNA
-#+   mkdir -p $WorkingDirectory/SNPTablesDNA
-#+   mkdir -p $WorkingDirectory/SequenceTablesDNA
-#+   # RNA
-#+   mkdir -p $WorkingDirectory/rawReadsRNA
-#+   mkdir -p $WorkingDirectory/cleanReadsRNA
-#+   mkdir -p $WorkingDirectory/mappedReadsRNA
-#+   mkdir -p $WorkingDirectory/StatsRNA
-#+   mkdir -p $WorkingDirectory/GATKRNA
-#+   mkdir -p $WorkingDirectory/SNPTablesRNA
-#+   mkdir -p $WorkingDirectory/SequenceTablesRNA
-#+   # Utilities
-#+   mkdir -p $WorkingDirectory/References
-#+   echo "RLK_report: directory created: $WorkingDirectory with rawReads and cleanReads sub directories"
-#+   
-#+   #+   ++++++++++++++++++++++++ Done June 27: 1994197 ++++++++++++++++++++++++   +#
-#+   #+   # ---------------------------
-#+   #+   # Copy raw DNA reads over
-#+   #+   # ---------------------------
-#+   #+   cd /home/shared/tss0019_lab/SeqCap_GarterSnake2012/
-#+   #+   for i in {1..96}
-#+   #+   do
-#+   #+     cp Sample_HTAdapter"$i"/*.fastq.gz $WorkingDirectory/rawReadsDNA
-#+   #+   done
-#+   #+   echo "RLK_report: SEQ-CAP RAW READ COPY COMPLETE"
-#+   #+   
-#+   #+   ### perform initial quality check ###
-#+   #+   cd $WorkingDirectory/rawReadsDNA
-#+   #+   ls *.fastq.gz | time parallel -j+0 --eta 'fastqc {}'
-#+   #+   multiqc .
-#+   #+   echo "RLK_report: SEQ-CAP RAW READ QUALITY CHECK COMPLETE"
-#+   #+   +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++   +#
-#+   
-#+   ### copy over adapter file ###
-#+   cp /home/rlk0015/SeqCap/code/References/adapters.fa $WorkingDirectory/rawReadsDNA
-#+   echo "RLK_report: ADAPTERS COPY COMPLETE"
-#+   
-#+   cd $WorkingDirectory/rawReadsDNA
-#+   ### paired-end trimming ###
-#+   ls | grep "fastq.gz" | cut -d "_" -f 1,2 | sort | uniq > PE_TrimmList
-#+   while read i
-#+   do
-#+   java -jar /tools/trimmomatic-0.36/trimmomatic-0.36.jar \
-#+     PE \
-#+     -threads 6 \
-#+     -phred33 \
-#+     $WorkingDirectory/rawReadsDNA/"$i"*_R1*.fastq.gz \
-#+     $WorkingDirectory/rawReadsDNA/"$i"*_R2*.fastq.gz \
-#+     $WorkingDirectory/cleanReadsDNA/"$i"_R1_paired.fastq.gz \ 
-#+     $WorkingDirectory/cleanReadsDNA/"$i"_R1_unpaired.fastq.gz \
-#+     $WorkingDirectory/cleanReadsDNA/"$i"_R2_paired.fastq.gz \
-#+     $WorkingDirectory/cleanReadsDNA/"$i"_R2_unpaired.fastq.gz \
-#+     ILLUMINACLIP:adapters.fa:2:30:10 LEADING:25 TRAILING:25 SLIDINGWINDOW:6:30 MINLEN:36
-#+   done<PE_TrimmList
-#+   echo "RLK_report: SEQ-CAP READ TRIMMING COMPLETE"
-#+   ### perform second quality check ###
-#+   cd $WorkingDirectory/cleanReadsDNA/
-#+   ls *paired.fastq.gz | grep "paired.fastq.gz" | time parallel -j+0 --eta 'fastqc {}'
-#+   multiqc .
-#+   echo "RLK_report: SEQ-CAP CLEAN READ QUALITY CHECK COMPLETE"
-#+   
-#+   # ---------------------------
-#+   # Copy clean RNA reads over
-#+   # ---------------------------
-#+   cd /scratch/GarterSnake/RNAseq_2012Data/CleanedData
-#+   ls SRR*.fastq | parallel -j+0 --eta 'cp {} '$WorkingDirectory'/cleanReadsRNA'
-#+   cd /scratch/GarterSnake/RNAseq_2008Data/CleanedData
-#+   ls SRR*.fastq | parallel -j+0 --eta 'cp {} '$WorkingDirectory'/cleanReadsRNA'
-#+   echo "RLK_report: RNA-SEQ CLEAN READ COPY COMPLETE"
-#+   
-#+   # -------------- Already performed- see details below --------------
-#+   # # Tonia's criteria for trimming RNA-Seq reads:
-#+   # ########## 2008 Data Trimmomatic #############
-#+   # java -jar /tools/trimmomatic-0.37/bin/trimmomatic.jar SE -phred33 "$i"_1.fastq  /scratch/GarterSnake/RNAseq_2008Data/CleanedData/"$i"_cleaned.fastq  LEADING:20 TRAILING:20 SLIDINGWINDOW:6:20 MINLEN:36 2012 samples are PE 100 bp reads.
-#+   # ########## 2012 Trimmomatic #############
-#+   # java -jar /tools/trimmomatic-0.37/bin/trimmomatic.jar PE  -phred33 "$i"_1.fastq "$i"_2.fastq "$i"_1_paired.fastq "$i"_1_unpaired.fastq "$i"_2_paired.fastq "$i"_2_unpaired.fastq LEADING:30 TRAILING:30 SLIDINGWINDOW:6:30 MINLEN:36
-#+   # ------------------------------------------------------------------
-#+   
-#+   # -------------------------------------
-#+   # Quality check on RNA-Seq cleaned data 
-#+   # -------------------------------------
-#+   cd $WorkingDirectory/cleanReadsRNA
-#+   ls *.fastq | grep "fastq" | time parallel -j+0 --eta 'fastqc {}'
-#+   multiqc . 
-#+   echo "RLK_report: RNA-SEQ CLEAN READ QUALITY CHECK COMPLETE"
-#+   
-#+   
-#+   # ------------------------
-#+   # Map Seq-Cap data to ref
-#+   # ------------------------
-#+   ### ••••••••••••••••••••••• This section is complete ••••••••••••••••••••• ###
-#+   # ### copy the reference (T. elegans genome) to References directory ###
-#+   # cp /home/rlk0015/SeqCap/code/References/T_elegans_genome/latest_assembly_versions/GCF_009769535.1_rThaEle1.pri/GCF_009769535.1_rThaEle1.pri_genomic.fna.gz $WorkingDirectory/References/TelagGenome.fasta.gz
-#+   # cd $WorkingDirectory/References
-#+   # gunzip TelagGenome.fasta.gz
-#+   # echo "RLK_report: REFERENCE GENOME COPY COMPLETE"
-#+   # index T. elegans genome
-#+   # cd $WorkingDirectory/References
-#+   # bwa index -p TelagGenome -a bwtsw TelagGenome.fasta
-#+   # echo "RLK_report: REFERENCE GENOME BWA INDEX COMPLETE"
-#+   ### •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• ###
-#+   
-#+   # create list with each paired individual
-#+   cd $WorkingDirectory/cleanReadsDNA
-#+   ls | grep "_paired.fastq" | cut -d "_" -f 1 | sort | uniq > \
-#+   	$WorkingDirectory/mappedReadsDNA/pairedMapList
-#+   echo "pairedMapList created"
-#+   cd $WorkingDirectory/mappedReadsDNA
-#+   # while loop through the names in pairedMapList
-#+   while read i
-#+   do
-#+   ### map to T. elegans genome ###
-#+   bwa mem -t 4 -M $WorkingDirectory/References/TelagGenome \
-#+   	$WorkingDirectory/cleanReadsDNA/"$i"_*R1_paired.fastq.gz \
-#+   	$WorkingDirectory/cleanReadsDNA/"$i"_*R2_paired.fastq.gz > \
-#+   	$WorkingDirectory/mappedReadsDNA/"$i"_mapped.sam
-#+   done<$WorkingDirectory/mappedReadsDNA/pairedMapList
-#+   echo "mapped DNA reads to genome"
-#+   
-#+   ### ***  -------------------  MAP RNA TO REFERENCE  ------------------ *** ###
-#+   # create list with each paired individual
-#+   cd $WorkingDirectory/cleanReadsRNA
-#+   ls | grep "_cleaned.fastq" | cut -d "_" -f 1 | sort | uniq > $WorkingDirectory/mappedReadsRNA/singleEndMapList
-#+   ls | grep "_paired.fastq" | cut -d "_" -f 1 | sort | uniq > $WorkingDirectory/mappedReadsRNA/pairedEndMapList
-#+   cd $WorkingDirectory/mappedReadsRNA
-#+   # while loop through the names in pairedEndMapList
-#+   while read i
-#+   do
-#+   ### PAIRED-END MAPPING ###
-#+   bwa mem -t 4 -M $WorkingDirectory/References/TelagGenome \
-#+     $WorkingDirectory/cleanReadsRNA/"$i"*_1_paired.fastq \
-#+     $WorkingDirectory/cleanReadsRNA/"$i"*_2_paired.fastq > \
-#+     $WorkingDirectory/mappedReadsRNA/"$i"_mapped.sam
-#+   done<$WorkingDirectory/mappedReadsRNA/pairedEndMapList
-#+   echo "RLK_report: paired map complete"
-#+   ### SINGLE-END MAPPING ###
-#+   while read i
-#+   do
-#+   bwa mem -t 4 -M $WorkingDirectory/References/TelagGenome \
-#+     $WorkingDirectory/cleanReadsRNA/"$i"*_cleaned.fastq > \
-#+     $WorkingDirectory/mappedReadsRNA/"$i"_mapped.sam
-#+   done<$WorkingDirectory/mappedReadsRNA/singleEndMapList
-#+   
-#+   ### change names to match population sampling ###
-#+   cd $WorkingDirectory/mappedReadsDNA/
-#+   mv HTAdapter1_mapped.sam ELF01_mapped.sam
-#+   mv HTAdapter2_mapped.sam ELF02_mapped.sam
-#+   mv HTAdapter3_mapped.sam ELF03_mapped.sam
-#+   mv HTAdapter4_mapped.sam ELF04_mapped.sam
-#+   mv HTAdapter5_mapped.sam ELF05_mapped.sam
-#+   mv HTAdapter6_mapped.sam ELF06_mapped.sam
-#+   mv HTAdapter7_mapped.sam ELF07_mapped.sam
-#+   mv HTAdapter8_mapped.sam ELF08_mapped.sam
-#+   mv HTAdapter9_mapped.sam ELF09_mapped.sam
-#+   mv HTAdapter10_mapped.sam ELF10_mapped.sam
-#+   mv HTAdapter11_mapped.sam ELF11_mapped.sam
-#+   mv HTAdapter12_mapped.sam ELF12_mapped.sam
-#+   mv HTAdapter13_mapped.sam ELF13_mapped.sam
-#+   mv HTAdapter14_mapped.sam ELF14_mapped.sam
-#+   mv HTAdapter15_mapped.sam ELF15_mapped.sam
-#+   mv HTAdapter16_mapped.sam ELF16_mapped.sam
-#+   mv HTAdapter17_mapped.sam MAH01_mapped.sam
-#+   mv HTAdapter18_mapped.sam MAH02_mapped.sam
-#+   mv HTAdapter19_mapped.sam MAH03_mapped.sam
-#+   mv HTAdapter20_mapped.sam MAH04_mapped.sam
-#+   mv HTAdapter21_mapped.sam MAH05_mapped.sam
-#+   mv HTAdapter22_mapped.sam MAH06_mapped.sam
-#+   mv HTAdapter23_mapped.sam MAH07_mapped.sam
-#+   mv HTAdapter24_mapped.sam MAH08_mapped.sam
-#+   mv HTAdapter25_mapped.sam MAH09_mapped.sam
-#+   mv HTAdapter26_mapped.sam MAH10_mapped.sam
-#+   mv HTAdapter27_mapped.sam MAH11_mapped.sam
-#+   mv HTAdapter28_mapped.sam MAH12_mapped.sam
-#+   mv HTAdapter29_mapped.sam MAH13_mapped.sam
-#+   mv HTAdapter30_mapped.sam MAH14_mapped.sam
-#+   mv HTAdapter31_mapped.sam MAH15_mapped.sam
-#+   mv HTAdapter32_mapped.sam MAR01_mapped.sam
-#+   mv HTAdapter33_mapped.sam MAR02_mapped.sam
-#+   mv HTAdapter34_mapped.sam MAR03_mapped.sam
-#+   mv HTAdapter35_mapped.sam MAR04_mapped.sam
-#+   mv HTAdapter36_mapped.sam MAR05_mapped.sam
-#+   mv HTAdapter37_mapped.sam MAR06_mapped.sam
-#+   mv HTAdapter38_mapped.sam MAR07_mapped.sam
-#+   mv HTAdapter39_mapped.sam MAR08_mapped.sam
-#+   mv HTAdapter40_mapped.sam MAR09_mapped.sam
-#+   mv HTAdapter41_mapped.sam MAR10_mapped.sam
-#+   mv HTAdapter42_mapped.sam PAP01_mapped.sam
-#+   mv HTAdapter43_mapped.sam PAP02_mapped.sam
-#+   mv HTAdapter44_mapped.sam PAP03_mapped.sam
-#+   mv HTAdapter45_mapped.sam PAP04_mapped.sam
-#+   mv HTAdapter46_mapped.sam PAP05_mapped.sam
-#+   mv HTAdapter47_mapped.sam PAP06_mapped.sam
-#+   mv HTAdapter48_mapped.sam PAP07_mapped.sam
-#+   mv HTAdapter49_mapped.sam PAP08_mapped.sam
-#+   mv HTAdapter50_mapped.sam PAP09_mapped.sam
-#+   mv HTAdapter51_mapped.sam PAP10_mapped.sam
-#+   mv HTAdapter52_mapped.sam PAP11_mapped.sam
-#+   mv HTAdapter53_mapped.sam PAP12_mapped.sam
-#+   mv HTAdapter54_mapped.sam PAP13_mapped.sam
-#+   mv HTAdapter55_mapped.sam PAP14_mapped.sam
-#+   mv HTAdapter56_mapped.sam PAP15_mapped.sam
-#+   mv HTAdapter57_mapped.sam STO01_mapped.sam
-#+   mv HTAdapter58_mapped.sam STO02_mapped.sam
-#+   mv HTAdapter59_mapped.sam STO03_mapped.sam
-#+   mv HTAdapter60_mapped.sam STO04_mapped.sam
-#+   mv HTAdapter61_mapped.sam STO05_mapped.sam
-#+   mv HTAdapter62_mapped.sam STO06_mapped.sam
-#+   mv HTAdapter63_mapped.sam STO07_mapped.sam
-#+   mv HTAdapter64_mapped.sam STO08_mapped.sam
-#+   mv HTAdapter65_mapped.sam STO09_mapped.sam
-#+   mv HTAdapter66_mapped.sam STO10_mapped.sam
-#+   mv HTAdapter67_mapped.sam STO11_mapped.sam
-#+   mv HTAdapter68_mapped.sam STO12_mapped.sam
-#+   mv HTAdapter69_mapped.sam STO13_mapped.sam
-#+   mv HTAdapter70_mapped.sam STO14_mapped.sam
-#+   mv HTAdapter71_mapped.sam STO15_mapped.sam
-#+   mv HTAdapter72_mapped.sam STO17_mapped.sam
-#+   mv HTAdapter73_mapped.sam STO18_mapped.sam
-#+   mv HTAdapter74_mapped.sam STO19_mapped.sam
-#+   mv HTAdapter75_mapped.sam STO20_mapped.sam
-#+   mv HTAdapter76_mapped.sam STO21_mapped.sam
-#+   mv HTAdapter77_mapped.sam SUM01_mapped.sam
-#+   mv HTAdapter78_mapped.sam SUM02_mapped.sam
-#+   mv HTAdapter79_mapped.sam SUM03_mapped.sam
-#+   mv HTAdapter80_mapped.sam SUM04_mapped.sam
-#+   mv HTAdapter81_mapped.sam SUM05_mapped.sam
-#+   mv HTAdapter82_mapped.sam SUM06_mapped.sam
-#+   mv HTAdapter83_mapped.sam SUM07_mapped.sam
-#+   mv HTAdapter84_mapped.sam SUM08_mapped.sam
-#+   mv HTAdapter85_mapped.sam SUM09_mapped.sam
-#+   mv HTAdapter86_mapped.sam SUM10_mapped.sam
-#+   mv HTAdapter87_mapped.sam SUM11_mapped.sam
-#+   mv HTAdapter88_mapped.sam SUM12_mapped.sam
-#+   mv HTAdapter89_mapped.sam SUM13_mapped.sam
-#+   mv HTAdapter90_mapped.sam SUM15_mapped.sam
-#+   mv HTAdapter91_mapped.sam SUM16_mapped.sam
-#+   mv HTAdapter92_mapped.sam SUM17_mapped.sam
-#+   mv HTAdapter93_mapped.sam SUM18_mapped.sam
-#+   mv HTAdapter94_mapped.sam SUM19_mapped.sam
-#+   mv HTAdapter95_mapped.sam SUM20_mapped.sam
-#+   mv HTAdapter96_mapped.sam SUM21_mapped.sam
-#+   
-#+   ## -- ADD READGROUPS -- ##
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF01_mapped.sam" O="ELF01_IDed.sam" RGPU="ELF" RGSM="ELF_54-38" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF02_mapped.sam" O="ELF02_IDed.sam" RGPU="ELF" RGSM="ELF_RA607" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF03_mapped.sam" O="ELF03_IDed.sam" RGPU="ELF" RGSM="ELF_RP54-0" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF04_mapped.sam" O="ELF04_IDed.sam" RGPU="ELF" RGSM="ELF_RP54-1" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF05_mapped.sam" O="ELF05_IDed.sam" RGPU="ELF" RGSM="ELF_558-1" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF06_mapped.sam" O="ELF06_IDed.sam" RGPU="ELF" RGSM="ELF_565-13" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF07_mapped.sam" O="ELF07_IDed.sam" RGPU="ELF" RGSM="ELF_5651-15" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF08_mapped.sam" O="ELF08_IDed.sam" RGPU="ELF" RGSM="ELF_568-3" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF09_mapped.sam" O="ELF09_IDed.sam" RGPU="ELF" RGSM="ELF_546-03" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF10_mapped.sam" O="ELF10_IDed.sam" RGPU="ELF" RGSM="ELF_547-01" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF11_mapped.sam" O="ELF11_IDed.sam" RGPU="ELF" RGSM="ELF_6050-3" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF12_mapped.sam" O="ELF12_IDed.sam" RGPU="ELF" RGSM="ELF_622-5" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF13_mapped.sam" O="ELF13_IDed.sam" RGPU="ELF" RGSM="ELF_636-3" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF14_mapped.sam" O="ELF14_IDed.sam" RGPU="ELF" RGSM="ELF_RA567" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF15_mapped.sam" O="ELF15_IDed.sam" RGPU="ELF" RGSM="ELF_RP54.1" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF16_mapped.sam" O="ELF16_IDed.sam" RGPU="ELF" RGSM="ELF_RP54" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH01_mapped.sam" O="MAH01_IDed.sam" RGPU="MAH" RGSM="MAH_35-1" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH02_mapped.sam" O="MAH02_IDed.sam" RGPU="MAH" RGSM="MAH_520-02" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH03_mapped.sam" O="MAH03_IDed.sam" RGPU="MAH" RGSM="MAH_539-01" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH04_mapped.sam" O="MAH04_IDed.sam" RGPU="MAH" RGSM="MAH_540-07" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH05_mapped.sam" O="MAH05_IDed.sam" RGPU="MAH" RGSM="MAH_541-01" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH06_mapped.sam" O="MAH06_IDed.sam" RGPU="MAH" RGSM="MAH_542-01" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH07_mapped.sam" O="MAH07_IDed.sam" RGPU="MAH" RGSM="MAH_543-01" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH08_mapped.sam" O="MAH08_IDed.sam" RGPU="MAH" RGSM="MAH_RA620" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH09_mapped.sam" O="MAH09_IDed.sam" RGPU="MAH" RGSM="MAH_RA641" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH10_mapped.sam" O="MAH10_IDed.sam" RGPU="MAH" RGSM="MAH_RP47.7" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH11_mapped.sam" O="MAH11_IDed.sam" RGPU="MAH" RGSM="MAH_RP47-10" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH12_mapped.sam" O="MAH12_IDed.sam" RGPU="MAH" RGSM="MAH_RP47-5" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH13_mapped.sam" O="MAH13_IDed.sam" RGPU="MAH" RGSM="MAH_RP47-8" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH14_mapped.sam" O="MAH14_IDed.sam" RGPU="MAH" RGSM="MAH_RP47-9" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH15_mapped.sam" O="MAH15_IDed.sam" RGPU="MAH" RGSM="MAH_RP47-6" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAR01_mapped.sam" O="MAR01_IDed.sam" RGPU="MAR" RGSM="MAR_RP6771" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAR02_mapped.sam" O="MAR02_IDed.sam" RGPU="MAR" RGSM="MAR_RP686" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAR03_mapped.sam" O="MAR03_IDed.sam" RGPU="MAR" RGSM="MAR_368- 2" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAR04_mapped.sam" O="MAR04_IDed.sam" RGPU="MAR" RGSM="MAR_RA26 366-4" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAR05_mapped.sam" O="MAR05_IDed.sam" RGPU="MAR" RGSM="MAR_RA379" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAR06_mapped.sam" O="MAR06_IDed.sam" RGPU="MAR" RGSM="MAR_RA42 _179-4" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAR07_mapped.sam" O="MAR07_IDed.sam" RGPU="MAR" RGSM="MAR_RA47_157-2T" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAR08_mapped.sam" O="MAR08_IDed.sam" RGPU="MAR" RGSM="MAR_RA605" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAR09_mapped.sam" O="MAR09_IDed.sam" RGPU="MAR" RGSM="MAR_RA630" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAR10_mapped.sam" O="MAR10_IDed.sam" RGPU="MAR" RGSM="MAR_RA88_263-3" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP01_mapped.sam" O="PAP01_IDed.sam" RGPU="PAP" RGSM="PAP_561-4" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP02_mapped.sam" O="PAP02_IDed.sam" RGPU="PAP" RGSM="PAP_562-1" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP03_mapped.sam" O="PAP03_IDed.sam" RGPU="PAP" RGSM="PAP_564-2" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP04_mapped.sam" O="PAP04_IDed.sam" RGPU="PAP" RGSM="PAP_569-3" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP05_mapped.sam" O="PAP05_IDed.sam" RGPU="PAP" RGSM="PAP_5010-05" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP06_mapped.sam" O="PAP06_IDed.sam" RGPU="PAP" RGSM="PAP_5021-02" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP07_mapped.sam" O="PAP07_IDed.sam" RGPU="PAP" RGSM="PAP_505-01" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP08_mapped.sam" O="PAP08_IDed.sam" RGPU="PAP" RGSM="PAP_516-02" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP09_mapped.sam" O="PAP09_IDed.sam" RGPU="PAP" RGSM="PAP_5241-01" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP10_mapped.sam" O="PAP10_IDed.sam" RGPU="PAP" RGSM="PAP_28-1" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP11_mapped.sam" O="PAP11_IDed.sam" RGPU="PAP" RGSM="PAP_RA434" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP12_mapped.sam" O="PAP12_IDed.sam" RGPU="PAP" RGSM="PAP_RA647" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP13_mapped.sam" O="PAP13_IDed.sam" RGPU="PAP" RGSM="PAP_RA648" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP14_mapped.sam" O="PAP14_IDed.sam" RGPU="PAP" RGSM="PAP_RA649" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP15_mapped.sam" O="PAP15_IDed.sam" RGPU="PAP" RGSM="PAP_RP16" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO01_mapped.sam" O="STO01_IDed.sam" RGPU="STO" RGSM="STO_RP697" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO02_mapped.sam" O="STO02_IDed.sam" RGPU="STO" RGSM="STO_RP698" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO03_mapped.sam" O="STO03_IDed.sam" RGPU="STO" RGSM="STO_RA530" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO04_mapped.sam" O="STO04_IDed.sam" RGPU="STO" RGSM="STO_RA549" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO05_mapped.sam" O="STO05_IDed.sam" RGPU="STO" RGSM="STO_RP22" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO06_mapped.sam" O="STO06_IDed.sam" RGPU="STO" RGSM="STO_271" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO07_mapped.sam" O="STO07_IDed.sam" RGPU="STO" RGSM="STO_275" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO08_mapped.sam" O="STO08_IDed.sam" RGPU="STO" RGSM="STO_43-113" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO09_mapped.sam" O="STO09_IDed.sam" RGPU="STO" RGSM="STO_43-115" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO10_mapped.sam" O="STO10_IDed.sam" RGPU="STO" RGSM="STO_43-125" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO11_mapped.sam" O="STO11_IDed.sam" RGPU="STO" RGSM="STO_43-76" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO12_mapped.sam" O="STO12_IDed.sam" RGPU="STO" RGSM="STO_43-77" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO13_mapped.sam" O="STO13_IDed.sam" RGPU="STO" RGSM="STO_43-78" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO14_mapped.sam" O="STO14_IDed.sam" RGPU="STO" RGSM="STO_43-74" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO15_mapped.sam" O="STO15_IDed.sam" RGPU="STO" RGSM="STO_43-75" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO17_mapped.sam" O="STO17_IDed.sam" RGPU="STO" RGSM="STO_33-10" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO18_mapped.sam" O="STO18_IDed.sam" RGPU="STO" RGSM="STO_560-2" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO19_mapped.sam" O="STO19_IDed.sam" RGPU="STO" RGSM="STO_528-3" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO20_mapped.sam" O="STO20_IDed.sam" RGPU="STO" RGSM="STO_559-1" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO21_mapped.sam" O="STO21_IDed.sam" RGPU="STO" RGSM="STO_33-272" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM01_mapped.sam" O="SUM01_IDed.sam" RGPU="SUM" RGSM="SUM_41-103" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM02_mapped.sam" O="SUM02_IDed.sam" RGPU="SUM" RGSM="SUM_41-104" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM03_mapped.sam" O="SUM03_IDed.sam" RGPU="SUM" RGSM="SUM_RA645" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM04_mapped.sam" O="SUM04_IDed.sam" RGPU="SUM" RGSM="SUM_RP31" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM05_mapped.sam" O="SUM05_IDed.sam" RGPU="SUM" RGSM="SUM_53-255" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM06_mapped.sam" O="SUM06_IDed.sam" RGPU="SUM" RGSM="SUM_53-252" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM07_mapped.sam" O="SUM07_IDed.sam" RGPU="SUM" RGSM="SUM_53-253" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM08_mapped.sam" O="SUM08_IDed.sam" RGPU="SUM" RGSM="SUM_53-256" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM09_mapped.sam" O="SUM09_IDed.sam" RGPU="SUM" RGSM="SUM_RP53-1" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM10_mapped.sam" O="SUM10_IDed.sam" RGPU="SUM" RGSM="SUM_644-2" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM11_mapped.sam" O="SUM11_IDed.sam" RGPU="SUM" RGSM="SUM_RP53-13" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM12_mapped.sam" O="SUM12_IDed.sam" RGPU="SUM" RGSM="SUM_RP53-14" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM13_mapped.sam" O="SUM13_IDed.sam" RGPU="SUM" RGSM="SUM_RP53-5" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM15_mapped.sam" O="SUM15_IDed.sam" RGPU="SUM" RGSM="SUM_RP53-8" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM16_mapped.sam" O="SUM16_IDed.sam" RGPU="SUM" RGSM="SUM_RP53-9" RGPL="illumina" RGLB="SeqCap2012"
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM17_mapped.sam" O="SUM17_IDed.sam" RGPU="SUM" RGSM="SUM_624-1" RGPL="illumina" RGLB="SeqCap2012" #+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM18_mapped.sam" O="SUM18_IDed.sam" RGPU="SUM" RGSM="SUM_625-1" RGPL="illumina" RGLB="SeqCap2012" #+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM19_mapped.sam" O="SUM19_IDed.sam" RGPU="SUM" RGSM="SUM_626-3" RGPL="illumina" RGLB="SeqCap2012" #+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM20_mapped.sam" O="SUM20_IDed.sam" RGPU="SUM" RGSM="SUM_643-2" RGPL="illumina" RGLB="SeqCap2012" #+   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM21_mapped.sam" O="SUM21_IDed.sam" RGPU="SUM" RGSM="SUM_RP53-4" RGPL="illumina" RGLB="SeqCap2012"
-#+   
-#+ # RNA Seq
-#+ cd $WorkingDirectory/mappedReadsRNA
-#+ # *** vvv Change to _mapped.sam for input and IDed.sam for output
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629651_sorted.bam" O="SRR629651_IDed.bam" RGPU="MAR" RGSM="MAR627-1" RGPL="illumina" RGLB="RNASeq2012" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629599_sorted.bam" O="SRR629599_IDed.bam" RGPU="MAH" RGSM="MAH6372" RGPL="illumina" RGLB="RNASeq2012" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629652_sorted.bam" O="SRR629652_IDed.bam" RGPU="MAR" RGSM="MAR6287" RGPL="illumina" RGLB="RNASeq2012" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629653_sorted.bam" O="SRR629653_IDed.bam" RGPU="MAR" RGSM="MAR276" RGPL="illumina" RGLB="RNASeq2012" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629654_sorted.bam" O="SRR629654_IDed.bam" RGPU="MAR" RGSM="MAR6299" RGPL="illumina" RGLB="RNASeq2012" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629655_sorted.bam" O="SRR629655_IDed.bam" RGPU="NAM" RGSM="NAM2064" RGPL="illumina" RGLB="RNASeq2012" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629656_sorted.bam" O="SRR629656_IDed.bam" RGPU="MAR" RGSM="MAR6326" RGPL="illumina" RGLB="RNASeq2012" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629657_sorted.bam" O="SRR629657_IDed.bam" RGPU="MAR" RGSM="MAR6326dup" RGPL="illumina" RGLB="RNASeq2012" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629658_sorted.bam" O="SRR629658_IDed.bam" RGPU="NAM" RGSM="NAM60603" RGPL="illumina" RGLB="RNASeq2012" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629659_sorted.bam" O="SRR629659_IDed.bam" RGPU="MAR" RGSM="MAR6463" RGPL="illumina" RGLB="RNASeq2012" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629661_sorted.bam" O="SRR629661_IDed.bam" RGPU="NAM" RGSM="NAM6153" RGPL="illumina" RGLB="RNASeq2012" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629660_sorted.bam" O="SRR629660_IDed.bam" RGPU="NAM" RGSM="NAM6193" RGPL="illumina" RGLB="RNASeq2012" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629662_sorted.bam" O="SRR629662_IDed.bam" RGPU="MAR" RGSM="MAR6099" RGPL="illumina" RGLB="RNASeq2012"
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629663_sorted.bam" O="SRR629663_IDed.bam" RGPU="NAM" RGSM="NAM6161" RGPL="illumina" RGLB="RNASeq2012" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629664_sorted.bam" O="SRR629664_IDed.bam" RGPU="MAR" RGSM="MAR6311" RGPL="illumina" RGLB="RNASeq2012" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629665_sorted.bam" O="SRR629665_IDed.bam" RGPU="MAR" RGSM="MAR6341" RGPL="illumina" RGLB="RNASeq2012" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629666_sorted.bam" O="SRR629666_IDed.bam" RGPU="MAH" RGSM="MAH252" RGPL="illumina" RGLB="RNASeq2012" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629667_sorted.bam" O="SRR629667_IDed.bam" RGPU="MAR" RGSM="MAR6503" RGPL="illumina" RGLB="RNASeq2012" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629668_sorted.bam" O="SRR629668_IDed.bam" RGPU="MAH" RGSM="MAH2811" RGPL="illumina" RGLB="RNASeq2012" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629669_sorted.bam" O="SRR629669_IDed.bam" RGPU="MAH" RGSM="MAH6084" RGPL="illumina" RGLB="RNASeq2012" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497737_sorted.bam" O="SRR497737_IDed.bam" RGPU="ELF" RGSM="ELF523-09" RGPL="illumina" RGLB="RNASeq2008" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497739_sorted.bam" O="SRR497739_IDed.bam" RGPU="ELF" RGSM="ELF5171-12" RGPL="illumina" RGLB="RNASeq2008" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497740_sorted.bam" O="SRR497740_IDed.bam" RGPU="PAP" RGSM="PAP509-05" RGPL="illumina" RGLB="RNASeq2008" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497741_sorted.bam" O="SRR497741_IDed.bam" RGPU="PAP" RGSM="PAP513-03" RGPL="illumina" RGLB="RNASeq2008" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497742_sorted.bam" O="SRR497742_IDed.bam" RGPU="ELF" RGSM="ELF525-03" RGPL="illumina" RGLB="RNASeq2008" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497743_sorted.bam" O="SRR497743_IDed.bam" RGPU="ELF" RGSM="ELF544-03" RGPL="illumina" RGLB="RNASeq2008" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497744_sorted.bam" O="SRR497744_IDed.bam" RGPU="PAP" RGSM="PAP532-02" RGPL="illumina" RGLB="RNASeq2008" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497745_sorted.bam" O="SRR497745_IDed.bam" RGPU="PAP" RGSM="PAP533-07" RGPL="illumina" RGLB="RNASeq2008" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497746_sorted.bam" O="SRR497746_IDed.bam" RGPU="PAP" RGSM="PAP532-05" RGPL="illumina" RGLB="RNASeq2008" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497747_sorted.bam" O="SRR497747_IDed.bam" RGPU="ELF" RGSM="ELF5171-02" RGPL="illumina" RGLB="RNASeq2008" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497748_sorted.bam" O="SRR497748_IDed.bam" RGPU="ELF" RGSM="ELF524-03" RGPL="illumina" RGLB="RNASeq2008" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497749_sorted.bam" O="SRR497749_IDed.bam" RGPU="PAP" RGSM="PAP504-03" RGPL="illumina" RGLB="RNASeq2008" 
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497738_sorted.bam" O="SRR497738_IDed.bam" RGPU="ELF" RGSM="ELF523-19" RGPL="illumina" RGLB="RNASeq2008" 
+function createWorkingEnvironment {
+  #create working directory ###
+    mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory 
+  # DNA
+    mkdir -p $WorkingDirectory/rawReadsDNA
+    mkdir -p $WorkingDirectory/cleanReadsDNA
+    mkdir -p $WorkingDirectory/mappedReadsDNA
+    mkdir -p $WorkingDirectory/StatsDNA
+    mkdir -p $WorkingDirectory/GATKDNA
+    mkdir -p $WorkingDirectory/SNPTablesDNA
+    mkdir -p $WorkingDirectory/SequenceTablesDNA
+  # RNA
+    mkdir -p $WorkingDirectory/rawReadsRNA
+    mkdir -p $WorkingDirectory/cleanReadsRNA
+    mkdir -p $WorkingDirectory/mappedReadsRNA
+    mkdir -p $WorkingDirectory/StatsRNA
+    mkdir -p $WorkingDirectory/GATKRNA
+    mkdir -p $WorkingDirectory/SNPTablesRNA
+    mkdir -p $WorkingDirectory/SequenceTablesRNA
+  # Utilities
+    mkdir -p $WorkingDirectory/References
+    echo "RLK_report: directory created: $WorkingDirectory with rawReads and cleanReads sub directories"
+}
+   
+function copyRawReadsDNA {
+  ### copy over raw reads ### 
+    cd /home/shared/tss0019_lab/SeqCap_GarterSnake2012/
+    for i in {1..96}
+    do
+      cp Sample_HTAdapter"$i"/*.fastq.gz $WorkingDirectory/rawReadsDNA
+    done
+    echo "RLK_report: SEQ-CAP RAW READ COPY COMPLETE"
+  ### copy over adapter file ###
+   cp /home/rlk0015/SeqCap/code/References/adapters.fa $WorkingDirectory/rawReadsDNA
+   echo "RLK_report: ADAPTERS COPY COMPLETE"
+  
+}
 
-#+   +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++   +#
+function performFASTQC {
+  cd $WorkingDirectory/"$1"
+  ls *.fastq.gz | time parallel -j+0 --eta 'fastqc {}'
+  multiqc .
+  echo "RLK_report: QUALITY CHECK COMPLETE"
+}
+   
+function performTrimmingPE {   
+   cd $WorkingDirectory/rawReads"$1"
+   ### paired-end trimming ###
+   ls | grep "fastq.gz" | cut -d "_" -f 1,2 | sort | uniq > PE_TrimmList
+   while read i
+   do
+   java -jar /tools/trimmomatic-0.36/trimmomatic-0.36.jar \
+     PE \
+     -threads 6 \
+     -phred33 \
+     $WorkingDirectory/rawReads"$1"/"$i"*_R1*.fastq.gz \
+     $WorkingDirectory/rawReads"$1"/"$i"*_R2*.fastq.gz \
+     $WorkingDirectory/cleanReads"$1"/"$i"_R1_paired.fastq.gz \ 
+     $WorkingDirectory/cleanReads"$1"/"$i"_R1_unpaired.fastq.gz \
+     $WorkingDirectory/cleanReads"$1"/"$i"_R2_paired.fastq.gz \
+     $WorkingDirectory/cleanReads"$1"/"$i"_R2_unpaired.fastq.gz \
+     ILLUMINACLIP:adapters.fa:2:30:10 LEADING:25 TRAILING:25 SLIDINGWINDOW:6:30 MINLEN:36
+   done<PE_TrimmList
+}
+   
+function performTrimmingSE {
+  cd $WorkingDirectory/rawReads"$1"
+    java -jar /tools/trimmomatic-0.37/bin/trimmomatic.jar SE -phred33 "$i"_1.fastq.gz  /scratch/GarterSnake/RNAseq_2008Data/CleanedData/"$i"_cleaned.fastq.gz  LEADING:20 TRAILING:20 SLIDINGWINDOW:6:20 MINLEN:36
+}
+
+function copyRef {
+   cp /home/rlk0015/SeqCap/code/References/T_elegans_genome/latest_assembly_versions/GCF_009769535.1_rThaEle1.pri/GCF_009769535.1_rThaEle1.pri_genomic.fna.gz $WorkingDirectory/References/TelagGenome.fasta.gz
+   cp /home/rlk0015/SeqCap/code/References/T_elegans_genome/latest_assembly_versions/GCF_009769535.1_rThaEle1.pri/GCF_009769535.1_rThaEle1.pri_genomic.gff.gz $WorkingDirectory/References/TelagGenome.gff.gz
+   cd $WorkingDirectory/References
+   gunzip TelagGenome.fasta.gz
+   index T. elegans genome
+   cd $WorkingDirectory/References
+   bwa index -p TelagGenome -a bwtsw TelagGenome.fasta
+   gunzip TelagGenome.gff.gz
+}
+
+function mapReadsDNA {
+   # create list with each paired individual
+   cd $WorkingDirectory/cleanReadsDNA
+   ls | grep "_paired.fastq" | cut -d "_" -f 1 | sort | uniq > $WorkingDirectory/mappedReadsDNA/pairedMapList
+   echo "pairedMapList created"
+   cd $WorkingDirectory/mappedReadsDNA
+   # while loop through the names in pairedMapList
+   while read i
+     do
+     ### map to T. elegans genome ###
+     bwa mem -t 4 -M $WorkingDirectory/References/TelagGenome \
+     	$WorkingDirectory/cleanReadsDNA/"$i"_*R1_paired.fastq.gz \
+     	$WorkingDirectory/cleanReadsDNA/"$i"_*R2_paired.fastq.gz > \
+     	$WorkingDirectory/mappedReadsDNA/"$i"_mapped.sam
+     echo "mapped DNA reads to genome"
+     ###  convert .sam to .bam & sort  ###
+     samtools view -@ 2 -bS $WorkingDirectory/mappedReads"$1"/"$i"*_mapped.sam | samtools sort -@ 2 -o $WorkingDirectory/mappedReads"$1"/"$i"_sorted.bam
+   done<$WorkingDirectory/mappedReadsDNA/pairedMapList
+}
+
+function mapSEReadsRNA {
+  # This section was performed by TSS in a separate script, and is included here only for parameter reference
+  ###  Prepare the reference Index for HiSat2
+    cd $WorkingDirectory/References
+    gffread $WorkingDirectory/References/TelegGenome.gff -T -o $WorkingDirectory/References/TelagGenome.gtf
+    extract_splice_sites.py $WorkingDirectory/References/TelagGenome.gtf > $WorkingDirectory/References/TelagGenome.ss
+    extract_exons.py $WorkingDirectory/References/TelagGenome.gtf > $WorkingDirectory/References/TelagGenome.exon
+  ###Create a HISAT2 index
+    hisat2-build --ss $WorkingDirectory/References/.ss --exon $WorkingDirectory/References/TelagGenome.exon $WorkingDirectory/References/TelagGenome.fasta TelagGenome_index
+  # Move to the 2008 SE data directory
+    $WorkingDirectory/cleanReadsRNA
+    wc -l *.fastq  >>  LineCount_Cleaned.txt
+  ## Create list of fastq files to map
+    ls | grep ".fastq" |cut -d "_" -f 1| sort | uniq > list    #should list SU_1703_USR16088798L_HHHKJBBXX_L7
+    cd $WorkingDirectory/mappedReadsRNA
+  # copy the list of unique ids from the original files to map
+  # This is from the 2008 SE directory
+    cp $WorkingDirectory/cleanReadsRNA/list . 
+    mkdir ballgown
+  while read i;
+    do
+    ##HiSat  -p indicates 20 processors, --dta reports alignments for StringTieq
+    hisat2 -p 20 --dta -x $WorkingDirectory/References/TelagGenome_index -U $WorkingDirectory/cleanReadsRNA/"$i"_cleaned.fastq -S "$i".sam
+      ###view: convert the SAM file into a BAM file  -bS: BAM is the binary format corresponding to the SAM text format.
+      ###sort: convert the BAM file to a sorted BAM file.
+      # Example Input: HS06_GATCAG_All.sam; Output: HS06_GATCAG_sorted.bam
+    samtools view -@ 20 -bS "$i".sam  | samtools sort -@ 20 -o  "$i"_sorted.bam   
+    mkdir ballgown/"$i"
+    # Original: This will make transcripts using the reference geneome as a guide for each sorted.bam
+    #stringtie -p 20 --rf -G "$REFDIR"/Daphnia_pulex.gtf -o "$i".gtf  -l "$i"  "$i"_sorted.bam 
+        # eAB: This will run stringtie once and hopefully ONLY use the Ref annotation
+    stringtie -p 20 -e -B -G $WorkingDirectory/References/TelagGenome.gtf -o ballgown/"$i"/"$i".gtf  -l "$i"  $WorkingDirectory/mappedReadsRNA/"$i"_sorted.bam
+  done<list
+}
+
+function mapPEReadsRNA {
+  # This section was performed by TSS in a separate script, and is included here only for parameter reference
+  while read i;
+    do
+    	##HiSat  -p indicates 20 processors, --dta reports alignments for StringTie --rf is the read orientation (from 
+    	#mike Crowley our reads are rf since made with Agilent Stranded RNA prep)
+    hisat2 -p 20 --dta --phred33 -x $WorkingDirectory/References/TelagGenome_index -1 $WorkingDirectory/cleanReadsRNA/"$i"_1_paired.fastq -2 $WorkingDirectory/cleanReadsRNA/"$i"_2_paired.fastq -S "$i".sam
+        ###view: convert the SAM file into a BAM file  -bS: BAM is the binary format corresponding to the SAM text format.
+        ###sort: convert the BAM file to a sorted BAM file.
+        # Example Input: HS06_GATCAG_All.sam; Output: HS06_GATCAG_sorted.bam
+    samtools view -@ 20 -bS "$i".sam  | samtools sort -@ 20 -o  "$i"_sorted.bam   
+    mkdir ballgown/"$i"
+      # Original: This will make transcripts using the reference geneome as a guide for each sorted.bam
+      #stringtie -p 20 --rf -G "$REFDIR"/Daphnia_pulex.gtf -o "$i".gtf  -l "$i"  "$i"_sorted.bam 
+    	# eAB: This will run stringtie once and hopefully ONLY use the Ref annotation
+    stringtie -p 20 -e -B -G $WorkingDirectory/References/TelagGenome.gtf -o ballgown/"$i"/"$i".gtf  -l "$i"  $WorkingDirectory/mappedReadsRNA/"$i"_sorted.bam
+  done<list
+}
+function changeSeqCapNames {
+  cd $WorkingDirectory/mappedReadsDNA
+  mv HTAdapter1_sorted.bam ELF01_sorted.bam
+  mv HTAdapter2_sorted.bam ELF02_sorted.bam
+  mv HTAdapter3_sorted.bam ELF03_sorted.bam
+  mv HTAdapter4_sorted.bam ELF04_sorted.bam
+  mv HTAdapter5_sorted.bam ELF05_sorted.bam
+  mv HTAdapter6_sorted.bam ELF06_sorted.bam
+  mv HTAdapter7_sorted.bam ELF07_sorted.bam
+  mv HTAdapter8_sorted.bam ELF08_sorted.bam
+  mv HTAdapter9_sorted.bam ELF09_sorted.bam
+  mv HTAdapter10_sorted.bam ELF10_sorted.bam
+  mv HTAdapter11_sorted.bam ELF11_sorted.bam
+  mv HTAdapter12_sorted.bam ELF12_sorted.bam
+  mv HTAdapter13_sorted.bam ELF13_sorted.bam
+  mv HTAdapter14_sorted.bam ELF14_sorted.bam
+  mv HTAdapter15_sorted.bam ELF15_sorted.bam
+  mv HTAdapter16_sorted.bam ELF16_sorted.bam
+  mv HTAdapter17_sorted.bam MAH01_sorted.bam
+  mv HTAdapter18_sorted.bam MAH02_sorted.bam
+  mv HTAdapter19_sorted.bam MAH03_sorted.bam
+  mv HTAdapter20_sorted.bam MAH04_sorted.bam
+  mv HTAdapter21_sorted.bam MAH05_sorted.bam
+  mv HTAdapter22_sorted.bam MAH06_sorted.bam
+  mv HTAdapter23_sorted.bam MAH07_sorted.bam
+  mv HTAdapter24_sorted.bam MAH08_sorted.bam
+  mv HTAdapter25_sorted.bam MAH09_sorted.bam
+  mv HTAdapter26_sorted.bam MAH10_sorted.bam
+  mv HTAdapter27_sorted.bam MAH11_sorted.bam
+  mv HTAdapter28_sorted.bam MAH12_sorted.bam
+  mv HTAdapter29_sorted.bam MAH13_sorted.bam
+  mv HTAdapter30_sorted.bam MAH14_sorted.bam
+  mv HTAdapter31_sorted.bam MAH15_sorted.bam
+  mv HTAdapter32_sorted.bam MAR01_sorted.bam
+  mv HTAdapter33_sorted.bam MAR02_sorted.bam
+  mv HTAdapter34_sorted.bam MAR03_sorted.bam
+  mv HTAdapter35_sorted.bam MAR04_sorted.bam
+  mv HTAdapter36_sorted.bam MAR05_sorted.bam
+  mv HTAdapter37_sorted.bam MAR06_sorted.bam
+  mv HTAdapter38_sorted.bam MAR07_sorted.bam
+  mv HTAdapter39_sorted.bam MAR08_sorted.bam
+  mv HTAdapter40_sorted.bam MAR09_sorted.bam
+  mv HTAdapter41_sorted.bam MAR10_sorted.bam
+  mv HTAdapter42_sorted.bam PAP01_sorted.bam
+  mv HTAdapter43_sorted.bam PAP02_sorted.bam
+  mv HTAdapter44_sorted.bam PAP03_sorted.bam
+  mv HTAdapter45_sorted.bam PAP04_sorted.bam
+  mv HTAdapter46_sorted.bam PAP05_sorted.bam
+  mv HTAdapter47_sorted.bam PAP06_sorted.bam
+  mv HTAdapter48_sorted.bam PAP07_sorted.bam
+  mv HTAdapter49_sorted.bam PAP08_sorted.bam
+  mv HTAdapter50_sorted.bam PAP09_sorted.bam
+  mv HTAdapter51_sorted.bam PAP10_sorted.bam
+  mv HTAdapter52_sorted.bam PAP11_sorted.bam
+  mv HTAdapter53_sorted.bam PAP12_sorted.bam
+  mv HTAdapter54_sorted.bam PAP13_sorted.bam
+  mv HTAdapter55_sorted.bam PAP14_sorted.bam
+  mv HTAdapter56_sorted.bam PAP15_sorted.bam
+  mv HTAdapter57_sorted.bam STO01_sorted.bam
+  mv HTAdapter58_sorted.bam STO02_sorted.bam
+  mv HTAdapter59_sorted.bam STO03_sorted.bam
+  mv HTAdapter60_sorted.bam STO04_sorted.bam
+  mv HTAdapter61_sorted.bam STO05_sorted.bam
+  mv HTAdapter62_sorted.bam STO06_sorted.bam
+  mv HTAdapter63_sorted.bam STO07_sorted.bam
+  mv HTAdapter64_sorted.bam STO08_sorted.bam
+  mv HTAdapter65_sorted.bam STO09_sorted.bam
+  mv HTAdapter66_sorted.bam STO10_sorted.bam
+  mv HTAdapter67_sorted.bam STO11_sorted.bam
+  mv HTAdapter68_sorted.bam STO12_sorted.bam
+  mv HTAdapter69_sorted.bam STO13_sorted.bam
+  mv HTAdapter70_sorted.bam STO14_sorted.bam
+  mv HTAdapter71_sorted.bam STO15_sorted.bam
+  mv HTAdapter72_sorted.bam STO17_sorted.bam
+  mv HTAdapter73_sorted.bam STO18_sorted.bam
+  mv HTAdapter74_sorted.bam STO19_sorted.bam
+  mv HTAdapter75_sorted.bam STO20_sorted.bam
+  mv HTAdapter76_sorted.bam STO21_sorted.bam
+  mv HTAdapter77_sorted.bam SUM01_sorted.bam
+  mv HTAdapter78_sorted.bam SUM02_sorted.bam
+  mv HTAdapter79_sorted.bam SUM03_sorted.bam
+  mv HTAdapter80_sorted.bam SUM04_sorted.bam
+  mv HTAdapter81_sorted.bam SUM05_sorted.bam
+  mv HTAdapter82_sorted.bam SUM06_sorted.bam
+  mv HTAdapter83_sorted.bam SUM07_sorted.bam
+  mv HTAdapter84_sorted.bam SUM08_sorted.bam
+  mv HTAdapter85_sorted.bam SUM09_sorted.bam
+  mv HTAdapter86_sorted.bam SUM10_sorted.bam
+  mv HTAdapter87_sorted.bam SUM11_sorted.bam
+  mv HTAdapter88_sorted.bam SUM12_sorted.bam
+  mv HTAdapter89_sorted.bam SUM13_sorted.bam
+  mv HTAdapter90_sorted.bam SUM15_sorted.bam
+  mv HTAdapter91_sorted.bam SUM16_sorted.bam
+  mv HTAdapter92_sorted.bam SUM17_sorted.bam
+  mv HTAdapter93_sorted.bam SUM18_sorted.bam
+  mv HTAdapter94_sorted.bam SUM19_sorted.bam
+  mv HTAdapter95_sorted.bam SUM20_sorted.bam
+  mv HTAdapter96_sorted.bam SUM21_sorted.bam
+}
+
+function readGroupsRNA {
+  cd $WorkingDirectory/mappedReadsDNA
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF01_sorted.bam" O="ELF01_IDed.bam" RGPU="ELF" RGSM="ELF_54-38" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF02_sorted.bam" O="ELF02_IDed.bam" RGPU="ELF" RGSM="ELF_RA607" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF03_sorted.bam" O="ELF03_IDed.bam" RGPU="ELF" RGSM="ELF_RP54-0" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF04_sorted.bam" O="ELF04_IDed.bam" RGPU="ELF" RGSM="ELF_RP54-1" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF05_sorted.bam" O="ELF05_IDed.bam" RGPU="ELF" RGSM="ELF_558-1" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF06_sorted.bam" O="ELF06_IDed.bam" RGPU="ELF" RGSM="ELF_565-13" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF07_sorted.bam" O="ELF07_IDed.bam" RGPU="ELF" RGSM="ELF_5651-15" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF08_sorted.bam" O="ELF08_IDed.bam" RGPU="ELF" RGSM="ELF_568-3" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF09_sorted.bam" O="ELF09_IDed.bam" RGPU="ELF" RGSM="ELF_546-03" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF10_sorted.bam" O="ELF10_IDed.bam" RGPU="ELF" RGSM="ELF_547-01" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF11_sorted.bam" O="ELF11_IDed.bam" RGPU="ELF" RGSM="ELF_6050-3" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF12_sorted.bam" O="ELF12_IDed.bam" RGPU="ELF" RGSM="ELF_622-5" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF13_sorted.bam" O="ELF13_IDed.bam" RGPU="ELF" RGSM="ELF_636-3" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF14_sorted.bam" O="ELF14_IDed.bam" RGPU="ELF" RGSM="ELF_RA567" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF15_sorted.bam" O="ELF15_IDed.bam" RGPU="ELF" RGSM="ELF_RP54.1" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF16_sorted.bam" O="ELF16_IDed.bam" RGPU="ELF" RGSM="ELF_RP54" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH01_sorted.bam" O="MAH01_IDed.bam" RGPU="MAH" RGSM="MAH_35-1" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH02_sorted.bam" O="MAH02_IDed.bam" RGPU="MAH" RGSM="MAH_520-02" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH03_sorted.bam" O="MAH03_IDed.bam" RGPU="MAH" RGSM="MAH_539-01" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH04_sorted.bam" O="MAH04_IDed.bam" RGPU="MAH" RGSM="MAH_540-07" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH05_sorted.bam" O="MAH05_IDed.bam" RGPU="MAH" RGSM="MAH_541-01" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH06_sorted.bam" O="MAH06_IDed.bam" RGPU="MAH" RGSM="MAH_542-01" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH07_sorted.bam" O="MAH07_IDed.bam" RGPU="MAH" RGSM="MAH_543-01" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH08_sorted.bam" O="MAH08_IDed.bam" RGPU="MAH" RGSM="MAH_RA620" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH09_sorted.bam" O="MAH09_IDed.bam" RGPU="MAH" RGSM="MAH_RA641" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH10_sorted.bam" O="MAH10_IDed.bam" RGPU="MAH" RGSM="MAH_RP47.7" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH11_sorted.bam" O="MAH11_IDed.bam" RGPU="MAH" RGSM="MAH_RP47-10" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH12_sorted.bam" O="MAH12_IDed.bam" RGPU="MAH" RGSM="MAH_RP47-5" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH13_sorted.bam" O="MAH13_IDed.bam" RGPU="MAH" RGSM="MAH_RP47-8" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH14_sorted.bam" O="MAH14_IDed.bam" RGPU="MAH" RGSM="MAH_RP47-9" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAH15_sorted.bam" O="MAH15_IDed.bam" RGPU="MAH" RGSM="MAH_RP47-6" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAR01_sorted.bam" O="MAR01_IDed.bam" RGPU="MAR" RGSM="MAR_RP6771" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAR02_sorted.bam" O="MAR02_IDed.bam" RGPU="MAR" RGSM="MAR_RP686" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAR03_sorted.bam" O="MAR03_IDed.bam" RGPU="MAR" RGSM="MAR_368- 2" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAR04_sorted.bam" O="MAR04_IDed.bam" RGPU="MAR" RGSM="MAR_RA26 366-4" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAR05_sorted.bam" O="MAR05_IDed.bam" RGPU="MAR" RGSM="MAR_RA379" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAR06_sorted.bam" O="MAR06_IDed.bam" RGPU="MAR" RGSM="MAR_RA42 _179-4" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAR07_sorted.bam" O="MAR07_IDed.bam" RGPU="MAR" RGSM="MAR_RA47_157-2T" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAR08_sorted.bam" O="MAR08_IDed.bam" RGPU="MAR" RGSM="MAR_RA605" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAR09_sorted.bam" O="MAR09_IDed.bam" RGPU="MAR" RGSM="MAR_RA630" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="MAR10_sorted.bam" O="MAR10_IDed.bam" RGPU="MAR" RGSM="MAR_RA88_263-3" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP01_sorted.bam" O="PAP01_IDed.bam" RGPU="PAP" RGSM="PAP_561-4" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP02_sorted.bam" O="PAP02_IDed.bam" RGPU="PAP" RGSM="PAP_562-1" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP03_sorted.bam" O="PAP03_IDed.bam" RGPU="PAP" RGSM="PAP_564-2" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP04_sorted.bam" O="PAP04_IDed.bam" RGPU="PAP" RGSM="PAP_569-3" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP05_sorted.bam" O="PAP05_IDed.bam" RGPU="PAP" RGSM="PAP_5010-05" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP06_sorted.bam" O="PAP06_IDed.bam" RGPU="PAP" RGSM="PAP_5021-02" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP07_sorted.bam" O="PAP07_IDed.bam" RGPU="PAP" RGSM="PAP_505-01" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP08_sorted.bam" O="PAP08_IDed.bam" RGPU="PAP" RGSM="PAP_516-02" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP09_sorted.bam" O="PAP09_IDed.bam" RGPU="PAP" RGSM="PAP_5241-01" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP10_sorted.bam" O="PAP10_IDed.bam" RGPU="PAP" RGSM="PAP_28-1" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP11_sorted.bam" O="PAP11_IDed.bam" RGPU="PAP" RGSM="PAP_RA434" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP12_sorted.bam" O="PAP12_IDed.bam" RGPU="PAP" RGSM="PAP_RA647" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP13_sorted.bam" O="PAP13_IDed.bam" RGPU="PAP" RGSM="PAP_RA648" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP14_sorted.bam" O="PAP14_IDed.bam" RGPU="PAP" RGSM="PAP_RA649" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP15_sorted.bam" O="PAP15_IDed.bam" RGPU="PAP" RGSM="PAP_RP16" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO01_sorted.bam" O="STO01_IDed.bam" RGPU="STO" RGSM="STO_RP697" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO02_sorted.bam" O="STO02_IDed.bam" RGPU="STO" RGSM="STO_RP698" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO03_sorted.bam" O="STO03_IDed.bam" RGPU="STO" RGSM="STO_RA530" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO04_sorted.bam" O="STO04_IDed.bam" RGPU="STO" RGSM="STO_RA549" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO05_sorted.bam" O="STO05_IDed.bam" RGPU="STO" RGSM="STO_RP22" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO06_sorted.bam" O="STO06_IDed.bam" RGPU="STO" RGSM="STO_271" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO07_sorted.bam" O="STO07_IDed.bam" RGPU="STO" RGSM="STO_275" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO08_sorted.bam" O="STO08_IDed.bam" RGPU="STO" RGSM="STO_43-113" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO09_sorted.bam" O="STO09_IDed.bam" RGPU="STO" RGSM="STO_43-115" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO10_sorted.bam" O="STO10_IDed.bam" RGPU="STO" RGSM="STO_43-125" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO11_sorted.bam" O="STO11_IDed.bam" RGPU="STO" RGSM="STO_43-76" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO12_sorted.bam" O="STO12_IDed.bam" RGPU="STO" RGSM="STO_43-77" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO13_sorted.bam" O="STO13_IDed.bam" RGPU="STO" RGSM="STO_43-78" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO14_sorted.bam" O="STO14_IDed.bam" RGPU="STO" RGSM="STO_43-74" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO15_sorted.bam" O="STO15_IDed.bam" RGPU="STO" RGSM="STO_43-75" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO17_sorted.bam" O="STO17_IDed.bam" RGPU="STO" RGSM="STO_33-10" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO18_sorted.bam" O="STO18_IDed.bam" RGPU="STO" RGSM="STO_560-2" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO19_sorted.bam" O="STO19_IDed.bam" RGPU="STO" RGSM="STO_528-3" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO20_sorted.bam" O="STO20_IDed.bam" RGPU="STO" RGSM="STO_559-1" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="STO21_sorted.bam" O="STO21_IDed.bam" RGPU="STO" RGSM="STO_33-272" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM01_sorted.bam" O="SUM01_IDed.bam" RGPU="SUM" RGSM="SUM_41-103" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM02_sorted.bam" O="SUM02_IDed.bam" RGPU="SUM" RGSM="SUM_41-104" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM03_sorted.bam" O="SUM03_IDed.bam" RGPU="SUM" RGSM="SUM_RA645" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM04_sorted.bam" O="SUM04_IDed.bam" RGPU="SUM" RGSM="SUM_RP31" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM05_sorted.bam" O="SUM05_IDed.bam" RGPU="SUM" RGSM="SUM_53-255" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM06_sorted.bam" O="SUM06_IDed.bam" RGPU="SUM" RGSM="SUM_53-252" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM07_sorted.bam" O="SUM07_IDed.bam" RGPU="SUM" RGSM="SUM_53-253" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM08_sorted.bam" O="SUM08_IDed.bam" RGPU="SUM" RGSM="SUM_53-256" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM09_sorted.bam" O="SUM09_IDed.bam" RGPU="SUM" RGSM="SUM_RP53-1" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM10_sorted.bam" O="SUM10_IDed.bam" RGPU="SUM" RGSM="SUM_644-2" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM11_sorted.bam" O="SUM11_IDed.bam" RGPU="SUM" RGSM="SUM_RP53-13" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM12_sorted.bam" O="SUM12_IDed.bam" RGPU="SUM" RGSM="SUM_RP53-14" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM13_sorted.bam" O="SUM13_IDed.bam" RGPU="SUM" RGSM="SUM_RP53-5" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM15_sorted.bam" O="SUM15_IDed.bam" RGPU="SUM" RGSM="SUM_RP53-8" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM16_sorted.bam" O="SUM16_IDed.bam" RGPU="SUM" RGSM="SUM_RP53-9" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM17_sorted.bam" O="SUM17_IDed.bam" RGPU="SUM" RGSM="SUM_624-1" RGPL="illumina" RGLB="SeqCap2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM18_sorted.bam" O="SUM18_IDed.bam" RGPU="SUM" RGSM="SUM_625-1" RGPL="illumina" RGLB="SeqCap2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM19_sorted.bam" O="SUM19_IDed.bam" RGPU="SUM" RGSM="SUM_626-3" RGPL="illumina" RGLB="SeqCap2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM20_sorted.bam" O="SUM20_IDed.bam" RGPU="SUM" RGSM="SUM_643-2" RGPL="illumina" RGLB="SeqCap2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM21_sorted.bam" O="SUM21_IDed.bam" RGPU="SUM" RGSM="SUM_RP53-4" RGPL="illumina" RGLB="SeqCap2012"
+}
+
+function readGroupsRNA {
+  cd $WorkingDirectory/mappedReadsRNA
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629651_sorted.bam" O="SRR629651_IDed.bam" RGPU="MAR" RGSM="MAR627-1" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629599_sorted.bam" O="SRR629599_IDed.bam" RGPU="MAH" RGSM="MAH6372" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629652_sorted.bam" O="SRR629652_IDed.bam" RGPU="MAR" RGSM="MAR6287" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629653_sorted.bam" O="SRR629653_IDed.bam" RGPU="MAR" RGSM="MAR276" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629654_sorted.bam" O="SRR629654_IDed.bam" RGPU="MAR" RGSM="MAR6299" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629655_sorted.bam" O="SRR629655_IDed.bam" RGPU="NAM" RGSM="NAM2064" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629656_sorted.bam" O="SRR629656_IDed.bam" RGPU="MAR" RGSM="MAR6326" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629657_sorted.bam" O="SRR629657_IDed.bam" RGPU="MAR" RGSM="MAR6326dup" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629658_sorted.bam" O="SRR629658_IDed.bam" RGPU="NAM" RGSM="NAM60603" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629659_sorted.bam" O="SRR629659_IDed.bam" RGPU="MAR" RGSM="MAR6463" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629661_sorted.bam" O="SRR629661_IDed.bam" RGPU="NAM" RGSM="NAM6153" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629660_sorted.bam" O="SRR629660_IDed.bam" RGPU="NAM" RGSM="NAM6193" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629662_sorted.bam" O="SRR629662_IDed.bam" RGPU="MAR" RGSM="MAR6099" RGPL="illumina" RGLB="RNASeq2012"
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629663_sorted.bam" O="SRR629663_IDed.bam" RGPU="NAM" RGSM="NAM6161" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629664_sorted.bam" O="SRR629664_IDed.bam" RGPU="MAR" RGSM="MAR6311" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629665_sorted.bam" O="SRR629665_IDed.bam" RGPU="MAR" RGSM="MAR6341" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629666_sorted.bam" O="SRR629666_IDed.bam" RGPU="MAH" RGSM="MAH252" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629667_sorted.bam" O="SRR629667_IDed.bam" RGPU="MAR" RGSM="MAR6503" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629668_sorted.bam" O="SRR629668_IDed.bam" RGPU="MAH" RGSM="MAH2811" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629669_sorted.bam" O="SRR629669_IDed.bam" RGPU="MAH" RGSM="MAH6084" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497737_sorted.bam" O="SRR497737_IDed.bam" RGPU="ELF" RGSM="ELF523-09" RGPL="illumina" RGLB="RNASeq2008" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497739_sorted.bam" O="SRR497739_IDed.bam" RGPU="ELF" RGSM="ELF5171-12" RGPL="illumina" RGLB="RNASeq2008" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497740_sorted.bam" O="SRR497740_IDed.bam" RGPU="PAP" RGSM="PAP509-05" RGPL="illumina" RGLB="RNASeq2008" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497741_sorted.bam" O="SRR497741_IDed.bam" RGPU="PAP" RGSM="PAP513-03" RGPL="illumina" RGLB="RNASeq2008" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497742_sorted.bam" O="SRR497742_IDed.bam" RGPU="ELF" RGSM="ELF525-03" RGPL="illumina" RGLB="RNASeq2008" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497743_sorted.bam" O="SRR497743_IDed.bam" RGPU="ELF" RGSM="ELF544-03" RGPL="illumina" RGLB="RNASeq2008" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497744_sorted.bam" O="SRR497744_IDed.bam" RGPU="PAP" RGSM="PAP532-02" RGPL="illumina" RGLB="RNASeq2008" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497745_sorted.bam" O="SRR497745_IDed.bam" RGPU="PAP" RGSM="PAP533-07" RGPL="illumina" RGLB="RNASeq2008" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497746_sorted.bam" O="SRR497746_IDed.bam" RGPU="PAP" RGSM="PAP532-05" RGPL="illumina" RGLB="RNASeq2008" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497747_sorted.bam" O="SRR497747_IDed.bam" RGPU="ELF" RGSM="ELF5171-02" RGPL="illumina" RGLB="RNASeq2008" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497748_sorted.bam" O="SRR497748_IDed.bam" RGPU="ELF" RGSM="ELF524-03" RGPL="illumina" RGLB="RNASeq2008" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497749_sorted.bam" O="SRR497749_IDed.bam" RGPU="PAP" RGSM="PAP504-03" RGPL="illumina" RGLB="RNASeq2008" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497738_sorted.bam" O="SRR497738_IDed.bam" RGPU="ELF" RGSM="ELF523-19" RGPL="illumina" RGLB="RNASeq2008" 
+}
+
+function prepForVariantCalling {
+  cd $WorkingDirectory/mappedReads"$1"
+  # make .sam files list for Samtools processing
+    ls | grep "_IDed.bam" |cut -d "_" -f 1 | sort | uniq  > bamList
+    
+    while read i;
+    do
+    cd $WorkingDirectory/mappedReads"$1"
+    ###  remove duplicates  ###
+      java -Xmx8g -jar /tools/picard-tools-2.4.1/MarkDuplicates.jar \
+          INPUT=$WorkingDirectory/mappedReads"$1"/"$i"_IDed.bam \
+          OUTPUT=$WorkingDirectory/GATK"$1"/"$i"_0.bam \
+          METRICS_FILE=DuplicationMetrics \
+          CREATE_INDEX=true \
+          VALIDATION_STRINGENCY=SILENT \
+          MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=1000 \
+          ASSUME_SORTED=TRUE \
+          REMOVE_DUPLICATES=TRUE
+    #index sorted bam
+      samtools index $WorkingDirectory/GATK"$1"/"$i"_0.bam
+    ###  Calculate Mapping Stats  ###
+      samtools idxstats $WorkingDirectory/GATK"$1"/"$i"_0.bam > $WorkingDirectory/Stats"$1"/"$i"_counts.txt
+      samtools flagstat $WorkingDirectory/GATK"$1"/"$i"_0.bam > $WorkingDirectory/Stats"$1"/"$i"_stats.txt
+      samtools depth $WorkingDirectory/GATK"$1"/"$i"_0.bam > $WorkingDirectory/Stats"$1"/"$i"_depth.txt
+  done<$WorkingDirectory/mappedReads"$1"/samList
+}
 
 # -- PREPARE FOR SNP CALLING -- ##
 # •••••••••••• Functions for obtaining SNP convergence in bqsr ••••••••••••• #
 # •••••••••• The input parameter is the current replicate number ••••••••••• #
 # ••••••• This approach is called "bootstrapping" by GATK developers ••••••• #
 # •••••••••• Even though there is no sampling with replacement... •••••••••• #
+function indexReference {
+  # INDEX REF TO USE FOR SNP CALLING
+    samtools faidx $WorkingDirectory/References/TelagGenome.fasta
+    java -Xmx8g -jar /tools/picard-tools-2.4.1/CreateSequenceDictionary.jar \
+          R= $WorkingDirectory/References/TelagGenome.fasta \
+          O= $WorkingDirectory/References/TelagGenome.dict 
+}
+
 function use-HaplotypeCaller {
 while read i
 do
@@ -463,8 +509,8 @@ function get-just-SNPs {
     	-R $WorkingDirectory/References/TelagGenome.fasta \
     	-V gendb://SNP_database_"$1" \
     	-O genotyped_"$1".vcf 
-# Get SNPs
-/tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" SelectVariants \
+    # Get SNPs
+    /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" SelectVariants \
 	-R $WorkingDirectory/References/TelagGenome.fasta \
 	-V genotyped_"$1".vcf \
 	--select-type-to-include SNP \
@@ -678,7 +724,7 @@ function filterByPopulation {
     mv "$2"_"$i"_popFiltered.vcf.recode.vcf "$2"_"$i"_popFiltered.vcf
   done<Pops
   bcftools merge "$2"*popFiltered.vcf -O v -o "$2"_popFiltered.vcf
-
+  echo "Filtered by Population IILS variants: $(grep -v "^#" "$1" | wc -l)" >> Log.txt
 }
 
 function annotateVariants {
@@ -688,7 +734,7 @@ function annotateVariants {
   #+ DONE # Make blast database from T. elegans genome
   #+ makeblastdb -in TelagGenome.fasta -parse_seqids -dbtype nucl -out Genome.db
   # Extract genes from exons used for probe design
-  python ~/SeqCap/pythonScripts/filterExons.py Exons.fa "$2".txt "$2"TargetGenes.fa ExtractGenesFromExons_log.txt
+  python ~/SeqCap/pythonScripts/filterExons.py Exons.fa "$2".txt "$2"TargetGenes.fa Extract"$2"GenesFromExons_log.txt
   # Use Blast with Exons.fa (the exons used for probe design) to filter the genome
   blastn -db Genome.db -query "$2"TargetGenes.fa -outfmt "7 qseqid sseqid evalue qstart qend sstart send" -out BlastResults_"$2".txt
   # Delete "^#" lines from blast output
@@ -697,7 +743,7 @@ function annotateVariants {
   sed -i.bak "s/ref|//" BlastResults_"$2".txt
   sed -i.bak "s/|//" BlastResults_"$2".txt
   # Use filtered genome results (blast output) to pull out targeted genes and create filtered gff
-  python ~/SeqCap/pythonScripts/shrinkGFF_v2.py BlastResults_"$2".txt TelagGenome.gff "$2"TargetGenes.gff PullTargetGenes_log.txt
+  python ~/SeqCap/pythonScripts/shrinkGFF_v2.py BlastResults_"$2".txt TelagGenome.gff "$2"TargetGenes.gff Pull"$2"TargetGenes_log.txt
   # Use bedops to convert gff to bed
   gff2bed < "$2"TargetGenes.gff > "$2"TargetGenes.bed
   # bgzip bed file
@@ -721,6 +767,7 @@ source /home/rlk0015/miniconda3/etc/profile.d/conda.sh
 conda activate vcfEnv
 python ~/SeqCap/pythonScripts/vcf2table.py "$1" "$1"_table
 ~/SeqCap/RScripts/plotvcftable.R -I "$1"_table -O "$1"_plot.pdf
+echo "Initial annotated IILS variants: $(grep -v "^#" "$1" | wc -l)" >> Log.txt
 }
 
 function initial-VariantFiltration {
@@ -760,171 +807,82 @@ function initial-VariantFiltration {
 	--filter-expression "FS > 60.0" \
 	--filter-name "ReadPosRankSum" \
 	--filter-expression "ReadPosRankSum < -5.0"
-  # awk '/^#/||$7=="PASS"' "$2"Init.vcf > "$2".vcf
+  awk '/^#/||$7=="PASS"' "$2"Init.vcf > "$2".vcf
+  echo "Initial filtration IILS variants: $(grep -v "^#" "$2".vcf | wc -l)" >> Log.txt
 } 
 
 function hard-VariantFiltration {
-  # Step 1: I changed "VariantFiltration" to filter out SNPs with DP < 20:
-    /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" VariantFiltration -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome.fasta -V "$1".vcf -O "$2"_HardFilterStep1Init.vcf --filter-name "DP" --filter-expression "DP < 20"
-    awk '/^#/||$7=="PASS"' "$2"_HardFilterStep1Init.vcf > "$2"_HardFilterStep1.vcf
-    echo "Depth filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep1.vcf | wc -l)" >> Log.txt
+  #+ ++++++++++ Commented out: I think we only want to filter by depth for genotyping... +++++++++++
+  #+ # Step 1: I changed "VariantFiltration" to filter out SNPs with DP < 20:
+  #+   /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" VariantFiltration -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome.fasta -V "$1".vcf -O "$2"_HardFilterStep1Init.vcf --filter-name "DP" --filter-expression "DP < 20"
+  #+   awk '/^#/||$7=="PASS"' "$2"_HardFilterStep1Init.vcf > "$2"_HardFilterStep1.vcf
+  #+   echo "Depth filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep1.vcf | wc -l)" >> Log.txt
+  #+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Step 4: Get rid of low-quality (mean) genotyping:
+    bcftools view  -i  'MIN(FMT/GQ>20)'   "$1".vcf > "$2"_HardFilterStep1.vcf
+    echo "Genotype Quality filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep1.vcf | wc -l)" >> Log.txt
   # Step 2: Get rid of multiallelic SNPs (more than 2 alleles):
     bcftools view -m2 -M2 -v snps "$2"_HardFilterStep1.vcf > "$2"_HardFilterStep2.vcf
     echo "Multiallelic filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep2.vcf | wc -l)" >> Log.txt
-    # Step 3: Get rid of low-frequency alleles- here just singletons:
+  # Step 3: Get rid of low-frequency alleles- here just singletons:
     vcftools --mac 2 --vcf "$2"_HardFilterStep2.vcf --recode --recode-INFO-all --out "$2"_HardFilterStep3.vcf
     mv "$2"_HardFilterStep3.vcf.recode.vcf "$2"_HardFilterStep3.vcf
     echo "Singleton filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep3.vcf | wc -l)" >> Log.txt
-  # Step 4: Get rid of low-quality (mean) genotyping:
-    bcftools view  -i  'MIN(FMT/GQ>20)'   "$2"_HardFilterStep3.vcf > "$2"_HardFilterStep4.vcf
-    echo "Genotype Quality filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep4.vcf | wc -l)" >> Log.txt
-  # Step 5: Remove low-depth genotyping:
-    vcftools --minDP 20 --vcf "$2"_HardFilterStep4.vcf --recode --recode-INFO-all --out "$2"_HardFilterStep5.vcf
-    mv "$2"_HardFilterStep5.vcf.recode.vcf "$2"_HardFilterStep5.vcf
-    echo "Depth filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep5.vcf | wc -l)" >> Log.txt
-  # Step 6: Remove individual sites with low genotyping
-    vcftools --max-missing 0.7 --vcf "$2"_HardFilterStep5.vcf  --recode --recode-INFO-all --out "$2"_HardFilterStep6.vcf
-    mv "$2"_HardFilterStep6.vcf.recode.vcf "$2"_HardFiltered.vcf
-    echo "Genotype filtration $2 variants: $(grep -v "^#" "$2"_HardFiltered.vcf | wc -l)" >> Log.txt
 }
-# •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• #
-#+ +++++++++++++++++++++++++++++++ DONE ++++++++++++++++++++++++++++++++ #
-#+ # INDEX REF TO USE FOR SNP CALLING
-#+ samtools faidx $WorkingDirectory/References/TelagGenome.fasta
-#+ java -Xmx8g -jar /tools/picard-tools-2.4.1/CreateSequenceDictionary.jar \
-#+       R= $WorkingDirectory/References/TelagGenome.fasta \
-#+       O= $WorkingDirectory/References/TelagGenome.dict 
-#+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 
-# ============================================================================================ #
-# ============================================================================================ #
-# =====================    1st Round of SNP calling for SeqCap data    ======================= #
-# ============================================================================================ #
-# ============================================================================================ #
-# == In this section mapped data will be prepped and analyzed, and all the required files   == #
-# == for GATK functions will be created.                                                    == #
-# ============================================================================================ #
+### -- If needed, here is code for removing individuals that would need to be adapted
+# To remove bad individuals:
+## vcftools --vcf yourvcfhere.vcf --depth --out Prefix
+## vcftools --vcf yourvcf.vcf --remove removetheseind.txt --recode --recode-INFO-all --out gooddepth
+## -- Examine Unfiltered Variants
 
-#+   +++++++++++++++++++++++++++++ Done July 4: 1994633 +++++++++++++++++++++++++++++++   +#
-#+   cd $WorkingDirectory/mappedReadsDNA
-#+   # make .sam files list for Samtools processing
-#+   ls | grep "_IDed.sam" |cut -d "_" -f 1 | sort | uniq  > samList
-#+   
-#+   while read i;
-#+   do
-#+   cd $WorkingDirectory/mappedReadsDNA
-#+   ###  convert .sam to .bam & sort  ###
-#+   samtools view -@ 2 -bS $WorkingDirectory/mappedReadsDNA/"$i"*_IDed.sam | samtools sort -@ 2 -o $WorkingDirectory/mappedReadsDNA/"$i"_sorted.bam
-#+   ###  remove duplicates  ###
-#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/MarkDuplicates.jar \
-#+       INPUT=$WorkingDirectory/mappedReadsDNA/"$i"_sorted.bam \
-#+       OUTPUT=$WorkingDirectory/GATKDNA/"$i"_0.bam \
-#+       METRICS_FILE=DuplicationMetrics \
-#+       CREATE_INDEX=true \
-#+       VALIDATION_STRINGENCY=SILENT \
-#+       MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=1000 \
-#+       ASSUME_SORTED=TRUE \
-#+       REMOVE_DUPLICATES=TRUE
-#+   #index sorted bam
-#+   samtools index $WorkingDirectory/GATKDNA/"$i"_0.bam
-#+   	
-#+   ###  Calculate Mapping Stats  ###
-#+   # tally mapped reads & calcuate the stats
-#+   samtools idxstats $WorkingDirectory/GATKDNA/"$i"_0.bam > $WorkingDirectory/StatsDNA/"$i"_counts.txt
-#+   samtools flagstat $WorkingDirectory/GATKDNA/"$i"_0.bam > $WorkingDirectory/StatsDNA/"$i"_stats.txt
-#+   samtools depth $WorkingDirectory/GATKDNA/"$i"_0.bam > $WorkingDirectory/StatsDNA/"$i"_depth.txt
-#+   done<$WorkingDirectory/mappedReadsDNA/samList
-#+   +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++   +#
 
-#  ************************ Commented out because I don't want to worry about this right now- needs to be done eventually *******
- #  # make results directory & move results
- #  mkdir -p /home/rlk0015/SeqCap/May2020/stats
- #  mkdir -p /home/rlk0015/SeqCap/May2020/counts
- #  mkdir -p /home/rlk0015/SeqCap/May2020/avgDepth
- #  
- #  # cp results to respective directories
- #  cp *stats.txt /home/rlk0015/SeqCap/May2020/stats
- #  cp *counts.txt /home/rlk0015/SeqCap/May2020/counts
- #  cp *depth.txt /home/rlk0015/SeqCap/May2020/avgDepth
- #  *****************************************************************************************************
-
-#+   ++++++++++++++++++++++++ Done July 4: 1994303 & 1994412 ++++++++++++++++++++++++   +#
-#+   ### --------------------- Continue Variant Calling ----------------------- ###
-#+   # ============================================================================================ #
-#+   # ============================================================================================ #
-#+   # =====================    1st Round of SNP calling for RNAseq data    ======================= #
-#+   # ============================================================================================ #
-#+   # ============================================================================================ #
-#+   # == In this section mapped data will be prepped and analyzed, and all the required files   == #
-#+   # == for GATK functions will be created.                                                    == #
-#+   # ============================================================================================ #
-#+   
-cd $WorkingDirectory/mappedReadsRNA
-# make .sam files list for Samtools processing
-#* *** vvv change to _IDed.sam
-ls | grep "_IDed.bam" |cut -d "_" -f 1 | sort | uniq  > samList
-while read i;
-do
-###  convert .sam to .bam & sort  ###
-#+   samtools view -@ 2 -bS $WorkingDirectory/mappedReadsRNA/"$i"*_IDed.sam | samtools sort -@ 2 -o $WorkingDirectory/mappedReadsRNA/"$i"_sorted.bam
-###  remove duplicates  ###
-# *** the input file should be "$i"_sorted.bam, but since Tonia sorted before I marked readgroups, it is IDed
-java -Xmx8g -jar /tools/picard-tools-2.4.1/MarkDuplicates.jar \
-    INPUT=$WorkingDirectory/mappedReadsRNA/"$i"_IDed.bam \
-    OUTPUT=$WorkingDirectory/GATKRNA/"$i"_0.bam \
-    METRICS_FILE=DuplicationMetrics \
-    CREATE_INDEX=true \
-    VALIDATION_STRINGENCY=SILENT \
-    MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=1000 \
-    ASSUME_SORTED=TRUE \
-    REMOVE_DUPLICATES=TRUE
-#index sorted bam
-samtools index $WorkingDirectory/GATKRNA/"$i"_0.bam
-#+   	
-#+   ###  Calculate Mapping Stats  ###
-#+   # tally mapped reads & calcuate the stats
-#+   samtools idxstats $WorkingDirectory/GATKRNA/"$i"_0.bam > $WorkingDirectory/StatsRNA/"$i"_counts.txt
-#+   samtools flagstat $WorkingDirectory/GATKRNA/"$i"_0.bam > $WorkingDirectory/StatsRNA/"$i"_stats.txt
-#+   samtools depth $WorkingDirectory/GATKRNA/"$i"_0.bam > $WorkingDirectory/StatsRNA/"$i"_depth.txt
-done<$WorkingDirectory/mappedReadsRNA/samList
-#+   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++   +#
-
-#  ************************ Commented out because I don't want to worry about this right now- needs to be done eventually *******
- #  # make results directory & move results
- #  mkdir -p /home/rlk0015/SeqCap/May2020/stats
- #  mkdir -p /home/rlk0015/SeqCap/May2020/counts
- #  mkdir -p /home/rlk0015/SeqCap/May2020/avgDepth
- #  
- #  # cp results to respective directories
- #  cp *stats.txt /home/rlk0015/SeqCap/May2020/stats
- #  cp *counts.txt /home/rlk0015/SeqCap/May2020/counts
- #  cp *depth.txt /home/rlk0015/SeqCap/May2020/avgDepth
- #  *****************************************************************************************************
-
-### --------------------- Continue Variant Calling ----------------------- ###
-# Perform bqsr-'bootstraping', SNP calling, and hard filtration on Seq Cap data
-#+ cd $WorkingDirectory/GATKDNA
-#+ ## Replicate 1
-#+ use-HaplotypeCaller 0 DNA
-#+ get-just-SNPs 0 
-#+ initial-VariantFiltration 0
-#+ use-BaseRecalibrator 0 DNA
-#+ use-BQSR 0 1 DNA
-#+ use-HaplotypeCaller 1 DNA
-#+ get-just-SNPs 1
-#+ use-BaseRecalibrator 1 DNA
-#+ use-AnalyzeCovariates 0 1 DNA
-## -- Replicate 2
-#+ use-BQSR 1 2 DNA
-#+ use-HaplotypeCaller 2 DNA
-#+ get-just-SNPs 2
-#+ use-BaseRecalibrator 2 DNA
-#+ use-AnalyzeCovariates 1 2 DNA
-#+ 
-# Perform bqsr-'bootstraping', SNP calling, and hard filtration on RNA-seq data
+### *** MAIN *** ###
+loadModules
+createWorkingEnvironment
+WorkingDirectory=/scratch/rlk0015/Telag/May2020/WorkingDirectory
+#+ COMPLETED copyRawReadsDNA
+#+ COMPLETED performFASTQC rawReadsDNA
+#+ COMPLETED performTrimmingPE DNA
+#+ COMPLETED performTrimmingPE RNA
+#+ COMPLETED performTrimmingSE RNA
+#+ COMPLETED performFASTQC cleanReadsDNA
+#+ COMPLETED performFASTQC cleanReadsRNA
+#+ COMPLETED copyRef
+#+ COMPLETED mapReadsDNA
+#+ COMPLETED mapPEReadsRNA
+#+ COMPLETED mapSEReadsRNA
+#+ COMPLETED changeSeqCapNames
+#+ COMPLETED readGroupsRNA 
+#+ COMPLETED readGroupsDNA
+#+ COMPLETED # Prep for SNP calling and calculate mapping stats
+#+ COMPLETED indexReference
+#+ COMPLETED prepForVariantCalling DNA
+#+ COMPLETED prepForVariantCalling RNA
+#+ COMPLETED ### --------------------- Variant Calling ----------------------- ###
+#+ COMPLETED # Perform bqsr-'bootstraping', SNP calling, and hard filtration on Seq Cap data
+#+ COMPLETED cd $WorkingDirectory/GATKDNA
+#+ COMPLETED ## Replicate 1
+#+ COMPLETED use-HaplotypeCaller 0 DNA
+#+ COMPLETED get-just-SNPs 0 
+#+ COMPLETED initial-VariantFiltration 0
+#+ COMPLETED use-BaseRecalibrator 0 DNA
+#+ COMPLETED use-BQSR 0 1 DNA
+#+ COMPLETED use-HaplotypeCaller 1 DNA
+#+ COMPLETED get-just-SNPs 1
+#+ COMPLETED use-BaseRecalibrator 1 DNA
+#+ COMPLETED use-AnalyzeCovariates 0 1 DNA
+#+ COMPLETED ## -- Replicate 2
+#+ COMPLETED use-BQSR 1 2 DNA
+#+ COMPLETED use-HaplotypeCaller 2 DNA
+#+ COMPLETED get-just-SNPs 2
+#+ COMPLETED use-BaseRecalibrator 2 DNA
+#+ COMPLETED use-AnalyzeCovariates 1 2 DNA
+#+ COMPLETED 
+#+ COMPLETED # Perform bqsr-'bootstraping', SNP calling, and hard filtration on RNA-seq data
 cd $WorkingDirectory/GATKRNA
-## Replicate 1
-use-HaplotypeCaller 0 RNA
+#+ COMPLETED ## Replicate 1
+#+ COMPLETED use-HaplotypeCaller 0 RNA
 get-just-SNPs 0
 initial-VariantFiltration 0
 use-BaseRecalibrator 0 RNA
@@ -939,81 +897,62 @@ use-HaplotypeCaller 2 RNA
 get-just-SNPs 2
 use-BaseRecalibrator 2 RNA
 use-AnalyzeCovariates 1 2 RNA
-#+ ## -- Filter Variants
-#+ initial-VariantFiltration 2
-#+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#* ********* NEED TO COMPLETE BELOW ***********
 ## -- Merge RNA and DNA data
-#* combine-VCF
-#* ## -- Annotate variants
-#* annotateVariants Merged SeqCap
-#* annotateVariants Merged IILS
-#* annotateVariants Merged Mito
-#* annotateVariants Merged ETC
-#* annotateVariants Merged Stress
-#* annotateVariants Merged Random
-#* cp SeqCap_Annotated_Init.vcf All_Annotated.vcf
-#* ## -- Examine Unfiltered Variants
-#* cd $WorkingDirectory/variantFiltration
-#* plotVariants IILS_Annotated.vcf
-#* echo "Initial annotated IILS variants: $(grep -v "^#" IILS_Annotated.vcf | wc -l)" >> Log.txt
-#* plotVariants ETC_Annotated.vcf
-#* echo "Initial annotated ETC variants: $(grep -v "^#" ETC_Annotated.vcf | wc -l)" >> Log.txt
-#* plotVariants Mito_Annotated.vcf
-#* echo "Initial annotated Mito variants: $(grep -v "^#" Mito_Annotated.vcf | wc -l)" >> Log.txt
-#* plotVariants Stress_Annotated.vcf
-#* echo "Initial annotated Stress variants: $(grep -v "^#" Stress_Annotated.vcf | wc -l)" >> Log.txt
-#* plotVariants SeqCap_Annotated.vcf
-#* echo "Initial annotated SeqCap variants: $(grep -v "^#" SeqCap_Annotated.vcf | wc -l)" >> Log.txt
-#* plotVariants All_Annotated.vcf
-#* echo "Initial annotated All variants: $(grep -v "^#" All_Annotated.vcf | wc -l)" >> Log.txt
-#* ## -- Filter by Population
-#* filterByPopulation IILS_Annotated.vcf IILS
-#* echo "Filtered by Population IILS variants: $(grep -v "^#" IILS_popFiltered.vcf | wc -l)" >> Log.txt
-#* filterByPopulation ETC_Annotated.vcf ETC
-#* echo "Filtered by Population ETC variants: $(grep -v "^#" ETC_popFiltered.vcf | wc -l)" >> Log.txt
-#* filterByPopulation Mito_Annotated.vcf Mito
-#* echo "Filtered by Population Mito variants: $(grep -v "^#" Mito_popFiltered.vcf | wc -l)" >> Log.txt
-#* filterByPopulation Stress_Annotated.vcf Stress
-#* echo "Filtered by Population Stress variants: $(grep -v "^#" Stress_popFiltered.vcf | wc -l)" >> Log.txt
-#* filterByPopulation SeqCap_Annotated.vcf SeqCap
-#* echo "Filtered by Population SeqCap variants: $(grep -v "^#" SeqCap_popFiltered.vcf | wc -l)" >> Log.txt
-#* filterByPopulation All_Annotated.vcf All
-#* echo "Filtered by Population All variants: $(grep -v "^#" All_popFiltered.vcf | wc -l)" >> Log.txt
-#* ## -- Initial Filter Variants
-#* initial-VariantFiltration IILS_popFiltered IILS_InitialFiltered
-#* echo "Initial filtration IILS variants: $(grep -v "^#" IILS_InitialFiltered.vcf | wc -l)" >> Log.txt
-#* initial-VariantFiltration ETC_popFiltered ETC_InitialFiltered
-#* echo "Initial filtration ETC variants: $(grep -v "^#" ETC_InitialFiltered.vcf | wc -l)" >> Log.txt
-#* initial-VariantFiltration Mito_popFiltered Mito_InitialFiltered
-#* echo "Initial filtration Mito variants: $(grep -v "^#" Mito_InitialFiltered.vcf | wc -l)" >> Log.txt
-#* initial-VariantFiltration Stress_popFiltered Stress_InitialFiltered
-#* echo "Initial filtration Stress variants: $(grep -v "^#" Stress_InitialFiltered.vcf | wc -l)" >> Log.txt
-#* initial-VariantFiltration SeqCap_popFiltered SeqCap_InitialFiltered
-#* echo "Initial filtration SeqCap variants: $(grep -v "^#" SeqCap_InitialFiltered.vcf | wc -l)" >> Log.txt
-#* initial-VariantFiltration All_popFiltered All_InitialFiltered
-#* echo "Initial filtration All variants: $(grep -v "^#" All_InitialFiltered.vcf | wc -l)" >> Log.txt
-#* ## -- Examine Initial Filtered Variants
-#* plotVariants IILS_InitialFiltered.vcf
-#* plotVariants ETC_InitialFiltered.vcf
-#* plotVariants Mito_InitialFiltered.vcf
-#* plotVariants Stress_InitialFiltered.vcf
-#* plotVariants SeqCap_InitialFiltered.vcf
-#* plotVariants All_InitialFiltered.vcf
-#* ## -- Perform Hard Filtering
-#* hard-VariantFiltration IILS_InitialFiltered IILS
-#* hard-VariantFiltration ETC_InitialFiltered ETC
-#* hard-VariantFiltration Mito_InitialFiltered Mito
-#* hard-VariantFiltration Stress_InitialFiltered Stress
-#* hard-VariantFiltration SeqCap_InitialFiltered SeqCap
-#* hard-VariantFiltration All_InitialFiltered All
-#* ## -- Examine Hard Filtered Variants
-#* plotVariants IILS_HardFiltered.vcf
-#* plotVariants ETC_HardFiltered.vcf
-#* plotVariants Mito_HardFiltered.vcf
-#* plotVariants Stress_HardFiltered.vcf
-#* plotVariants SeqCap_HardFiltered.vcf
-#* plotVariants All_HardFiltered.vcf
-#* cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/variantFiltration/isec
-#* vcftools --vcf Merged.vcf --bed isec.bed --out Iseced.vcf --recode --keep-INFO-all
-#* ***********************************
+combine-VCF
+## -- Annotate variants
+annotateVariants Merged SeqCap
+annotateVariants Merged IILS
+annotateVariants Merged Mito
+annotateVariants Merged ETC
+annotateVariants Merged Stress
+annotateVariants Merged Random
+cp SeqCap_Annotated_Init.vcf All_Annotated.vcf
+cd $WorkingDirectory/variantFiltration
+plotVariants IILS_Annotated.vcf
+plotVariants ETC_Annotated.vcf
+plotVariants Mito_Annotated.vcf
+plotVariants Stress_Annotated.vcf
+plotVariants SeqCap_Annotated.vcf
+plotVariants All_Annotated.vcf
+## -- Filter by Population
+filterByPopulation IILS_Annotated.vcf IILS
+filterByPopulation ETC_Annotated.vcf ETC
+filterByPopulation Mito_Annotated.vcf Mito
+filterByPopulation Stress_Annotated.vcf Stress
+filterByPopulation SeqCap_Annotated.vcf SeqCap
+filterByPopulation All_Annotated.vcf All
+## -- Initial Filter Variants
+initial-VariantFiltration IILS_popFiltered IILS_InitialFiltered
+initial-VariantFiltration ETC_popFiltered ETC_InitialFiltered
+initial-VariantFiltration Mito_popFiltered Mito_InitialFiltered
+initial-VariantFiltration Stress_popFiltered Stress_InitialFiltered
+initial-VariantFiltration SeqCap_popFiltered SeqCap_InitialFiltered
+initial-VariantFiltration All_popFiltered All_InitialFiltered
+## -- Examine Initial Filtered Variants
+plotVariants IILS_InitialFiltered.vcf
+plotVariants ETC_InitialFiltered.vcf
+plotVariants Mito_InitialFiltered.vcf
+plotVariants Stress_InitialFiltered.vcf
+plotVariants SeqCap_InitialFiltered.vcf
+plotVariants All_InitialFiltered.vcf
+## -- Perform Hard Filtering
+hard-VariantFiltration IILS_InitialFiltered IILS
+hard-VariantFiltration ETC_InitialFiltered ETC
+hard-VariantFiltration Mito_InitialFiltered Mito
+hard-VariantFiltration Stress_InitialFiltered Stress
+hard-VariantFiltration SeqCap_InitialFiltered SeqCap
+hard-VariantFiltration All_InitialFiltered All
+## -- Examine Hard Filtered Variants
+plotVariants IILS_HardFiltered.vcf
+plotVariants ETC_HardFiltered.vcf
+plotVariants Mito_HardFiltered.vcf
+plotVariants Stress_HardFiltered.vcf
+plotVariants SeqCap_HardFiltered.vcf
+plotVariants All_HardFiltered.vcf
+## -- Filter by population for a final time
+filterByPopulation IILS_HardFiltered.vcf IILS
+filterByPopulation ETC_HardFiltered.vcf ETC
+filterByPopulation Mito_HardFiltered.vcf Mito
+filterByPopulation Stress_HardFiltered.vcf Stress
+filterByPopulation SeqCap_HardFiltered.vcf SeqCap
+filterByPopulation All_HardFiltered.vcf All
