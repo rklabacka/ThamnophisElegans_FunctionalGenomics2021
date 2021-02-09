@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #Give job a name
-#PBS -N PE_Genome
+#PBS -N PE_Transcriptome
 
 #-- We recommend passing your environment variables down to the
 #-- compute nodes with -V, but this is optional
@@ -11,7 +11,7 @@
 #-- Hopper's standard compute nodes have a total of 20 cores each
 #-- so, to use all the processors on a single machine, set your
 #-- ppn (processors per node) to 20.
-#PBS -l nodes=2:ppn=10,walltime=40:00:00 
+#PBS -l nodes=3:ppn=15,walltime=40:00:00 
 #-- Indicate if\when you want to receive email about your job
 #-- The directive below sends email if the job is (a) aborted, 
 #-- when it (b) begins, and when it (e) ends
@@ -40,23 +40,23 @@ module load samtools/1.3.1
 module load picard/2.4.1
 module load python/3.5.2
 
-# #create working directory
-# mkdir -p /scratch/rlk0015/Telag/Dec2017Results/PE/Genome_WorkingDirectory
-# echo "RLK_report: directory created: /scratch/rlk0015/Telag/Dec2017Results/PE/Genome_WorkingDirectory"
-# 
-# # copy over clean PE fastq files
-# cd /scratch/rlk0015/Telag/Dec2017Results/PE/PE_CleanReads
-# ls *_paired.fastq | parallel -j+0  --eta 'cp {} /scratch/rlk0015/Telag/Dec2017Results/PE/Genome_WorkingDirectory'
-# echo "RLK_report: clean PE fastq files copied to /scratch/rlk0015/Telag/Dec2017Results/PE/Genome_WorkingDirectory"
+#create working directory
+mkdir -p /scratch/rlk0015/Telag/Dec2017Results/PE/Transcriptome_WorkingDirectory
+echo "RLK_report: directory created: /scratch/rlk0015/Telag/Dec2017Results/PE/Transcriptome_WorkingDirectory"
+
+# copy over clean PE fastq files
+cd /scratch/rlk0015/Telag/Dec2017Results/PE/PE_CleanReads
+ls *_paired.fastq | parallel -j+0  --eta 'cp {} /scratch/rlk0015/Telag/Dec2017Results/PE/Transcriptome_WorkingDirectory'
+echo "RLK_report: clean PE fastq files copied to /scratch/rlk0015/Telag/Dec2017Results/PE/Transcriptome_WorkingDirectory"
 
 # move to working directory
-cd /scratch/rlk0015/Telag/Dec2017Results/PE/Genome_WorkingDirectory
+cd /scratch/rlk0015/Telag/Dec2017Results/PE/Transcriptome_WorkingDirectory
 
-# #copy the reference to your current directory
-# cp /home/rlk0015/SeqCap/code/References/Genome.fa .
-echo "RLK_report: reference copy and unzip complete"
+copy the reference to your current directory
+cp /home/rlk0015/SeqCap/code/References/Transcriptome.fa .
+echo "RLK_report: reference copy complete"
 # index reference
-bwa index -p genome -a bwtsw Genome.fa
+bwa index -p transcriptome -a is Transcriptome.fa
 echo "RLK_report: reference index complete"
 
 # create list with each paired individual
@@ -66,7 +66,7 @@ ls | grep "_paired.fastq" | cut -d "_" -f 1 | sort | uniq > pairedMapList
 while read i
 do
 # map to ref
-bwa mem -t 4 -M genome "$i"*_R1_paired.fastq "$i"*_R2_paired.fastq > "$i"_doubles.sam
+bwa mem -t 4 -M transcriptome "$i"*_R1_paired.fastq "$i"*_R2_paired.fastq > "$i"_doubles.sam
 done<pairedMapList
 echo "RLK_report: map complete"
 
@@ -202,22 +202,22 @@ sed -i "s/$/\t$i/" $f; done
 done<depthList
 
 # Generate file with all depth information
-cat *_depth.txt > Genome_depth.txt
-for f in Genome_depth.txt
+cat *_depth.txt > Transcriptome_depth.txt
+for f in Transcriptome_depth.txt
 do
-sed -i "s/$/\tGenome/" $f; done
+sed -i "s/$/\tTranscriptome/" $f; done
 
 # Create file with avg depth per exon using Randy's python script
-cp /home/rlk0015/SeqCap/pythonScripts/Genome_avgDepth.py .
-python Genome_avgDepth.py Genome_depth.txt Genome_avgDepth.txt
+cp /home/rlk0015/SeqCap/pythonScripts/Transcriptome_avgDepth.py .
+python Transcriptome_avgDepth.py Transcriptome_depth.txt Transcriptome_avgDepth.txt
 
 # make results directory & move results
-mkdir -p /home/rlk0015/SeqCap/Dec2017Results/PE/Genome_WorkingDirectory/stats
-mkdir -p /home/rlk0015/SeqCap/Dec2017Results/PE/Genome_WorkingDirectory/counts
-mkdir -p /home/rlk0015/SeqCap/Dec2017Results/PE/Genome_WorkingDirectory/avgDepth
+mkdir -p /home/rlk0015/SeqCap/Dec2017Results/PE/Transcriptome_WorkingDirectory/stats
+mkdir -p /home/rlk0015/SeqCap/Dec2017Results/PE/Transcriptome_WorkingDirectory/counts
+mkdir -p /home/rlk0015/SeqCap/Dec2017Results/PE/Transcriptome_WorkingDirectory/avgDepth
 
 # cp results to respective directories
-cp *stats.txt /home/rlk0015/SeqCap/Dec2017Results/PE/Genome_WorkingDirectory/stats
-cp *counts.txt /home/rlk0015/SeqCap/Dec2017Results/PE/Genome_WorkingDirectory/counts
-cp *depth.txt /home/rlk0015/SeqCap/Dec2017Results/PE/Genome_WorkingDirectory/avgDepth
+cp *stats.txt /home/rlk0015/SeqCap/Dec2017Results/PE/Transcriptome_WorkingDirectory/stats
+cp *counts.txt /home/rlk0015/SeqCap/Dec2017Results/PE/Transcriptome_WorkingDirectory/counts
+cp *depth.txt /home/rlk0015/SeqCap/Dec2017Results/PE/Transcriptome_WorkingDirectory/avgDepth
 
