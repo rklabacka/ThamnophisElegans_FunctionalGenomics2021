@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #Give job a name
-#PBS -N FullScript_June2019
+#PBS -N FullScript_May2020
 
 #-- We recommend passing your environment variables down to the
 #-- compute nodes with -V, but this is optional
@@ -46,62 +46,61 @@ module load htslib/1.3.3
 module load gatk/4.0.10.1
 
 #create working directory ###
-mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory
+mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory
 # DNA
-mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/assembledReads
-mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/rawReadsDNA
-mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/cleanReadsDNA
-mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsDNA
+mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/assembledReads
+mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/rawReadsDNA
+mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/cleanReadsDNA
+mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsDNA
 # RNA
-mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/rawReadsRNA
-mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/cleanReadsRNA
-mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsRNA
-echo "RLK_report: directory created: /scratch/rlk0015/Telag/Dec2018/WorkingDirectory with rawReads and cleanReads sub directories"
+mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/rawReadsRNA
+mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/cleanReadsRNA
+mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsRNA
+# Utilities
+mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/References
+echo "RLK_report: directory created: /scratch/rlk0015/Telag/May2020/WorkingDirectory with rawReads and cleanReads sub directories"
 
-#### The following is commented out because I already have cleaned reads in the HybPiperContigs working directory. Remove comment when publishing ####
-# -----------------------------------------------------------------------------------
+# ------ For optimization purposes we'll just work with a couple of individuals, uncomment when performing complete script ----------#
 # ### copy raw data to scratch ###
-# cd /scratch/rlk0015/Telag/rawReadsDNA
-# ls HTAdapter*.fastq.gz | parallel -j+0  --eta 'cp {} /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/rawReadsDNA'
-# 
-# ### quality check ###
-# cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/rawReadsDNA
-# ls *.fastq | time parallel -j+0 --eta 'fastqc {}'
-# 
-# ### copy over adapter file ###
-# cp /home/rlk0015/SeqCap/code/References/adapters.fa /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/rawReadsDNA
-# 
-# ### paired-end trimming ###
-# ls | grep "fastq.gz" | cut -d "_" -f 1,2 | sort | uniq > PE_TrimmList
-# while read i
+# cd /home/shared/tss0019_lab/SeqCap_GarterSnake2012/
+# for i in {1..96}
 # do
-# java -jar /tools/trimmomatic-0.36/trimmomatic-0.36.jar PE -threads 6 -phred33 /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/rawReadsDNA/"$i"*_R1*.fastq.gz /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/rawReadsDNA/"$i"*_R2*.fastq.gz /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/cleanReadsDNA/"$i"_R1_paired.fastq.gz /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/cleanReadsDNA/"$i"_R1_unpaired.fastq.gz /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/cleanReadsDNA/"$i"_R2_paired.fastq.gz /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/cleanReadsDNA/"$i"_R2_unpaired.fastq.gz ILLUMINACLIP:adapters.fa:2:30:10 LEADING:25 TRAILING:25 SLIDINGWINDOW:6:30 MINLEN:36
-# done<PE_TrimmList
-# ### quality check ###
-# cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/cleanReadsDNA/
-# ls *paired.fastq.gz | grep "paired.fastq.gz" | time parallel -j+0 --eta 'fastqc {}'
-# -----------------------------------------------------------------------------------
+#   cp Sample_HTAdapter"$i"/*.fastq.gz /scratch/rlk0015/Telag/May2020/WorkingDirectory/rawReadsDNA
+# done
+# -----------------------------------------------------------------------------------------------------------------------------------#
+### perform initial quality check ###
+cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/rawReadsDNA
+ls *.fastq | time parallel -j+0 --eta 'fastqc {}'
+multiqc .
 
-#### ************** COPY STUFF OVER ************** ####
-# Copy cleaned reads over
-# ---------------------------
-# DONE:
-# cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory_HybPiperContigs_T2/cleanReadsDNA
-# ls *.fastq | parallel -j+0  --eta 'cp {} /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/cleanReadsDNA'
+### copy over adapter file ###
+cp /home/rlk0015/SeqCap/code/References/adapters.fa /scratch/rlk0015/Telag/May2020/WorkingDirectory/References
+
+### paired-end trimming ###
+ls | grep "fastq.gz" | cut -d "_" -f 1,2 | sort | uniq > PE_TrimmList
+while read i
+do
+java -jar /tools/trimmomatic-0.36/trimmomatic-0.36.jar PE -threads 6 -phred33 /scratch/rlk0015/Telag/May2020/WorkingDirectory/rawReadsDNA/"$i"*_R1*.fastq.gz /scratch/rlk0015/Telag/May2020/WorkingDirectory/rawReadsDNA/"$i"*_R2*.fastq.gz /scratch/rlk0015/Telag/May2020/WorkingDirectory/cleanReadsDNA/"$i"_R1_paired.fastq.gz /scratch/rlk0015/Telag/May2020/WorkingDirectory/cleanReadsDNA/"$i"_R1_unpaired.fastq.gz /scratch/rlk0015/Telag/May2020/WorkingDirectory/cleanReadsDNA/"$i"_R2_paired.fastq.gz /scratch/rlk0015/Telag/May2020/WorkingDirectory/cleanReadsDNA/"$i"_R2_unpaired.fastq.gz ILLUMINACLIP:adapters.fa:2:30:10 LEADING:25 TRAILING:25 SLIDINGWINDOW:6:30 MINLEN:36
+done<PE_TrimmList
+### perform second quality check ###
+cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/cleanReadsDNA/
+ls *paired.fastq.gz | grep "paired.fastq.gz" | time parallel -j+0 --eta 'fastqc {}'
+
 # ---------------------------
 # Copy clean RNA reads over
 # ---------------------------
-# Don't need for now (already mapped)
+# ------ For optimization purposes we'll just work with a couple of individuals, uncomment when performing complete script ----------#
 # cd /scratch/GarterSnake/RNAseq_2012Data/CleanedData
-# ls SRR*.fastq | parallel -j+0 --eta 'cp {} /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/cleanReadsRNA'
-# mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/Report/RNAseq_2012copied
+# ls SRR*.fastq | parallel -j+0 --eta 'cp {} /scratch/rlk0015/Telag/May2020/WorkingDirectory/cleanReadsRNA'
+# mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/Report/RNAseq_2012copied
 # cd /scratch/GarterSnake/RNAseq_2008Data/CleanedData
-# ls SRR*.fastq | parallel -j+0 --eta 'cp {} /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/cleanReadsRNA'
-# mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/Report/RNAseq_2008copied
+# ls SRR*.fastq | parallel -j+0 --eta 'cp {} /scratch/rlk0015/Telag/May2020/WorkingDirectory/cleanReadsRNA'
+# mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/Report/RNAseq_2008copied
 # # Copy mapped reads over
-# cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory_HybPiperContigs_T2/mappedReadsRNA
-# ls *.sam | parallel -j+0  --eta 'cp {} /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsRNA'
-# mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/Report/mappedReadsRNA_copied
+# cd /scratch/rlk0015/Telag/May2020/WorkingDirectory_HybPiperContigs_T2/mappedReadsRNA
+# ls *.sam | parallel -j+0  --eta 'cp {} /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsRNA'
+# mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/Report/mappedReadsRNA_copied
+# -----------------------------------------------------------------------------------------------------------------------------------#
 #### ********************************************* ####
 
 # ºººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººº #
@@ -113,15 +112,15 @@ echo "RLK_report: directory created: /scratch/rlk0015/Telag/Dec2018/WorkingDirec
 # ºººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººº #
 # ºººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººº #
 # # -------- HybPiper Assembly -------- ###
-# cp /home/rlk0015/SeqCap/code/References/Transcripts.fa /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/assembledReads
-# cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/cleanReadsDNA
+# cp /home/rlk0015/SeqCap/code/References/Transcripts.fa /scratch/rlk0015/Telag/May2020/WorkingDirectory/assembledReads
+# cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/cleanReadsDNA
 # ls | grep "fastq" | cut -d "_" -f 1 | sort | uniq > cleanReadsList
 # while read i
 # do
-# reads_first.py -b /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/assembledReads/Transcripts.fa -r /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/cleanReadsDNA/"$i"*_R*_paired.fastq --bwa --cpu 20 --prefix /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/assembledReads/HybPiperAssembly
+# reads_first.py -b /scratch/rlk0015/Telag/May2020/WorkingDirectory/assembledReads/Transcripts.fa -r /scratch/rlk0015/Telag/May2020/WorkingDirectory/cleanReadsDNA/"$i"*_R*_paired.fastq --bwa --cpu 20 --prefix /scratch/rlk0015/Telag/May2020/WorkingDirectory/assembledReads/HybPiperAssembly
 # done<cleanReadsList
 # # Create test_seq_lengths.txt file (for data visualization)
-# cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/assembledReads
+# cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/assembledReads
 # echo "HybPiperAssembly" >> names.txt
 # python /tools/hybpiper-1/get_seq_lengths.py Transcripts.fa names.txt dna > test_seq_lengths.txt
 # # Retrieve Assembled Sequences
@@ -143,77 +142,77 @@ echo "RLK_report: directory created: /scratch/rlk0015/Telag/Dec2018/WorkingDirec
 # ºººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººº #
 # ºººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººº #
 
-# ------------------------------------------------------------------
+# ----------------- Trim RNA-seq reads -----------------------------
 # Tonia's criteria for trimming RNA-Seq reads:
-############ 2008 Data Trimmomatic #############
-# java -jar /tools/trimmomatic-0.37/bin/trimmomatic.jar SE -phred33 "$i"_1.fastq  /scratch/GarterSnake/RNAseq_2008Data/CleanedData/"$i"_cleaned.fastq  LEADING:20 TRAILING:20 SLIDINGWINDOW:6:20 MINLEN:36 2012 samples are PE 100 bp reads.
-############ 2012 Trimmomatic #############
-# java -jar /tools/trimmomatic-0.37/bin/trimmomatic.jar PE  -phred33 "$i"_1.fastq "$i"_2.fastq "$i"_1_paired.fastq "$i"_1_unpaired.fastq "$i"_2_paired.fastq "$i"_2_unpaired.fastq LEADING:30 TRAILING:30 SLIDINGWINDOW:6:30 MINLEN:36
+########## 2008 Data Trimmomatic #############
+java -jar /tools/trimmomatic-0.37/bin/trimmomatic.jar SE -phred33 "$i"_1.fastq  /scratch/GarterSnake/RNAseq_2008Data/CleanedData/"$i"_cleaned.fastq  LEADING:20 TRAILING:20 SLIDINGWINDOW:6:20 MINLEN:36 2012 samples are PE 100 bp reads.
+########## 2012 Trimmomatic #############
+java -jar /tools/trimmomatic-0.37/bin/trimmomatic.jar PE  -phred33 "$i"_1.fastq "$i"_2.fastq "$i"_1_paired.fastq "$i"_1_unpaired.fastq "$i"_2_paired.fastq "$i"_2_unpaired.fastq LEADING:30 TRAILING:30 SLIDINGWINDOW:6:30 MINLEN:36
 # ------------------------------------------------------------------
 
 # ******************************* Completed the following, uncommment for publication ************************************
 #  # Quality check on RNA-Seq data
-#  cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/cleanReadsRNA
+#  cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/cleanReadsRNA
 #  ls *.fastq | grep "fastq" | time parallel -j+0 --eta 'fastqc {}'
 #  
 ### ***  -------------------  MAP DNA TO REFERENCE  ------------------ *** ###
-# mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsDNA/HybPiper
-# mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsDNA/Transcripts
+# mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsDNA/HybPiper
+# mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsDNA/Transcripts
 ### copy the reference to mapped reads directory ###
-# cp /home/rlk0015/SeqCap/code/References/HybPiper_Transcripts_Round1.fasta /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsDNA/HybPiper/HybPiperContigs.fa
-# cp /home/rlk0015/SeqCap/code/References/Transcripts.fa /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsDNA/Transcripts/Transcripts.fa
+# cp /home/rlk0015/SeqCap/code/References/HybPiper_Transcripts_Round1.fasta /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsDNA/HybPiper/HybPiperContigs.fa
+# cp /home/rlk0015/SeqCap/code/References/Transcripts.fa /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsDNA/Transcripts/Transcripts.fa
 # echo "RLK_report: reference copy complete"
 # index reference
-# cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsDNA/HybPiper
+# cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsDNA/HybPiper
 # bwa index -p hybPiperContigs -a is HybPiperContigs.fa
-# cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsDNA/Transcripts
+# cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsDNA/Transcripts
 # bwa index -p transcripts -a is Transcripts.fa
 # echo "RLK_report: reference index complete"
 # create list with each paired individual
-# cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/cleanReadsDNA
-# ls | grep "_paired.fastq" | cut -d "_" -f 1 | sort | uniq > /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsDNA/pairedMapList
-# cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsDNA
+# cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/cleanReadsDNA
+# ls | grep "_paired.fastq" | cut -d "_" -f 1 | sort | uniq > /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsDNA/pairedMapList
+# cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsDNA
 #  # while loop through the names in pairedMapList
 # while read i
 # do
 # ### map to ref hybPiperContigs ###
-# bwa mem -t 4 -M HybPiper/hybPiperContigs /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/cleanReadsDNA/"$i"_*R1_paired.fastq /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/cleanReadsDNA/"$i"_*R2_paired.fastq > /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsDNA/HybPiper/"$i"_hybPiper_doubles.sam
+# bwa mem -t 4 -M HybPiper/hybPiperContigs /scratch/rlk0015/Telag/May2020/WorkingDirectory/cleanReadsDNA/"$i"_*R1_paired.fastq /scratch/rlk0015/Telag/May2020/WorkingDirectory/cleanReadsDNA/"$i"_*R2_paired.fastq > /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsDNA/HybPiper/"$i"_hybPiper_doubles.sam
 ### map to ref Transcripts ###
-# bwa mem -t 4 -M Transcripts/transcripts /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/cleanReadsDNA/"$i"_*R1_paired.fastq /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/cleanReadsDNA/"$i"_*R2_paired.fastq > /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsDNA/Transcripts/"$i"_transcripts_doubles.sam
+# bwa mem -t 4 -M Transcripts/transcripts /scratch/rlk0015/Telag/May2020/WorkingDirectory/cleanReadsDNA/"$i"_*R1_paired.fastq /scratch/rlk0015/Telag/May2020/WorkingDirectory/cleanReadsDNA/"$i"_*R2_paired.fastq > /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsDNA/Transcripts/"$i"_transcripts_doubles.sam
 # done<pairedMapList
 #  echo "RLK_report: map complete"
 #  
 #  # ********************* THIS IS COMPLETE (uncomment when publishing) ***************************
 #  # ### ***  -------------------  MAP RNA TO REFERENCE  ------------------ *** ###
 # ### copy the reference to mapped reads directory ###
-# cp /home/rlk0015/SeqCap/code/References/TranscriptomePlusTranscripts.fa /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsRNA/Transcriptome.fa
+# cp /home/rlk0015/SeqCap/code/References/TranscriptomePlusTranscripts.fa /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsRNA/Transcriptome.fa
 # echo "RLK_report: reference copy complete"
 # # index reference
-# cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsRNA
+# cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsRNA
 # bwa index -p transcriptome -a is Transcriptome.fa
 # echo "RLK_report: reference index complete"
 # # create list with each paired individual
-# cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/cleanReadsRNA
-# ls | grep "_cleaned.fastq" | cut -d "_" -f 1 | sort | uniq > /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsRNA/singleEndMapList
-# ls | grep "_paired.fastq" | cut -d "_" -f 1 | sort | uniq > /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsRNA/pairedEndMapList
-# cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsRNA
+# cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/cleanReadsRNA
+# ls | grep "_cleaned.fastq" | cut -d "_" -f 1 | sort | uniq > /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsRNA/singleEndMapList
+# ls | grep "_paired.fastq" | cut -d "_" -f 1 | sort | uniq > /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsRNA/pairedEndMapList
+# cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsRNA
 # # while loop through the names in pairedEndMapList
 # while read i
 # do
 # ### PAIRED-END MAPPING ###
-# bwa mem -t 4 -M transcriptome /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/cleanReadsRNA/"$i"*_1_paired.fastq /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/cleanReadsRNA/"$i"*_2_paired.fastq > /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsRNA/"$i"_doubles.sam
-# done</scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsRNA/pairedEndMapList
+# bwa mem -t 4 -M transcriptome /scratch/rlk0015/Telag/May2020/WorkingDirectory/cleanReadsRNA/"$i"*_1_paired.fastq /scratch/rlk0015/Telag/May2020/WorkingDirectory/cleanReadsRNA/"$i"*_2_paired.fastq > /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsRNA/"$i"_doubles.sam
+# done</scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsRNA/pairedEndMapList
 # echo "RLK_report: paired map complete"
 # ### SINGLE-END MAPPING ###
 # while read i
 # do
-# bwa mem -t 4 -M transcriptome /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/cleanReadsRNA/"$i"*.fastq > /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsRNA/"$i"_doubles.sam
-# done</scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsRNA/singleEndMapList
+# bwa mem -t 4 -M transcriptome /scratch/rlk0015/Telag/May2020/WorkingDirectory/cleanReadsRNA/"$i"*.fastq > /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsRNA/"$i"_doubles.sam
+# done</scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsRNA/singleEndMapList
 #  # 
 #  # ***********************************************************************
 #  
 #  ### change names to match population sampling ###
-#  cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsDNA/HybPiper
+#  cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsDNA/HybPiper
 #  mv HTAdapter1_hybPiper_doubles.sam ELF01_hybPiper_doubles.sam
 #  mv HTAdapter2_hybPiper_doubles.sam ELF02_hybPiper_doubles.sam
 #  mv HTAdapter3_hybPiper_doubles.sam ELF03_hybPiper_doubles.sam
@@ -409,7 +408,7 @@ echo "RLK_report: directory created: /scratch/rlk0015/Telag/Dec2018/WorkingDirec
 #  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM20_hybPiper_doubles.sam" O="SUM20_hybPiper_IDed.sam" RGPU="SUM" RGSM="SUM_643-2" RGPL="illumina" RGLB="SeqCap2012"
 #  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM21_hybPiper_doubles.sam" O="SUM21_hybPiper_IDed.sam" RGPU="SUM" RGSM="SUM_RP53-4" RGPL="illumina" RGLB="SeqCap2012"
 #  
-#  cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsDNA/Transcripts
+#  cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsDNA/Transcripts
 #  mv HTAdapter1_transcripts_doubles.sam ELF01_transcripts_doubles.sam
 #  mv HTAdapter2_transcripts_doubles.sam ELF02_transcripts_doubles.sam
 #  mv HTAdapter3_transcripts_doubles.sam ELF03_transcripts_doubles.sam
@@ -607,7 +606,7 @@ echo "RLK_report: directory created: /scratch/rlk0015/Telag/Dec2018/WorkingDirec
 #  echo "RLK_report: readGrouping complete"
 # 
 # # RNA Seq
-# cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsRNA
+# cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsRNA
 # java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629651_doubles.sam" O="SRR629651_IDed.sam" RGPU="SUM" RGSM="SAMN01823448" RGPL="illumina" RGLB="RNASeq2012" 
 # java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629599_doubles.sam" O="SRR629599_IDed.sam" RGPU="SUM" RGSM="SAMN01823447" RGPL="illumina" RGLB="RNASeq2012" 
 # java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629652_doubles.sam" O="SRR629652_IDed.sam" RGPU="SUM" RGSM="SAMN01823449" RGPL="illumina" RGLB="RNASeq2012" 
@@ -660,29 +659,29 @@ echo "RLK_report: directory created: /scratch/rlk0015/Telag/Dec2018/WorkingDirec
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 # &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& Following is complete: &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 # # HybPiper
-# cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsDNA/HybPiper
+# cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsDNA/HybPiper
 # # make .sam files list for Samtools processing
 # ls | grep "_IDed.sam" |cut -d "_" -f 1 | sort | uniq  > samList
 # # make result directories
-# mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK
-# mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperSNPTables
-# mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperSequenceTables
+# mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK
+# mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperSNPTables
+# mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperSequenceTables
 # # copy reference for SNP calling
-# cp /home/rlk0015/SeqCap/code/References/HybPiper_Transcripts_Round1.fasta /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa
+# cp /home/rlk0015/SeqCap/code/References/HybPiper_Transcripts_Round1.fasta /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa
 # # index ref
-# samtools faidx /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa
+# samtools faidx /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa
 # java -Xmx8g -jar /tools/picard-tools-2.4.1/CreateSequenceDictionary.jar \
-#     R= /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa \
-#     O= /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/HybPiperContigs.dict
-# cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsDNA/HybPiper
+#     R= /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa \
+#     O= /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/HybPiperContigs.dict
+# cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsDNA/HybPiper
 # while read i;
 # do
 # # convert .sam to .bam & sort ###
-# samtools view -@ 2 -bS /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsDNA/HybPiper/"$i"*_IDed.sam | samtools sort -@ 2 -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsDNA/HybPiper/"$i"_sorted.bam
+# samtools view -@ 2 -bS /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsDNA/HybPiper/"$i"*_IDed.sam | samtools sort -@ 2 -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsDNA/HybPiper/"$i"_sorted.bam
 # ### remove duplicates ###
 # java -Xmx8g -jar /tools/picard-tools-2.4.1/MarkDuplicates.jar \
-#     INPUT=/scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsDNA/HybPiper/"$i"_sorted.bam \
-#     OUTPUT=/scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/"$i"_dupsRemoved.bam \
+#     INPUT=/scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsDNA/HybPiper/"$i"_sorted.bam \
+#     OUTPUT=/scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/"$i"_dupsRemoved.bam \
 #     METRICS_FILE=DuplicationMetrics \
 #     CREATE_INDEX=true \
 #     VALIDATION_STRINGENCY=SILENT \
@@ -690,19 +689,19 @@ echo "RLK_report: directory created: /scratch/rlk0015/Telag/Dec2018/WorkingDirec
 #     ASSUME_SORTED=TRUE \
 #     REMOVE_DUPLICATES=TRUE
 # #index sorted bam
-# samtools index /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/"$i"_dupsRemoved.bam
+# samtools index /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/"$i"_dupsRemoved.bam
 # 
 # ## Calculate Stats ##
-# cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory_ReducedTranscriptome/mappedReadsDNA/HybPiper
+# cd /scratch/rlk0015/Telag/May2020/WorkingDirectory_ReducedTranscriptome/mappedReadsDNA/HybPiper
 # # make stats folder
-# mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperStats
+# mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperStats
 # # tally mapped reads & calcuate the stats
-# samtools idxstats /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/"$i"_dupsRemoved.bam > /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperStats/"$i"_counts.txt
-# samtools flagstat /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/"$i"_dupsRemoved.bam > /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperStats/"$i"_stats.txt
-# samtools depth /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/"$i"_dupsRemoved.bam > /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperStats/"$i"_depth.txt
+# samtools idxstats /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/"$i"_dupsRemoved.bam > /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperStats/"$i"_counts.txt
+# samtools flagstat /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/"$i"_dupsRemoved.bam > /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperStats/"$i"_stats.txt
+# samtools depth /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/"$i"_dupsRemoved.bam > /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperStats/"$i"_depth.txt
 # done<samList
 # 
-# cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperStats
+# cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperStats
 # ls | grep "_depth.txt" | cut -d "_" -f 1 | sort | uniq > depthList
 # # Add individual name to each line in depth file
 # while read i
@@ -724,44 +723,44 @@ echo "RLK_report: directory created: /scratch/rlk0015/Telag/Dec2018/WorkingDirec
 # 
 # #  ************************ Commented out because I don't want to worry about this right now- needs to be done eventually *******
 # #  # make results directory & move results
-# #  mkdir -p /home/rlk0015/SeqCap/Dec2018/stats
-# #  mkdir -p /home/rlk0015/SeqCap/Dec2018/counts
-# #  mkdir -p /home/rlk0015/SeqCap/Dec2018/avgDepth
+# #  mkdir -p /home/rlk0015/SeqCap/May2020/stats
+# #  mkdir -p /home/rlk0015/SeqCap/May2020/counts
+# #  mkdir -p /home/rlk0015/SeqCap/May2020/avgDepth
 # #  
 # #  # cp results to respective directories
-# #  cp *stats.txt /home/rlk0015/SeqCap/Dec2018/stats
-# #  cp *counts.txt /home/rlk0015/SeqCap/Dec2018/counts
-# #  cp *depth.txt /home/rlk0015/SeqCap/Dec2018/avgDepth
+# #  cp *stats.txt /home/rlk0015/SeqCap/May2020/stats
+# #  cp *counts.txt /home/rlk0015/SeqCap/May2020/counts
+# #  cp *depth.txt /home/rlk0015/SeqCap/May2020/avgDepth
 # #  *****************************************************************************************************
 # &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
 
 # ### move to GATK directory ###
-# cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/
+# cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/
 # ### merge .bam files ###
-# samtools merge -f /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/dupsRemoved.bam /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/*_dupsRemoved.bam
+# samtools merge -f /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/dupsRemoved.bam /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/*_dupsRemoved.bam
 # ### index the merged .bam ###
-# samtools index /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/dupsRemoved.bam
+# samtools index /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/dupsRemoved.bam
 # # call indels
 # java -Xmx16g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
 #     -T RealignerTargetCreator \
-#     -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa \
-#     -I /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/dupsRemoved.bam \
-#     -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/indelsCalled.intervals
+#     -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa \
+#     -I /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/dupsRemoved.bam \
+#     -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/indelsCalled.intervals
 # # realign indels
 # java -Xmx16g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
 #     -T IndelRealigner \
-#     -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa \
-#     -I /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/dupsRemoved.bam \
-#     -targetIntervals /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/indelsCalled.intervals \
+#     -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa \
+#     -I /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/dupsRemoved.bam \
+#     -targetIntervals /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/indelsCalled.intervals \
 #     -LOD 3.0 \
-#     -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/indelsRealigned.bam
+#     -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/indelsRealigned.bam
 # ## -- CALL SNPS -- ##
 # java -Xmx16g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
 #     -T UnifiedGenotyper \
-#     -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa \
-#     -I /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/indelsRealigned.bam \
-#     -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/calledSNPs.vcf \
+#     -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa \
+#     -I /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/indelsRealigned.bam \
+#     -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/calledSNPs.vcf \
 #     -gt_mode DISCOVERY \
 #     -ploidy 2 \
 #     -stand_call_conf 30 \
@@ -770,47 +769,47 @@ echo "RLK_report: directory created: /scratch/rlk0015/Telag/Dec2018/WorkingDirec
 # # annotate variants
 # java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
 #     -T VariantAnnotator \
-#     -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa \
-#     -I /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/indelsRealigned.bam \
+#     -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa \
+#     -I /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/indelsRealigned.bam \
 #     -G StandardAnnotation \
-#     -V:variant,VCF /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/calledSNPs.vcf \
+#     -V:variant,VCF /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/calledSNPs.vcf \
 #     -XA SnpEff \
-#     -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/annotatedSNPs.vcf \
+#     -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/annotatedSNPs.vcf \
 #     -rf BadCigar
 # # annotate indels
 # java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
 #     -T UnifiedGenotyper \
-#     -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa \
-#     -I /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/indelsRealigned.bam \
+#     -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa \
+#     -I /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/indelsRealigned.bam \
 #     -gt_mode DISCOVERY \
 #     -glm INDEL \
-#     -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/annotatedIndels.vcf \
+#     -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/annotatedIndels.vcf \
 #     -stand_call_conf 30 \
 #     -stand_emit_conf 10 \
 #     -rf BadCigar
 # # mask indels
 # java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
 #     -T VariantFiltration \
-#     -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa \
-#     -V /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/calledSNPs.vcf \
-#     --mask /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/annotatedIndels.vcf \
-#     -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/SNPsMaskedIndels.vcf/ \
+#     -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa \
+#     -V /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/calledSNPs.vcf \
+#     --mask /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/annotatedIndels.vcf \
+#     -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/SNPsMaskedIndels.vcf/ \
 #     -rf BadCigar
 # # restrict to high-quality variant calls
-# cat /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/SNPsMaskedIndels.vcf | grep 'PASS\|^#' > /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/qualitySNPs.vcf
+# cat /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/SNPsMaskedIndels.vcf | grep 'PASS\|^#' > /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/qualitySNPs.vcf
 # # read-backed phasing
 # java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
 #     -T ReadBackedPhasing \
-#     -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa \
-#     -I /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/indelsRealigned.bam \
-#     --variant /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/qualitySNPs.vcf \
-#     -L /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/qualitySNPs.vcf \
-#     -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/phasedSNPs.vcf \
+#     -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa \
+#     -I /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/indelsRealigned.bam \
+#     --variant /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/qualitySNPs.vcf \
+#     -L /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/qualitySNPs.vcf \
+#     -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/phasedSNPs.vcf \
 #     --phaseQualityThresh 20.0 \
 #     -rf BadCigar
 # 
 # ## Make Sample List from VCF ##
-# cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK
+# cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK
 # bcftools query -l phasedSNPs.vcf > VcfSampleList
 # 
 # while read i;
@@ -818,24 +817,24 @@ echo "RLK_report: directory created: /scratch/rlk0015/Telag/Dec2018/WorkingDirec
 # # VCF for each sample
 # java -Xmx2g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
 #     -T SelectVariants \
-#     -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa \
-#     --variant /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/phasedSNPs.vcf \
-#     -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/"$i"_phasedSNPs.vcf \
+#     -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa \
+#     --variant /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/phasedSNPs.vcf \
+#     -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/"$i"_phasedSNPs.vcf \
 #     -sn "$i" \
 #     -rf BadCigar
 # # make SNPs table
 # java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
 #     -T VariantsToTable \
-#     -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa \
-#     -V /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/"$i"_phasedSNPs.vcf \
+#     -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa \
+#     -V /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/"$i"_phasedSNPs.vcf \
 #     -F CHROM -F POS -F QUAL -GF GT -GF DP -GF HP -GF AD \
-#     -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperSNPTables/"$i"_tableSNPs.txt \
+#     -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperSNPTables/"$i"_tableSNPs.txt \
 #     -rf BadCigar
 # # Add phased SNPs to reference and filter
 # python /home/rlk0015/SeqCap/seqcap_pop/bin/add_phased_snps_to_seqs_filter.py \
-#     /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa \
-#     /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperSNPTables/"$i"_tableSNPs.txt \
-#     /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/HybPiperSequenceTables/"$i"_tableSequences.txt \
+#     /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperGATK/HybPiperContigs.fa \
+#     /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperSNPTables/"$i"_tableSNPs.txt \
+#     /scratch/rlk0015/Telag/May2020/WorkingDirectory/HybPiperSequenceTables/"$i"_tableSequences.txt \
 #     1
 # done<VcfSampleList
 
@@ -852,30 +851,30 @@ echo "RLK_report: directory created: /scratch/rlk0015/Telag/Dec2018/WorkingDirec
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 # &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& Following is complete &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-# && cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsDNA/Transcripts
+# && cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsDNA/Transcripts
 # && # make .sam files list for Samtools processing
 # && ls | grep "_IDed.sam" |cut -d "_" -f 1 | sort | uniq  > samList
 # && # make result directories
-mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK
-mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/Sequences
-# && mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsSNPTables
-# && mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsSequenceTables
+mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK
+mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/Sequences
+# && mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsSNPTables
+# && mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsSequenceTables
 # && # copy reference for SNP calling
-cp /home/rlk0015/SeqCap/code/References/Transcripts.fa /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa
+cp /home/rlk0015/SeqCap/code/References/Transcripts.fa /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/Transcripts.fa
 # && # index ref
-# && samtools faidx /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa
+# && samtools faidx /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/Transcripts.fa
 # && java -Xmx8g -jar /tools/picard-tools-2.4.1/CreateSequenceDictionary.jar \
-# &&     R= /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
-# &&     O= /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.dict
-# && cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsDNA/Transcripts
+# &&     R= /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
+# &&     O= /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/Transcripts.dict
+# && cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsDNA/Transcripts
 # && while read i;
 # && do
 # && # convert .sam to .bam & sort ###
-# && samtools view -@ 2 -bS /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsDNA/Transcripts/"$i"*_IDed.sam | samtools sort -@ 2 -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsDNA/Transcripts/"$i"_sorted.bam
+# && samtools view -@ 2 -bS /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsDNA/Transcripts/"$i"*_IDed.sam | samtools sort -@ 2 -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsDNA/Transcripts/"$i"_sorted.bam
 # && ### remove duplicates ###
 # && java -Xmx8g -jar /tools/picard-tools-2.4.1/MarkDuplicates.jar \
-# &&     INPUT=/scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsDNA/Transcripts/"$i"_sorted.bam \
-# &&     OUTPUT=/scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/"$i"_dupsRemoved.bam \
+# &&     INPUT=/scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsDNA/Transcripts/"$i"_sorted.bam \
+# &&     OUTPUT=/scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/"$i"_dupsRemoved.bam \
 # &&     METRICS_FILE=DuplicationMetrics \
 # &&     CREATE_INDEX=true \
 # &&     VALIDATION_STRINGENCY=SILENT \
@@ -883,19 +882,19 @@ cp /home/rlk0015/SeqCap/code/References/Transcripts.fa /scratch/rlk0015/Telag/De
 # &&     ASSUME_SORTED=TRUE \
 # &&     REMOVE_DUPLICATES=TRUE
 # && #index sorted bam
-# && samtools index /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/"$i"_dupsRemoved.bam
+# && samtools index /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/"$i"_dupsRemoved.bam
 # && 
 # && ## Calculate Stats ##
-# && cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory_ReducedTranscriptome/mappedReadsDNA/Transcripts
+# && cd /scratch/rlk0015/Telag/May2020/WorkingDirectory_ReducedTranscriptome/mappedReadsDNA/Transcripts
 # && # make stats folder
-# && mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsStats
+# && mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsStats
 # && # tally mapped reads & calcuate the stats
-# && samtools idxstats /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/"$i"_dupsRemoved.bam > /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsStats/"$i"_counts.txt
-# && samtools flagstat /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/"$i"_dupsRemoved.bam > /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsStats/"$i"_stats.txt
-# && samtools depth /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/"$i"_dupsRemoved.bam > /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsStats/"$i"_depth.txt
+# && samtools idxstats /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/"$i"_dupsRemoved.bam > /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsStats/"$i"_counts.txt
+# && samtools flagstat /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/"$i"_dupsRemoved.bam > /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsStats/"$i"_stats.txt
+# && samtools depth /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/"$i"_dupsRemoved.bam > /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsStats/"$i"_depth.txt
 # && done<samList
 # && 
-# && cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsStats
+# && cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsStats
 # && ls | grep "_depth.txt" | cut -d "_" -f 1 | sort | uniq > depthList
 # && # Add individual name to each line in depth file
 # && while read i
@@ -917,26 +916,26 @@ cp /home/rlk0015/SeqCap/code/References/Transcripts.fa /scratch/rlk0015/Telag/De
 # && 
 # && #  ************************ Commented out because I don't want to worry about this right now- needs to be done eventually *******
 # && #  # make results directory & move results
-# && #  mkdir -p /home/rlk0015/SeqCap/Dec2018/stats
-# && #  mkdir -p /home/rlk0015/SeqCap/Dec2018/counts
-# && #  mkdir -p /home/rlk0015/SeqCap/Dec2018/avgDepth
+# && #  mkdir -p /home/rlk0015/SeqCap/May2020/stats
+# && #  mkdir -p /home/rlk0015/SeqCap/May2020/counts
+# && #  mkdir -p /home/rlk0015/SeqCap/May2020/avgDepth
 # && #  
 # && #  # cp results to respective directories
-# && #  cp *stats.txt /home/rlk0015/SeqCap/Dec2018/stats
-# && #  cp *counts.txt /home/rlk0015/SeqCap/Dec2018/counts
-# && #  cp *depth.txt /home/rlk0015/SeqCap/Dec2018/avgDepth
+# && #  cp *stats.txt /home/rlk0015/SeqCap/May2020/stats
+# && #  cp *counts.txt /home/rlk0015/SeqCap/May2020/counts
+# && #  cp *depth.txt /home/rlk0015/SeqCap/May2020/avgDepth
 # && #  *****************************************************************************************************
 # && 
 # && 
 # && ### move to GATK directory ###
-# && cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/
+# && cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/
 # && ### merge .bam files ###
-# && samtools merge -f /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/dupsRemoved.bam /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/*_dupsRemoved.bam
+# && samtools merge -f /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/dupsRemoved.bam /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/*_dupsRemoved.bam
 # && ### index the merged .bam ###
-# && samtools index /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/dupsRemoved.bam
+# && samtools index /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/dupsRemoved.bam
 # && ## -- CALL SNPS -- ##
 /tools/gatk-4.1.2.0/gatk --java-options "-Xmx16g" HaplotypeCaller\
-  -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
+  -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
   -I dupsRemoved.bam \
   -stand_emit_conf 10 \
   -stand_call_conf 30 \
@@ -945,47 +944,47 @@ cp /home/rlk0015/SeqCap/code/References/Transcripts.fa /scratch/rlk0015/Telag/De
 # annotate variants
 java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
 # &&     -T VariantAnnotator \
-# &&     -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
-# &&     -I /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/indelsRealigned.bam \
+# &&     -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
+# &&     -I /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/indelsRealigned.bam \
 # &&     -G StandardAnnotation \
-# &&     -V:variant,VCF /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/calledSNPs.vcf \
+# &&     -V:variant,VCF /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/calledSNPs.vcf \
 # &&     -XA SnpEff \
-# &&     -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/annotatedSNPs.vcf \
+# &&     -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/annotatedSNPs.vcf \
 # &&     -rf BadCigar
 # && # annotate indels
 # && java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
 # &&     -T UnifiedGenotyper \
-# &&     -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
-# &&     -I /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/indelsRealigned.bam \
+# &&     -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
+# &&     -I /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/indelsRealigned.bam \
 # &&     -gt_mode DISCOVERY \
 # &&     -glm INDEL \
-# &&     -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/annotatedIndels.vcf \
+# &&     -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/annotatedIndels.vcf \
 # &&     -stand_call_conf 30 \
 # &&     -stand_emit_conf 10 \
 # &&     -rf BadCigar
 # && # mask indels
 # && java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
 # &&     -T VariantFiltration \
-# &&     -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
-# &&     -V /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/calledSNPs.vcf \
-# &&     --mask /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/annotatedIndels.vcf \
-# &&     -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/SNPsMaskedIndels.vcf/ \
+# &&     -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
+# &&     -V /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/calledSNPs.vcf \
+# &&     --mask /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/annotatedIndels.vcf \
+# &&     -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/SNPsMaskedIndels.vcf/ \
 # &&     -rf BadCigar
 # && # restrict to high-quality variant calls
-# && cat /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/SNPsMaskedIndels.vcf | grep 'PASS\|^#' > /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/qualitySNPs.vcf
+# && cat /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/SNPsMaskedIndels.vcf | grep 'PASS\|^#' > /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/qualitySNPs.vcf
 # && # read-backed phasing
 # && java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
 # &&     -T ReadBackedPhasing \
-# &&     -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
-# &&     -I /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/indelsRealigned.bam \
-# &&     --variant /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/qualitySNPs.vcf \
-# &&     -L /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/qualitySNPs.vcf \
-# &&     -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/phasedSNPs.vcf \
+# &&     -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
+# &&     -I /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/indelsRealigned.bam \
+# &&     --variant /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/qualitySNPs.vcf \
+# &&     -L /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/qualitySNPs.vcf \
+# &&     -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/phasedSNPs.vcf \
 # &&     --phaseQualityThresh 20.0 \
 # &&     -rf BadCigar
 # && 
 # && ## Make Sample List from VCF ##
-# && cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK
+# && cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK
 # && bcftools query -l phasedSNPs.vcf > VcfSampleList
 # && 
 # && while read i;
@@ -993,24 +992,24 @@ java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
 # && # VCF for each sample
 # && java -Xmx2g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
 # &&     -T SelectVariants \
-# &&     -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
-# &&     --variant /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/phasedSNPs.vcf \
-# &&     -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/"$i"_phasedSNPs.vcf \
+# &&     -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
+# &&     --variant /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/phasedSNPs.vcf \
+# &&     -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/"$i"_phasedSNPs.vcf \
 # &&     -sn "$i" \
 # &&     -rf BadCigar
 # && # make SNPs table
 # && java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
 # &&     -T VariantsToTable \
-# &&     -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
-# &&     -V /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/"$i"_phasedSNPs.vcf \
+# &&     -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
+# &&     -V /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/"$i"_phasedSNPs.vcf \
 # &&     -F CHROM -F POS -F QUAL -GF GT -GF DP -GF HP -GF AD \
-# &&     -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsSNPTables/"$i"_tableSNPs.txt \
+# &&     -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsSNPTables/"$i"_tableSNPs.txt \
 # &&     -rf BadCigar
 # && # Add phased SNPs to reference and filter
 # && python /home/rlk0015/SeqCap/seqcap_pop/bin/add_phased_snps_to_seqs_filter.py \
-# &&     /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
-# &&     /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsSNPTables/"$i"_tableSNPs.txt \
-# &&     /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsSequenceTables/"$i"_tableSequences.txt \
+# &&     /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
+# &&     /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsSNPTables/"$i"_tableSNPs.txt \
+# &&     /scratch/rlk0015/Telag/May2020/WorkingDirectory/TranscriptsSequenceTables/"$i"_tableSequences.txt \
 # &&     1
 # && done<VcfSampleList
 # &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& End && block &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -1020,32 +1019,32 @@ java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ RNA SEQ BLOCK ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsRNA
+cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsRNA
 # +++++++++++++++++++++++++ Already done +++++++++++++++++++++++++++++
 # ++ # make .sam files list for Samtools processing
 # ++ ls | grep "_IDed.sam" |cut -d "_" -f 1 | sort | uniq  > samList
 # ++ # make result directories
-# ++ mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK
-# ++ mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNASNPTables
-# ++ mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNASequenceTables
+# ++ mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK
+# ++ mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNASNPTables
+# ++ mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNASequenceTables
 # ++ # copy reference for SNP calling
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-cp /home/rlk0015/SeqCap/code/References/TranscriptomePlusTranscripts.fa /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/Transcriptome.fa
+cp /home/rlk0015/SeqCap/code/References/TranscriptomePlusTranscripts.fa /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/Transcriptome.fa
 # index ref
-samtools faidx /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/Transcriptome.fa
+samtools faidx /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/Transcriptome.fa
 java -Xmx8g -jar /tools/picard-tools-2.4.1/CreateSequenceDictionary.jar \
-    R= /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/Transcriptome.fa \
-    O= /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/Transcriptome.dict
+    R= /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/Transcriptome.fa \
+    O= /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/Transcriptome.dict
 # =========================== Already done ===========================
-# == cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsRNA
+# == cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsRNA
 # == while read i;
 # == do
 # == # convert .sam to .bam & sort ###
-# == samtools view -@ 2 -bS /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsRNA/"$i"*_IDed.sam | samtools sort -@ 2 -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsRNA/"$i"_sorted.bam
+# == samtools view -@ 2 -bS /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsRNA/"$i"*_IDed.sam | samtools sort -@ 2 -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsRNA/"$i"_sorted.bam
 # == ### remove duplicates ###
 # == java -Xmx8g -jar /tools/picard-tools-2.4.1/MarkDuplicates.jar \
-# ==     INPUT=/scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsRNA/"$i"_sorted.bam \
-# ==     OUTPUT=/scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/"$i"_dupsRemoved.bam \
+# ==     INPUT=/scratch/rlk0015/Telag/May2020/WorkingDirectory/mappedReadsRNA/"$i"_sorted.bam \
+# ==     OUTPUT=/scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/"$i"_dupsRemoved.bam \
 # ==     METRICS_FILE=DuplicationMetrics \
 # ==     CREATE_INDEX=true \
 # ==     VALIDATION_STRINGENCY=SILENT \
@@ -1053,19 +1052,19 @@ java -Xmx8g -jar /tools/picard-tools-2.4.1/CreateSequenceDictionary.jar \
 # ==     ASSUME_SORTED=TRUE \
 # ==     REMOVE_DUPLICATES=TRUE
 # == #index sorted bam
-# == samtools index /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/"$i"_dupsRemoved.bam
+# == samtools index /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/"$i"_dupsRemoved.bam
 # == 
 # == ## Calculate Stats ##
-# == cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory_ReducedTranscriptome/mappedReadsRNA
+# == cd /scratch/rlk0015/Telag/May2020/WorkingDirectory_ReducedTranscriptome/mappedReadsRNA
 # == # make stats folder
-# == mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAStats
+# == mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAStats
 # == # tally mapped reads & calcuate the stats
-# == samtools idxstats /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/"$i"_dupsRemoved.bam > /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAStats/"$i"_counts.txt
-# == samtools flagstat /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/"$i"_dupsRemoved.bam > /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAStats/"$i"_stats.txt
-# == samtools depth /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/"$i"_dupsRemoved.bam > /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAStats/"$i"_depth.txt
+# == samtools idxstats /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/"$i"_dupsRemoved.bam > /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAStats/"$i"_counts.txt
+# == samtools flagstat /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/"$i"_dupsRemoved.bam > /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAStats/"$i"_stats.txt
+# == samtools depth /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/"$i"_dupsRemoved.bam > /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAStats/"$i"_depth.txt
 # == done<samList
 # == 
-# == cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAStats
+# == cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAStats
 # == ls | grep "_depth.txt" | cut -d "_" -f 1 | sort | uniq > depthList
 # == # Add individual name to each line in depth file
 # == while read i
@@ -1087,46 +1086,46 @@ java -Xmx8g -jar /tools/picard-tools-2.4.1/CreateSequenceDictionary.jar \
 # == 
 # == #  ************************ Commented out because I don't want to worry about this right now- needs to be done eventually *******
 # == #  # make results directory & move results
-# == #  mkdir -p /home/rlk0015/SeqCap/Dec2018/stats
-# == #  mkdir -p /home/rlk0015/SeqCap/Dec2018/counts
-# == #  mkdir -p /home/rlk0015/SeqCap/Dec2018/avgDepth
+# == #  mkdir -p /home/rlk0015/SeqCap/May2020/stats
+# == #  mkdir -p /home/rlk0015/SeqCap/May2020/counts
+# == #  mkdir -p /home/rlk0015/SeqCap/May2020/avgDepth
 # == #  
 # == #  # cp results to respective directories
-# == #  cp *stats.txt /home/rlk0015/SeqCap/Dec2018/stats
-# == #  cp *counts.txt /home/rlk0015/SeqCap/Dec2018/counts
-# == #  cp *depth.txt /home/rlk0015/SeqCap/Dec2018/avgDepth
+# == #  cp *stats.txt /home/rlk0015/SeqCap/May2020/stats
+# == #  cp *counts.txt /home/rlk0015/SeqCap/May2020/counts
+# == #  cp *depth.txt /home/rlk0015/SeqCap/May2020/avgDepth
 # == #  *****************************************************************************************************
 # == =================================================================================== 
 
 
 ### move to GATK directory ###
-cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/
+cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/
 # .......................... Already done ..............................
 # .. ### merge .bam files ###
-# .. samtools merge -f /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/dupsRemoved.bam /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/*_dupsRemoved.bam
+# .. samtools merge -f /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/dupsRemoved.bam /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/*_dupsRemoved.bam
 # .. ### index the merged .bam ###
-# .. samtools index /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/dupsRemoved.bam
+# .. samtools index /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/dupsRemoved.bam
 # call indels
 # ......................................................................
 java -Xmx16g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
     -T RealignerTargetCreator \
-    -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/Transcriptome.fa \
-    -I /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/dupsRemoved.bam \
-    -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/indelsCalled.intervals
+    -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/Transcriptome.fa \
+    -I /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/dupsRemoved.bam \
+    -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/indelsCalled.intervals
 # realign indels
 java -Xmx16g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
     -T IndelRealigner \
-    -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/Transcriptome.fa \
-    -I /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/dupsRemoved.bam \
-    -targetIntervals /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/indelsCalled.intervals \
+    -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/Transcriptome.fa \
+    -I /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/dupsRemoved.bam \
+    -targetIntervals /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/indelsCalled.intervals \
     -LOD 3.0 \
-    -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/indelsRealigned.bam
+    -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/indelsRealigned.bam
 ## -- CALL SNPS -- ##
 java -Xmx16g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
     -T UnifiedGenotyper \
-    -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/Transcriptome.fa \
-    -I /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/indelsRealigned.bam \
-    -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/calledSNPs.vcf \
+    -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/Transcriptome.fa \
+    -I /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/indelsRealigned.bam \
+    -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/calledSNPs.vcf \
     -gt_mode DISCOVERY \
     -ploidy 2 \
     -stand_call_conf 30 \
@@ -1135,47 +1134,47 @@ java -Xmx16g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
 # annotate variants
 java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
     -T VariantAnnotator \
-    -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/Transcriptome.fa \
-    -I /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/indelsRealigned.bam \
+    -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/Transcriptome.fa \
+    -I /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/indelsRealigned.bam \
     -G StandardAnnotation \
-    -V:variant,VCF /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/calledSNPs.vcf \
+    -V:variant,VCF /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/calledSNPs.vcf \
     -XA SnpEff \
-    -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/annotatedSNPs.vcf \
+    -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/annotatedSNPs.vcf \
     -rf BadCigar
 # annotate indels
 java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
     -T UnifiedGenotyper \
-    -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/Transcriptome.fa \
-    -I /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/indelsRealigned.bam \
+    -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/Transcriptome.fa \
+    -I /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/indelsRealigned.bam \
     -gt_mode DISCOVERY \
     -glm INDEL \
-    -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/annotatedIndels.vcf \
+    -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/annotatedIndels.vcf \
     -stand_call_conf 30 \
     -stand_emit_conf 10 \
     -rf BadCigar
 # mask indels
 java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
     -T VariantFiltration \
-    -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/Transcriptome.fa \
-    -V /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/calledSNPs.vcf \
-    --mask /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/annotatedIndels.vcf \
-    -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/SNPsMaskedIndels.vcf/ \
+    -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/Transcriptome.fa \
+    -V /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/calledSNPs.vcf \
+    --mask /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/annotatedIndels.vcf \
+    -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/SNPsMaskedIndels.vcf/ \
     -rf BadCigar
 # restrict to high-quality variant calls
-cat /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/SNPsMaskedIndels.vcf | grep 'PASS\|^#' > /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/qualitySNPs.vcf
+cat /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/SNPsMaskedIndels.vcf | grep 'PASS\|^#' > /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/qualitySNPs.vcf
 # read-backed phasing
 java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
     -T ReadBackedPhasing \
-    -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/Transcriptome.fa \
-    -I /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/indelsRealigned.bam \
-    --variant /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/qualitySNPs.vcf \
-    -L /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/qualitySNPs.vcf \
-    -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/phasedSNPs.vcf \
+    -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/Transcriptome.fa \
+    -I /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/indelsRealigned.bam \
+    --variant /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/qualitySNPs.vcf \
+    -L /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/qualitySNPs.vcf \
+    -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/phasedSNPs.vcf \
     --phaseQualityThresh 20.0 \
     -rf BadCigar
 
 ## Make Sample List from VCF ##
-cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK
+cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK
 bcftools query -l phasedSNPs.vcf > VcfSampleList
 
 while read i;
@@ -1183,23 +1182,23 @@ do
 # VCF for each sample
 java -Xmx2g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
     -T SelectVariants \
-    -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/Transcriptome.fa \
-    --variant /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/phasedSNPs.vcf \
-    -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/"$i"_phasedSNPs.vcf \
+    -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/Transcriptome.fa \
+    --variant /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/phasedSNPs.vcf \
+    -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/"$i"_phasedSNPs.vcf \
     -sn "$i" \
     -rf BadCigar
 # make SNPs table
 java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
     -T VariantsToTable \
-    -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/Transcriptome.fa \
-    -V /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/"$i"_phasedSNPs.vcf \
+    -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/Transcriptome.fa \
+    -V /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/"$i"_phasedSNPs.vcf \
     -F CHROM -F POS -F QUAL -GF GT -GF DP -GF HP -GF AD \
-    -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNASNPTables/"$i"_tableSNPs.txt \
+    -o /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNASNPTables/"$i"_tableSNPs.txt \
     -rf BadCigar
 # Add phased SNPs to reference and filter
 python /home/rlk0015/SeqCap/seqcap_pop/bin/add_phased_snps_to_seqs_filter.py \
-    /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNAGATK/Transcriptome.fa \
-    /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNASNPTables/"$i"_tableSNPs.txt \
-    /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/RNASequenceTables/"$i"_tableSequences.txt \
+    /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNAGATK/Transcriptome.fa \
+    /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNASNPTables/"$i"_tableSNPs.txt \
+    /scratch/rlk0015/Telag/May2020/WorkingDirectory/RNASequenceTables/"$i"_tableSequences.txt \
     1
 done<VcfSampleList
