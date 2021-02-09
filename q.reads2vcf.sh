@@ -542,14 +542,49 @@ cd $WorkingDirectory/GATKDNA
 #+  	--genomicsdb-workspace-path SNP_database \
 #+  	--reader-threads 5 \
 #+  	--intervals $WorkingDirectory/GATKDNA/DNA.intervals
+#+  # Joint genotyping
+#+  /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" GenotypeGVCFs \
+#+  	-R $WorkingDirectory/References/TelagGenome.fasta \
+#+  	-V gendb://$WorkingDirectory/GATKDNA/SNP_database \
+#+  	-O genotyped.vcf 
 #+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# Joint genotyping
-/tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" GenotypeGVCFs \
+# Filter variants
+	# Provide expression for filtration:
+	  # FS = FisherStrand *NOT COMMON IN GATK4.1.7.0
+	    # Phred-scaled probability strand bias exists at site 
+	  # QD = quality of depth *NOT COMMON IN GATK4.1.7.0
+	    # Variant confidence divided by raw depth 
+	  # DP = depth of coverage *NOT COMMON IN GATK4.1.7.0
+	    # Raw depth. I don't use here, because QD accounts for this 
+	  # MQ = RMS mapping quality *NOT COMMON IN GATK4.1.7.0
+	    # Root mean square mq over all the reads at the site 
+	  # MQRankSum = Mapping quality rank sum test *NOT COMMON IN GATK4.1.7.0
+	    # Compares mapping qualities of reads supporting the ref allele to those supporting the alt allele. 
+	  # ReadPosRankSum = Rank sum test used to assess site position *NOT COMMON IN GATK4.1.7.0
+	    # It compares whether the positions of the reference and alternate alleles are different within the reads 
+	  # AB = Allele Balance
+	    # Depth of covereage for each allele per sample generalized over all samples
+	  # MQ0 = Map Quality 0
+	    # Number of reads with map quality 0
+	  # SOR = StrandOddsRatio
+	    # Estimate strand bias without penalizing reads that occur at the end of exons *FS is biased to penalize
+/tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" VariantFiltration \
 	-R $WorkingDirectory/References/TelagGenome.fasta \
-	-V gendb://$WorkingDirectory/GATKDNA/SNP_database \
-	-O test_output.vcf 
+	-V genotyped.vcf \
+	-O filtered.vcf \
+	--filter-name "SOR" \
+	--filter-expression "SOR > 3.0" \
+	--filter-name "QD" \
+	--filter-expression "QD < 2.0" \
+	--filter-name "MQ" \
+	--filter-expression "MQ < 40.0" \
+	--filter-name "MQRankSum" \
+	--filter-expression "MQRankSum < -12.5" \
+	--filter-name "FS" \
+	--filter-expression "FS > 60.0" \
+	--filter-name "ReadPosRankSum" \
+	--filter-expression "ReadPosRankSum < -5.0"
 
-# HERE 
 # ### move to GATK directory ###
 # cd $WorkingDirectory/GATKDNA/
 # ### merge .bam files ###
