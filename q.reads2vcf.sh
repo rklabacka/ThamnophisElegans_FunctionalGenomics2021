@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #Give job a name
-#PBS -N FullScript_March2019
+#PBS -N FullScript_June2019
 
 #-- We recommend passing your environment variables down to the
 #-- compute nodes with -V, but this is optional
@@ -39,11 +39,11 @@ module load bwa/0.7.15
 module load samtools/1.3.1
 module load picard/2.4.1
 module load python/2.7.15
-module load gatk/3.6
 module load bcftools/1.3.2
 module load hybpiper/1
 module load xz/5.2.2
 module load htslib/1.3.3
+module load gatk/4.0.10.1
 
 #create working directory ###
 mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory
@@ -856,16 +856,17 @@ echo "RLK_report: directory created: /scratch/rlk0015/Telag/Dec2018/WorkingDirec
 # && # make .sam files list for Samtools processing
 # && ls | grep "_IDed.sam" |cut -d "_" -f 1 | sort | uniq  > samList
 # && # make result directories
-# && mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK
+mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK
+mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/Sequences
 # && mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsSNPTables
 # && mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsSequenceTables
 # && # copy reference for SNP calling
-# && cp /home/rlk0015/SeqCap/code/References/Transcripts.fa /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa
-# && # index ref
-# && samtools faidx /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa
-# && java -Xmx8g -jar /tools/picard-tools-2.4.1/CreateSequenceDictionary.jar \
-# &&     R= /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
-# &&     O= /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.dict
+cp /home/rlk0015/SeqCap/code/References/Transcripts.fa /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa
+# index ref
+samtools faidx /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa
+java -Xmx8g -jar /tools/picard-tools-2.4.1/CreateSequenceDictionary.jar \
+    R= /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
+    O= /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.dict
 # && cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsDNA/Transcripts
 # && while read i;
 # && do
@@ -933,33 +934,16 @@ echo "RLK_report: directory created: /scratch/rlk0015/Telag/Dec2018/WorkingDirec
 # && samtools merge -f /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/dupsRemoved.bam /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/*_dupsRemoved.bam
 # && ### index the merged .bam ###
 # && samtools index /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/dupsRemoved.bam
-# && # call indels
-# && java -Xmx16g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-# &&     -T RealignerTargetCreator \
-# &&     -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
-# &&     -I /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/dupsRemoved.bam \
-# &&     -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/indelsCalled.intervals
-# && # realign indels
-# && java -Xmx16g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-# &&     -T IndelRealigner \
-# &&     -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
-# &&     -I /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/dupsRemoved.bam \
-# &&     -targetIntervals /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/indelsCalled.intervals \
-# &&     -LOD 3.0 \
-# &&     -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/indelsRealigned.bam
 # && ## -- CALL SNPS -- ##
-# && java -Xmx16g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-# &&     -T UnifiedGenotyper \
-# &&     -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
-# &&     -I /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/indelsRealigned.bam \
-# &&     -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/calledSNPs.vcf \
-# &&     -gt_mode DISCOVERY \
-# &&     -ploidy 2 \
-# &&     -stand_call_conf 30 \
-# &&     -stand_emit_conf 10 \
-# &&     -rf BadCigar
-# && # annotate variants
-# && java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
+/tools/gatk-4.1.2.0/gatk --java-options "-Xmx16g" HaplotypeCaller\
+  -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
+  -I dupsRemoved.bam \
+  -stand_emit_conf 10 \
+  -stand_call_conf 30 \
+  -O rawVariants.vcf 
+  # The following read filters are applied automatically: HCMappingQualityFilter, MalformedReadFilter, BadCigarFilter, UnmappedReadFilter, NotPrimaryAlignmentFilter, FailsVendorQualityCheckFilter, DuplicateReadFilter, MappingQualityUnavailableFilter
+# annotate variants
+java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
 # &&     -T VariantAnnotator \
 # &&     -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
 # &&     -I /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/indelsRealigned.bam \
@@ -1004,16 +988,14 @@ echo "RLK_report: directory created: /scratch/rlk0015/Telag/Dec2018/WorkingDirec
 # && cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK
 # && bcftools query -l phasedSNPs.vcf > VcfSampleList
 # && 
-# && while read i;
-# && do
-# && # VCF for each sample
-# && java -Xmx2g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-# &&     -T SelectVariants \
-# &&     -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
-# &&     --variant /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/phasedSNPs.vcf \
-# &&     -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/"$i"_phasedSNPs.vcf \
-# &&     -sn "$i" \
-# &&     -rf BadCigar
+while read i;
+do
+# VCF for each sample
+/tools/gatk-4.1.2.0/gatk --java-options "-Xmx16g" SelectVariants\
+    -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
+    -V /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/phasedSNPs.vcf \
+    -O /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/"$i"_phasedSNPs.vcf \
+    -sn "$i" \
 # && # make SNPs table
 # && java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
 # &&     -T VariantsToTable \
@@ -1029,6 +1011,7 @@ echo "RLK_report: directory created: /scratch/rlk0015/Telag/Dec2018/WorkingDirec
 # &&     /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsSequenceTables/"$i"_tableSequences.txt \
 # &&     1
 # && done<VcfSampleList
+
 # &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& End && block &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
