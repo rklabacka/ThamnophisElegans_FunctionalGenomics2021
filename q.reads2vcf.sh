@@ -862,11 +862,11 @@ mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/Sequences
 # && mkdir -p /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsSequenceTables
 # && # copy reference for SNP calling
 cp /home/rlk0015/SeqCap/code/References/Transcripts.fa /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa
-# index ref
-samtools faidx /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa
-java -Xmx8g -jar /tools/picard-tools-2.4.1/CreateSequenceDictionary.jar \
-    R= /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
-    O= /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.dict
+# && # index ref
+# && samtools faidx /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa
+# && java -Xmx8g -jar /tools/picard-tools-2.4.1/CreateSequenceDictionary.jar \
+# &&     R= /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
+# &&     O= /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.dict
 # && cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/mappedReadsDNA/Transcripts
 # && while read i;
 # && do
@@ -988,14 +988,16 @@ java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
 # && cd /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK
 # && bcftools query -l phasedSNPs.vcf > VcfSampleList
 # && 
-while read i;
-do
-# VCF for each sample
-/tools/gatk-4.1.2.0/gatk --java-options "-Xmx16g" SelectVariants\
-    -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
-    -V /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/phasedSNPs.vcf \
-    -O /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/"$i"_phasedSNPs.vcf \
-    -sn "$i" \
+# && while read i;
+# && do
+# && # VCF for each sample
+# && java -Xmx2g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
+# &&     -T SelectVariants \
+# &&     -R /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/Transcripts.fa \
+# &&     --variant /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/phasedSNPs.vcf \
+# &&     -o /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsGATK/"$i"_phasedSNPs.vcf \
+# &&     -sn "$i" \
+# &&     -rf BadCigar
 # && # make SNPs table
 # && java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
 # &&     -T VariantsToTable \
@@ -1011,7 +1013,6 @@ do
 # &&     /scratch/rlk0015/Telag/Dec2018/WorkingDirectory/TranscriptsSequenceTables/"$i"_tableSequences.txt \
 # &&     1
 # && done<VcfSampleList
-
 # &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& End && block &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
