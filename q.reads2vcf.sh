@@ -490,9 +490,9 @@ echo "RLK_report: directory created: $WorkingDirectory with rawReads and cleanRe
 #+  /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" HaplotypeCaller \
 #+  	-R $WorkingDirectory/References/TelagGenome.fasta \
 #+  	-I $WorkingDirectory/GATKDNA/"$i"_dupsRemoved.bam \
-#+  	-O $WorkingDirectory/GATKDNA/"$i"_rawVariants.g.vcf \
+#+  	-O $WorkingDirectory/GATKDNA/"$i"_rawVariants_0.g.vcf \
 #+  	-ERC GVCF
-#+  echo "$i"$'\t'"$i""_rawVariants.g.vcf" >> $WorkingDirectory/GATKDNA/cohort.sample_map
+#+  echo "$i"$'\t'"$i""_rawVariants_0.g.vcf" >> $WorkingDirectory/GATKDNA/cohort.sample_map
 #+  	
 #+  ## Calculate Mapping Stats ##
 #+  # tally mapped reads & calcuate the stats
@@ -546,51 +546,62 @@ cd $WorkingDirectory/GATKDNA
 #+  /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" GenotypeGVCFs \
 #+  	-R $WorkingDirectory/References/TelagGenome.fasta \
 #+  	-V gendb://$WorkingDirectory/GATKDNA/SNP_database \
-#+  	-O genotyped.vcf 
+#+  	-O $WorkingDirectory/GATKDNA/genotyped_0.vcf 
+#+  # Filter variants
+#+  	# Provide expression for filtration:
+#+  	  # FS = FisherStrand *NOT COMMON IN GATK4.1.7.0
+#+  	    # Phred-scaled probability strand bias exists at site 
+#+  	  # QD = quality of depth *NOT COMMON IN GATK4.1.7.0
+#+  	    # Variant confidence divided by raw depth 
+#+  	  # DP = depth of coverage *NOT COMMON IN GATK4.1.7.0
+#+  	    # Raw depth. I don't use here, because QD accounts for this 
+#+  	  # MQ = RMS mapping quality *NOT COMMON IN GATK4.1.7.0
+#+  	    # Root mean square mq over all the reads at the site 
+#+  	  # MQRankSum = Mapping quality rank sum test *NOT COMMON IN GATK4.1.7.0
+#+  	    # Compares mapping qualities of reads supporting the ref allele to those supporting the alt allele. 
+#+  	  # ReadPosRankSum = Rank sum test used to assess site position *NOT COMMON IN GATK4.1.7.0
+#+  	    # It compares whether the positions of the reference and alternate alleles are different within the reads 
+#+  	  # AB = Allele Balance
+#+  	    # Depth of covereage for each allele per sample generalized over all samples
+#+  	  # MQ0 = Map Quality 0
+#+  	    # Number of reads with map quality 0
+#+  	  # SOR = StrandOddsRatio
+#+  	    # Estimate strand bias without penalizing reads that occur at the end of exons *FS is biased to penalize
+#+  /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" VariantFiltration \
+#+  	-R $WorkingDirectory/References/TelagGenome.fasta \
+#+  	-V genotyped_0.vcf \
+#+ 	-O filtered_0.vcf \
+#+  	--filter-name "SOR" \
+#+  	--filter-expression "SOR > 3.0" \
+#+  	--filter-name "QD" \
+#+  	--filter-expression "QD < 2.0" \
+#+  	--filter-name "MQ" \
+#+  	--filter-expression "MQ < 30.0" \
+#+  	--filter-name "MQRankSum" \
+#+  	--filter-expression "MQRankSum < -12.5" \
+#+  	--filter-name "FS" \
+#+  	--filter-expression "FS > 60.0" \
+#+  	--filter-name "ReadPosRankSum" \
+#+  	--filter-expression "ReadPosRankSum < -5.0"
 #+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# Filter variants
-	# Provide expression for filtration:
-	  # FS = FisherStrand *NOT COMMON IN GATK4.1.7.0
-	    # Phred-scaled probability strand bias exists at site 
-	  # QD = quality of depth *NOT COMMON IN GATK4.1.7.0
-	    # Variant confidence divided by raw depth 
-	  # DP = depth of coverage *NOT COMMON IN GATK4.1.7.0
-	    # Raw depth. I don't use here, because QD accounts for this 
-	  # MQ = RMS mapping quality *NOT COMMON IN GATK4.1.7.0
-	    # Root mean square mq over all the reads at the site 
-	  # MQRankSum = Mapping quality rank sum test *NOT COMMON IN GATK4.1.7.0
-	    # Compares mapping qualities of reads supporting the ref allele to those supporting the alt allele. 
-	  # ReadPosRankSum = Rank sum test used to assess site position *NOT COMMON IN GATK4.1.7.0
-	    # It compares whether the positions of the reference and alternate alleles are different within the reads 
-	  # AB = Allele Balance
-	    # Depth of covereage for each allele per sample generalized over all samples
-	  # MQ0 = Map Quality 0
-	    # Number of reads with map quality 0
-	  # SOR = StrandOddsRatio
-	    # Estimate strand bias without penalizing reads that occur at the end of exons *FS is biased to penalize
-/tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" VariantFiltration \
-	-R $WorkingDirectory/References/TelagGenome.fasta \
-	-V genotyped.vcf \
-	-O filtered.vcf \
-	--filter-name "SOR" \
-	--filter-expression "SOR > 3.0" \
-	--filter-name "QD" \
-	--filter-expression "QD < 2.0" \
-	--filter-name "MQ" \
-	--filter-expression "MQ < 40.0" \
-	--filter-name "MQRankSum" \
-	--filter-expression "MQRankSum < -12.5" \
-	--filter-name "FS" \
-	--filter-expression "FS > 60.0" \
-	--filter-name "ReadPosRankSum" \
-	--filter-expression "ReadPosRankSum < -5.0"
 
-# ### move to GATK directory ###
-# cd $WorkingDirectory/GATKDNA/
-# ### merge .bam files ###
-# samtools merge -f $WorkingDirectory/GATKDNA/dupsRemoved.bam $WorkingDirectory/GATKDNA/*_dupsRemoved.bam
-# ### index the merged .bam ###
-#  samtools index $WorkingDirectory/GATKDNA/dupsRemoved.bam
+# Get SNPs
+/tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" SelectVariants \
+	-R $WorkingDirectory/References/TelagGenome.fasta \
+	-V $WorkingDirectory/GATKDNA/filtered_0.vcf \
+	--select-type-to-include SNP \
+	-O $WorkingDirectory/GATKDNA/JustSNPs_0.vcf
+
+### merge .bam files ###
+samtools merge -f $WorkingDirectory/GATKDNA/dupsRemoved.bam $WorkingDirectory/GATKDNA/*_dupsRemoved.bam
+### index the merged .bam ###
+samtools index $WorkingDirectory/GATKDNA/dupsRemoved.bam
+# Recalibrate SNP calling accounting for sequencing error
+/tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" BaseRecalibrator \
+	-R $WorkingDirectory/References/TelagGenome.fasta \
+	-I $WorkingDirectory/GATKDNA/dupsRemoved.bam \
+	--known-sites $WorkingDirectory/GATKDNA/JustSNPs_0.vcf
+	
 #  # realign indels
 #  java -Xmx16g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
 #      -T IndelRealigner \
