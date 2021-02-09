@@ -507,198 +507,224 @@ done<$WorkingDirectory/mappedReads"$3"/samList
 }
 
 function combine-VCF {
-    #+ cp $WorkingDirectory/GATKDNA/JustSNPs_2.vcf $WorkingDirectory/variantFiltration/JustSNPs_DNA.vcf
-    #+ cp $WorkingDirectory/GATKRNA/JustSNPs_2.vcf $WorkingDirectory/variantFiltration/JustSNPs_RNA.vcf
-    #+ cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/variantFiltration
-    #+ # Change names:
-    #+ # DNA
-    #+ sed -i.bak "s/SRR497737/ELF52309/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR497738/ELF52319/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR497739/ELF517112/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR497740/PAP50905/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR497741/PAP51303/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR497742/ELF52503/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR497743/ELF54403/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR497744/PAP53202/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR497745/PAP53307/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR497746/PAP53205/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR497747/ELF517102/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR497749/PAP50403/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR629599/MAH6372/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR629651/MAR6271/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR629652/MAR6287/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR629653/MAR276/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR629654/MAR6299/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR629655/NAM2064/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR629656/MAR6326/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR629658/NAM60603/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR629659/MAR6463/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR629660/NAM6193/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR629661/NAM6153/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR629662/MAR6099/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR629663/NAM6161/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR629664/MAR6311/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR629665/MAR6341/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR629666/MAH252/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR629667/MAR6503/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR629668/MAH2811/" JustSNPs_RNA.vcf
-    #+ sed -i.bak "s/SRR629669/MAH6084/" JustSNPs_RNA.vcf
+    cp $WorkingDirectory/GATKDNA/JustSNPs_2.vcf $WorkingDirectory/variantFiltration/JustSNPs_DNA.vcf
+    cp $WorkingDirectory/GATKRNA/JustSNPs_2.vcf $WorkingDirectory/variantFiltration/JustSNPs_RNA.vcf
+    cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/variantFiltration
+    # Change names:
+    # DNA
+    sed -i.bak "s/SRR497737/ELF52309/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR497738/ELF52319/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR497739/ELF517112/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR497740/PAP50905/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR497741/PAP51303/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR497742/ELF52503/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR497743/ELF54403/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR497744/PAP53202/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR497745/PAP53307/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR497746/PAP53205/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR497747/ELF517102/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR497749/PAP50403/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629599/MAH6372/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629651/MAR6271/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629652/MAR6287/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629653/MAR276/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629654/MAR6299/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629655/NAM2064/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629656/MAR6326/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629658/NAM60603/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629659/MAR6463/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629660/NAM6193/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629661/NAM6153/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629662/MAR6099/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629663/NAM6161/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629664/MAR6311/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629665/MAR6341/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629666/MAH252/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629667/MAR6503/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629668/MAH2811/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629669/MAH6084/" JustSNPs_RNA.vcf
 
-    #+ # RNA
-    #+ sed -i.bak "s/ELF01/ELFRA567/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/ELF02/ELFRA607/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/ELF03/ELFRP540/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/ELF04/ELFRP541/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/ELF05/ELF5581/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/ELF06/ELF56513/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/ELF07/ELF565115/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/ELF08/ELF5683/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/ELF09/ELF54603/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/ELF10/ELF54701/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/ELF11/ELF60503/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/ELF12/ELF6225/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/ELF13/ELF6363/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/ELF14/ELFRA567dup/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/ELF15/ELFRP54.1/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/ELF16/ELFRP54/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/MAH01/MAH351/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/MAH02/MAH52002/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/MAH03/MAH53901/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/MAH04/MAH54007/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/MAH05/MAH54101/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/MAH06/MAH54201/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/MAH07/MAH54301/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/MAH08/MAHRA620/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/MAH09/MAHRA641/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/MAH10/MAHRP47.7/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/MAH11/MAHRP4710/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/MAH12/MAHRP475/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/MAH13/MAHRP478/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/MAH14/MAHRP479/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/MAH15/MAHRP476/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/MAR01/MARRP6771/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/MAR02/MARRP686/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/MAR03/MAR3682/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/MAR04/MAR3664/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/MAR05/MARRA379/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/MAR06/MAR1794/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/MAR07/MAR1572T/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/MAR08/MARRA605/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/MAR09/MARRA630/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/MAR10/MAR2633/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/PAP01/PAP5614/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/PAP02/PAP5621/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/PAP03/PAP5642/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/PAP04/PAP5693/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/PAP05/PAP501005/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/PAP06/PAP502102/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/PAP07/PAP50501/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/PAP08/PAP51602/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/PAP09/PAP524101/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/PAP10/PAP281/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/PAP11/PAPRA434/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/PAP12/PAPRA647/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/PAP13/PAPRA648/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/PAP14/PAPRA649/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/PAP15/PAPRP16/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/STO01/STORP697/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/STO02/STORP698/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/STO03/STORA530/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/STO04/STORA549/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/STO05/STORP22/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/STO06/STO271/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/STO07/STO275/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/STO08/STO43113/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/STO09/STO43115/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/STO10/STO43125/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/STO11/STO4376/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/STO12/STO4377/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/STO13/STO4378/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/STO14/STO4374/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/STO15/STO4375/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/STO17/STO3310/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/STO18/STO5602/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/STO19/STO5283/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/STO20/STO5591/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/STO21/STO33272/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/SUM01/SUM41103/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/SUM02/SUM41104/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/SUM03/SUMRA645/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/SUM04/SUMRP31/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/SUM05/SUM53255/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/SUM06/SUM53252/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/SUM07/SUM53253/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/SUM08/SUM53256/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/SUM09/SUMRP531/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/SUM10/SUM6442/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/SUM11/SUMRP5313/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/SUM12/SUMRP5314/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/SUM13/SUMRP535/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/SUM15/SUMRP538/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/SUM16/SUMRP539/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/SUM17/SUM6241/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/SUM18/SUM6251/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/SUM19/SUM6263/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/SUM20/SUM6432/" JustSNPs_DNA.vcf
-    #+ sed -i.bak "s/SUM21/SUMRP534/" JustSNPs_DNA.vcf
-    #+ cp $WorkingDirectory/variantFiltration/JustSNPs_DNA.vcf $WorkingDirectory/variantFiltration/JustSNPs_DNA_copy.vcf
-    #+ cp $WorkingDirectory/variantFiltration/JustSNPs_RNA.vcf $WorkingDirectory/variantFiltration/JustSNPs_RNA_copy.vcf
+    # RNA
+    sed -i.bak "s/ELF01/ELFRA567/" JustSNPs_DNA.vcf
+    sed -i.bak "s/ELF02/ELFRA607/" JustSNPs_DNA.vcf
+    sed -i.bak "s/ELF03/ELFRP540/" JustSNPs_DNA.vcf
+    sed -i.bak "s/ELF04/ELFRP541/" JustSNPs_DNA.vcf
+    sed -i.bak "s/ELF05/ELF5581/" JustSNPs_DNA.vcf
+    sed -i.bak "s/ELF06/ELF56513/" JustSNPs_DNA.vcf
+    sed -i.bak "s/ELF07/ELF565115/" JustSNPs_DNA.vcf
+    sed -i.bak "s/ELF08/ELF5683/" JustSNPs_DNA.vcf
+    sed -i.bak "s/ELF09/ELF54603/" JustSNPs_DNA.vcf
+    sed -i.bak "s/ELF10/ELF54701/" JustSNPs_DNA.vcf
+    sed -i.bak "s/ELF11/ELF60503/" JustSNPs_DNA.vcf
+    sed -i.bak "s/ELF12/ELF6225/" JustSNPs_DNA.vcf
+    sed -i.bak "s/ELF13/ELF6363/" JustSNPs_DNA.vcf
+    sed -i.bak "s/ELF14/ELFRA567dup/" JustSNPs_DNA.vcf
+    sed -i.bak "s/ELF15/ELFRP54.1/" JustSNPs_DNA.vcf
+    sed -i.bak "s/ELF16/ELFRP54/" JustSNPs_DNA.vcf
+    sed -i.bak "s/MAH01/MAH351/" JustSNPs_DNA.vcf
+    sed -i.bak "s/MAH02/MAH52002/" JustSNPs_DNA.vcf
+    sed -i.bak "s/MAH03/MAH53901/" JustSNPs_DNA.vcf
+    sed -i.bak "s/MAH04/MAH54007/" JustSNPs_DNA.vcf
+    sed -i.bak "s/MAH05/MAH54101/" JustSNPs_DNA.vcf
+    sed -i.bak "s/MAH06/MAH54201/" JustSNPs_DNA.vcf
+    sed -i.bak "s/MAH07/MAH54301/" JustSNPs_DNA.vcf
+    sed -i.bak "s/MAH08/MAHRA620/" JustSNPs_DNA.vcf
+    sed -i.bak "s/MAH09/MAHRA641/" JustSNPs_DNA.vcf
+    sed -i.bak "s/MAH10/MAHRP47.7/" JustSNPs_DNA.vcf
+    sed -i.bak "s/MAH11/MAHRP4710/" JustSNPs_DNA.vcf
+    sed -i.bak "s/MAH12/MAHRP475/" JustSNPs_DNA.vcf
+    sed -i.bak "s/MAH13/MAHRP478/" JustSNPs_DNA.vcf
+    sed -i.bak "s/MAH14/MAHRP479/" JustSNPs_DNA.vcf
+    sed -i.bak "s/MAH15/MAHRP476/" JustSNPs_DNA.vcf
+    sed -i.bak "s/MAR01/MARRP6771/" JustSNPs_DNA.vcf
+    sed -i.bak "s/MAR02/MARRP686/" JustSNPs_DNA.vcf
+    sed -i.bak "s/MAR03/MAR3682/" JustSNPs_DNA.vcf
+    sed -i.bak "s/MAR04/MAR3664/" JustSNPs_DNA.vcf
+    sed -i.bak "s/MAR05/MARRA379/" JustSNPs_DNA.vcf
+    sed -i.bak "s/MAR06/MAR1794/" JustSNPs_DNA.vcf
+    sed -i.bak "s/MAR07/MAR1572T/" JustSNPs_DNA.vcf
+    sed -i.bak "s/MAR08/MARRA605/" JustSNPs_DNA.vcf
+    sed -i.bak "s/MAR09/MARRA630/" JustSNPs_DNA.vcf
+    sed -i.bak "s/MAR10/MAR2633/" JustSNPs_DNA.vcf
+    sed -i.bak "s/PAP01/PAP5614/" JustSNPs_DNA.vcf
+    sed -i.bak "s/PAP02/PAP5621/" JustSNPs_DNA.vcf
+    sed -i.bak "s/PAP03/PAP5642/" JustSNPs_DNA.vcf
+    sed -i.bak "s/PAP04/PAP5693/" JustSNPs_DNA.vcf
+    sed -i.bak "s/PAP05/PAP501005/" JustSNPs_DNA.vcf
+    sed -i.bak "s/PAP06/PAP502102/" JustSNPs_DNA.vcf
+    sed -i.bak "s/PAP07/PAP50501/" JustSNPs_DNA.vcf
+    sed -i.bak "s/PAP08/PAP51602/" JustSNPs_DNA.vcf
+    sed -i.bak "s/PAP09/PAP524101/" JustSNPs_DNA.vcf
+    sed -i.bak "s/PAP10/PAP281/" JustSNPs_DNA.vcf
+    sed -i.bak "s/PAP11/PAPRA434/" JustSNPs_DNA.vcf
+    sed -i.bak "s/PAP12/PAPRA647/" JustSNPs_DNA.vcf
+    sed -i.bak "s/PAP13/PAPRA648/" JustSNPs_DNA.vcf
+    sed -i.bak "s/PAP14/PAPRA649/" JustSNPs_DNA.vcf
+    sed -i.bak "s/PAP15/PAPRP16/" JustSNPs_DNA.vcf
+    sed -i.bak "s/STO01/STORP697/" JustSNPs_DNA.vcf
+    sed -i.bak "s/STO02/STORP698/" JustSNPs_DNA.vcf
+    sed -i.bak "s/STO03/STORA530/" JustSNPs_DNA.vcf
+    sed -i.bak "s/STO04/STORA549/" JustSNPs_DNA.vcf
+    sed -i.bak "s/STO05/STORP22/" JustSNPs_DNA.vcf
+    sed -i.bak "s/STO06/STO271/" JustSNPs_DNA.vcf
+    sed -i.bak "s/STO07/STO275/" JustSNPs_DNA.vcf
+    sed -i.bak "s/STO08/STO43113/" JustSNPs_DNA.vcf
+    sed -i.bak "s/STO09/STO43115/" JustSNPs_DNA.vcf
+    sed -i.bak "s/STO10/STO43125/" JustSNPs_DNA.vcf
+    sed -i.bak "s/STO11/STO4376/" JustSNPs_DNA.vcf
+    sed -i.bak "s/STO12/STO4377/" JustSNPs_DNA.vcf
+    sed -i.bak "s/STO13/STO4378/" JustSNPs_DNA.vcf
+    sed -i.bak "s/STO14/STO4374/" JustSNPs_DNA.vcf
+    sed -i.bak "s/STO15/STO4375/" JustSNPs_DNA.vcf
+    sed -i.bak "s/STO17/STO3310/" JustSNPs_DNA.vcf
+    sed -i.bak "s/STO18/STO5602/" JustSNPs_DNA.vcf
+    sed -i.bak "s/STO19/STO5283/" JustSNPs_DNA.vcf
+    sed -i.bak "s/STO20/STO5591/" JustSNPs_DNA.vcf
+    sed -i.bak "s/STO21/STO33272/" JustSNPs_DNA.vcf
+    sed -i.bak "s/SUM01/SUM41103/" JustSNPs_DNA.vcf
+    sed -i.bak "s/SUM02/SUM41104/" JustSNPs_DNA.vcf
+    sed -i.bak "s/SUM03/SUMRA645/" JustSNPs_DNA.vcf
+    sed -i.bak "s/SUM04/SUMRP31/" JustSNPs_DNA.vcf
+    sed -i.bak "s/SUM05/SUM53255/" JustSNPs_DNA.vcf
+    sed -i.bak "s/SUM06/SUM53252/" JustSNPs_DNA.vcf
+    sed -i.bak "s/SUM07/SUM53253/" JustSNPs_DNA.vcf
+    sed -i.bak "s/SUM08/SUM53256/" JustSNPs_DNA.vcf
+    sed -i.bak "s/SUM09/SUMRP531/" JustSNPs_DNA.vcf
+    sed -i.bak "s/SUM10/SUM6442/" JustSNPs_DNA.vcf
+    sed -i.bak "s/SUM11/SUMRP5313/" JustSNPs_DNA.vcf
+    sed -i.bak "s/SUM12/SUMRP5314/" JustSNPs_DNA.vcf
+    sed -i.bak "s/SUM13/SUMRP535/" JustSNPs_DNA.vcf
+    sed -i.bak "s/SUM15/SUMRP538/" JustSNPs_DNA.vcf
+    sed -i.bak "s/SUM16/SUMRP539/" JustSNPs_DNA.vcf
+    sed -i.bak "s/SUM17/SUM6241/" JustSNPs_DNA.vcf
+    sed -i.bak "s/SUM18/SUM6251/" JustSNPs_DNA.vcf
+    sed -i.bak "s/SUM19/SUM6263/" JustSNPs_DNA.vcf
+    sed -i.bak "s/SUM20/SUM6432/" JustSNPs_DNA.vcf
+    sed -i.bak "s/SUM21/SUMRP534/" JustSNPs_DNA.vcf
+    cp $WorkingDirectory/variantFiltration/JustSNPs_DNA.vcf $WorkingDirectory/variantFiltration/JustSNPs_DNA_copy.vcf
+    cp $WorkingDirectory/variantFiltration/JustSNPs_RNA.vcf $WorkingDirectory/variantFiltration/JustSNPs_RNA_copy.vcf
     cd $WorkingDirectory/variantFiltration/
-    #+ bgzip JustSNPs_DNA.vcf
-    #+ bgzip JustSNPs_RNA.vcf
-    #+ bcftools index JustSNPs_DNA.vcf.gz
-    #+ bcftools index JustSNPs_RNA.vcf.gz
-    #+ # Find variant intersections between datasets
-    #+ bcftools isec JustSNPs_DNA.vcf.gz JustSNPs_RNA.vcf.gz -p isec
-    #+ # Move into isec directory
-    #+ ## -- This directory contains the output from the isec command
-    #+ ## -- Look at the README to understand the files output from isec
-    #+ ## -- 0002 is the records from just DNA shared by both DNA and RNA
-    #+ ## -- 0003 is the records from just RNA shared by both DNA and RNA
+    bgzip JustSNPs_DNA.vcf
+    bgzip JustSNPs_RNA.vcf
+    bcftools index JustSNPs_DNA.vcf.gz
+    bcftools index JustSNPs_RNA.vcf.gz
+    # Find variant intersections between datasets
+    bcftools isec JustSNPs_DNA.vcf.gz JustSNPs_RNA.vcf.gz -p isec
+    # Move into isec directory
+    ## -- This directory contains the output from the isec command
+    ## -- Look at the README to understand the files output from isec
+    ## -- 0002 is the records from just DNA shared by both DNA and RNA
+    ## -- 0003 is the records from just RNA shared by both DNA and RNA
     cd isec
-    #+ bgzip 0002.vcf
-    #+ bgzip 0003.vcf
-    #+ bcftools index 0002.vcf.gz
-    #+ bcftools index 0003.vcf.gz
-    #+ # Create merged VCF file with the intersected sites
-    #+ bcftools merge 0002.vcf.gz 0003.vcf.gz -O v -o Merged.vcf
-    #+ vcf2bed < Merged.vcf > isec.bed
+    bgzip 0002.vcf
+    bgzip 0003.vcf
+    bcftools index 0002.vcf.gz
+    bcftools index 0003.vcf.gz
+    # Create merged VCF file with the intersected sites
+    bcftools merge 0002.vcf.gz 0003.vcf.gz -O v -o Iseced.vcf
+    vcf2bed < Iseced.vcf > isec.bed
     vcftools --gzvcf 0003.vcf.gz --bed isec.bed --out IsecedRNA.vcf --recode --keep-INFO-all
+    mv IsecedRNA.vcf.recode.vcf IsecedRNA.vcf
+    bgzip IsecedRNA.vcf
+    bcftools index IsecedRNA.vcf.gz
+    cp ../JustSNPs_DNA.vcf.gz* .
+    bcftools merge IsecedRNA.vcf.gz JustSNPs_DNA.vcf.gz -O v -o Merged.vcf
+    mv Merged.vcf ..
+
+}
+
+function filterByPopulation {
+  cd $WorkingDirectory/variantFiltration
+  #Create list for each population
+  echo "ELF" >> Pops; echo "MAH" >> Pops; echo "MAR" >> Pops; echo "NAM" >> Pops; echo "PAP" >> Pops; echo "STO" >> Pops; echo "SUM" >> Pops
+  while read i
+  do
+    #Create VCF for each population  
+    bcftools view --samples-file $WorkingDirectory/References/"$i".txt "$1" > "$2"_"$i".vcf
+    #Get number of individuals for each vcf
+    n="$(awk '{if ($1 == "#CHROM"){print NF-9; exit}}' "$2"_"$i".vcf)"
+    min=$(expr $n - 1)
+    #Filter missing data- 
+    vcftools --max-missing-count $min --vcf "$2"_"$i".vcf  --recode --recode-INFO-all --out "$2"_"$i"_popFiltered.vcf
+    mv "$2"_"$i"_popFiltered.vcf.recode.vcf "$2"_"$i"_popFiltered.vcf
+  done<Pops
+  bcftools merge "$2"*popFiltered.vcf -O v -o "$2"_popFiltered.vcf
+
 }
 
 function annotateVariants {
   ## ANNOTATE FILTERED VARIANT FILES FOR SEQCAP DATA
   ## ANNOTATE FILTERED VARIANT FILES FOR SEQCAP DATA
   cd $WorkingDirectory/References
-  # Make blast database from T. elegans genome
-  makeblastdb -in TelagGenome.fasta -parse_seqids -dbtype nucl -out Genome.db
-  # Extract IILS genes from exons used for probe design
-  python ~/SeqCap/pythonScripts/filterExons.py Exons.fa IILS.txt "$3"TargetGenes.fa log.txt
+  #+ DONE # Make blast database from T. elegans genome
+  #+ makeblastdb -in TelagGenome.fasta -parse_seqids -dbtype nucl -out Genome.db
+  # Extract genes from exons used for probe design
+  python ~/SeqCap/pythonScripts/filterExons.py Exons.fa "$2".txt "$2"TargetGenes.fa log.txt
   # Use Blast with Exons.fa (the exons used for probe design) to filter the genome
-  blastn -db Genome.db -query "$3"TargetGenes.fa -outfmt "7 qseqid sseqid evalue qstart qend sstart send" -out BlastResultsIILS.txt
+  blastn -db Genome.db -query "$2"TargetGenes.fa -outfmt "7 qseqid sseqid evalue qstart qend sstart send" -out BlastResults_"$2".txt
   # Delete "^#" lines from blast output
-  cp BlastResultsIILS.txt BlastResultsIILS_original.txt
-  sed -i.bak '/^#/d' BlastResultsIILS.txt
-  sed -i.bak "s/ref|//" BlastResultsIILS.txt
-  sed -i.bak "s/|//" BlastResultsIILS.txt
+  cp BlastResults_"$2".txt BlastResults_"$2"_original.txt
+  sed -i.bak '/^#/d' BlastResults_"$2".txt
+  sed -i.bak "s/ref|//" BlastResults_"$2".txt
+  sed -i.bak "s/|//" BlastResults_"$2".txt
   # Use filtered genome results (blast output) to pull out targeted genes and create filtered gff
-  python ~/SeqCap/pythonScripts/shrinkGFF_v2.py BlastResultsIILS.txt TelagGenome.gff "$3"TargetGenes.gff log.txt
+  python ~/SeqCap/pythonScripts/shrinkGFF_v2.py BlastResults_"$2".txt TelagGenome.gff "$2"TargetGenes.gff log.txt
   # Use bedops to convert gff to bed
-  gff2bed < "$3"TargetGenes.gff > "$3"TargetGenes.bed
+  gff2bed < "$2"TargetGenes.gff > "$2"TargetGenes.bed
   # bgzip bed file
-  bgzip "$3"TargetGenes.bed "$3"TargetGenes.bed.gz
+  bgzip -f "$2"TargetGenes.bed "$2"TargetGenes.bed.gz
   # tabix index .bed.gz file
-  tabix -p bed "$3"TargetGenes.bed.gz
-  # Annotate SNP file
+  tabix -f -p bed "$2"TargetGenes.bed.gz
+  # Annotate SNP file make sure "$1".vcf is in this directory
   cd $WorkingDirectory/variantFiltration
   bcftools annotate \
-  	-a $WorkingDirectory/References/"$3"TargetGenes.bed.gz \
+  	-a $WorkingDirectory/References/"$2"TargetGenes.bed.gz \
   	-c CHROM,FROM,TO,GENE \
-        -o "$2"Init.vcf \
+        -o "$2"_Annotated_Init.vcf \
   	-O v \
   	-h <(echo '##INFO=<ID=GENE,Number=1,Type=String,Description="Gene name">') \
   	"$1".vcf
-  awk '/^#|GENE=/' "$2"Init.vcf > "$2".vcf
+  awk '/^#|GENE=/' "$2"_Annotated_Init.vcf > "$2"_Annotated.vcf
 }  
 
 function plotVariants {
@@ -752,19 +778,25 @@ function hard-VariantFiltration {
   # Step 1: I changed "VariantFiltration" to filter out SNPs with DP < 20:
     /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" VariantFiltration -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome.fasta -V "$1".vcf -O "$2"_HardFilterStep1Init.vcf --filter-name "DP" --filter-expression "DP < 20"
     awk '/^#/||$7=="PASS"' "$2"_HardFilterStep1Init.vcf > "$2"_HardFilterStep1.vcf
+    echo "Depth filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep1.vcf | wc -l)" >> Log.txt
   # Step 2: Get rid of multiallelic SNPs (more than 2 alleles):
     bcftools view -m2 -M2 -v snps "$2"_HardFilterStep1.vcf > "$2"_HardFilterStep2.vcf
-  # Step 3: Get rid of low-frequency alleles:
-    /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" VariantFiltration -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome.fasta -V "$2"_HardFilterStep2.vcf -O "$2"_HardFilterStep3Init.vcf --filter-name "AF" --filter-expression "AF < 0.05"
-    awk '/^#/||$7=="PASS"' "$2"_HardFilterStep3Init.vcf > "$2"_HardFilterStep3.vcf
+    echo "Multiallelic filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep2.vcf | wc -l)" >> Log.txt
+    # Step 3: Get rid of low-frequency alleles- here just singletons:
+    vcftools --mac 2 --vcf "$2"_HardFilterStep2.vcf --recode --recode-INFO-all --out "$2"_HardFilterStep3.vcf
+    mv "$2"_HardFilterStep3.vcf.recode.vcf "$2"_HardFilterStep3.vcf
+    echo "Singleton filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep3.vcf | wc -l)" >> Log.txt
   # Step 4: Get rid of low-quality (mean) genotyping:
     bcftools view  -i  'MIN(FMT/GQ>20)'   "$2"_HardFilterStep3.vcf > "$2"_HardFilterStep4.vcf
+    echo "Genotype Quality filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep4.vcf | wc -l)" >> Log.txt
   # Step 5: Remove low-depth genotyping:
     vcftools --minDP 20 --vcf "$2"_HardFilterStep4.vcf --recode --recode-INFO-all --out "$2"_HardFilterStep5.vcf
     mv "$2"_HardFilterStep5.vcf.recode.vcf "$2"_HardFilterStep5.vcf
+    echo "Depth filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep5.vcf | wc -l)" >> Log.txt
   # Step 6: Remove individual sites with low genotyping
     vcftools --max-missing 0.7 --vcf "$2"_HardFilterStep5.vcf  --recode --recode-INFO-all --out "$2"_HardFilterStep6.vcf
     mv "$2"_HardFilterStep6.vcf.recode.vcf "$2"_HardFiltered.vcf
+    echo "Genotype filtration $2 variants: $(grep -v "^#" "$2"_HardFiltered.vcf | wc -l)" >> Log.txt
 }
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• #
 #+ +++++++++++++++++++++++++++++++ DONE ++++++++++++++++++++++++++++++++ #
@@ -881,7 +913,7 @@ function hard-VariantFiltration {
 #+ +++++++++++++++++++++++++++ Completed July 2020 +++++++++++++++++++++++++++ +#
 #+ ### --------------------- Continue Variant Calling ----------------------- ###
 #+ # Perform bqsr-'bootstraping', SNP calling, and hard filtration on Seq Cap data
-#+ cd $WorkingDirectory/GATKDNA
+cd $WorkingDirectory/GATKDNA
 #+ ## Replicate 1
 #+ use-HaplotypeCaller 0 DNA
 #+ get-just-SNPs 0 
@@ -900,28 +932,73 @@ function hard-VariantFiltration {
 #+ use-AnalyzeCovariates 1 2 DNA
 #+ ## -- Merge RNA and DNA data
 #+ combine-VCF
-#+ ## -- Annotate variants
-#+ annotateVariants Merged IILS_Annotated IILS
-#+ annotateVariants Merged All_Annotated All
-#+ ## -- Examine Unfiltered Variants
+## -- Annotate variants
+annotateVariants Merged SeqCap
+annotateVariants Merged IILS
+annotateVariants Merged Mito
+annotateVariants Merged ETC
+annotateVariants Merged Stress
+annotateVariants Merged Random
+cp SeqCap_Annotated_Init.vcf All_Annotated.vcf
+## -- Examine Unfiltered Variants
 cd $WorkingDirectory/variantFiltration
-#+ plotVariants IILS_Annotated.vcf
-#+ plotVariants SeqCap_Annotated.vcf
-#+ plotVariants All_Annotated.vcf
+plotVariants IILS_Annotated.vcf
+echo "Initial annotated IILS variants: $(grep -v "^#" IILS_Annotated.vcf | wc -l)" >> Log.txt
+plotVariants ETC_Annotated.vcf
+echo "Initial annotated ETC variants: $(grep -v "^#" ETC_Annotated.vcf | wc -l)" >> Log.txt
+plotVariants Mito_Annotated.vcf
+echo "Initial annotated Mito variants: $(grep -v "^#" Mito_Annotated.vcf | wc -l)" >> Log.txt
+plotVariants Stress_Annotated.vcf
+echo "Initial annotated Stress variants: $(grep -v "^#" Stress_Annotated.vcf | wc -l)" >> Log.txt
+plotVariants SeqCap_Annotated.vcf
+echo "Initial annotated SeqCap variants: $(grep -v "^#" SeqCap_Annotated.vcf | wc -l)" >> Log.txt
+plotVariants All_Annotated.vcf
+echo "Initial annotated All variants: $(grep -v "^#" All_Annotated.vcf | wc -l)" >> Log.txt
+## -- Filter by Population
+filterByPopulation IILS_Annotated.vcf IILS
+echo "Filtered by Population IILS variants: $(grep -v "^#" IILS_popFiltered.vcf | wc -l)" >> Log.txt
+filterByPopulation ETC_Annotated.vcf ETC
+echo "Filtered by Population ETC variants: $(grep -v "^#" ETC_popFiltered.vcf | wc -l)" >> Log.txt
+filterByPopulation Mito_Annotated.vcf Mito
+echo "Filtered by Population Mito variants: $(grep -v "^#" Mito_popFiltered.vcf | wc -l)" >> Log.txt
+filterByPopulation Stress_Annotated.vcf Stress
+echo "Filtered by Population Stress variants: $(grep -v "^#" Stress_popFiltered.vcf | wc -l)" >> Log.txt
+filterByPopulation SeqCap_Annotated.vcf SeqCap
+echo "Filtered by Population SeqCap variants: $(grep -v "^#" SeqCap_popFiltered.vcf | wc -l)" >> Log.txt
+filterByPopulation All_Annotated.vcf All
+echo "Filtered by Population All variants: $(grep -v "^#" All_popFiltered.vcf | wc -l)" >> Log.txt
 #+ ## -- Initial Filter Variants
-#+ initial-VariantFiltration IILS_Annotated IILS_InitialFiltered
-#+ initial-VariantFiltration SeqCap_Annotated SeqCap_InitialFiltered
-#+ initial-VariantFiltration All_Annotated All_InitialFiltered
+#+ initial-VariantFiltration IILS_popFiltered IILS_InitialFiltered
+#+ echo "Initial filtration IILS variants: $(grep -v "^#" IILS_InitialFiltered.vcf | wc -l)" >> Log.txt
+#+ initial-VariantFiltration ETC_popFiltered ETC_InitialFiltered
+#+ echo "Initial filtration ETC variants: $(grep -v "^#" ETC_InitialFiltered.vcf | wc -l)" >> Log.txt
+#+ initial-VariantFiltration Mito_popFiltered Mito_InitialFiltered
+#+ echo "Initial filtration Mito variants: $(grep -v "^#" Mito_InitialFiltered.vcf | wc -l)" >> Log.txt
+#+ initial-VariantFiltration Stress_popFiltered Stress_InitialFiltered
+#+ echo "Initial filtration Stress variants: $(grep -v "^#" Stress_InitialFiltered.vcf | wc -l)" >> Log.txt
+#+ initial-VariantFiltration SeqCap_popFiltered SeqCap_InitialFiltered
+#+ echo "Initial filtration SeqCap variants: $(grep -v "^#" SeqCap_InitialFiltered.vcf | wc -l)" >> Log.txt
+#+ initial-VariantFiltration All_popFiltered All_InitialFiltered
+#+ echo "Initial filtration All variants: $(grep -v "^#" All_InitialFiltered.vcf | wc -l)" >> Log.txt
 #+ ## -- Examine Initial Filtered Variants
 #+ plotVariants IILS_InitialFiltered.vcf
+#+ plotVariants ETC_InitialFiltered.vcf
+#+ plotVariants Mito_InitialFiltered.vcf
+#+ plotVariants Stress_InitialFiltered.vcf
 #+ plotVariants SeqCap_InitialFiltered.vcf
 #+ plotVariants All_InitialFiltered.vcf
 #+ ## -- Perform Hard Filtering
 #+ hard-VariantFiltration IILS_InitialFiltered IILS
+#+ hard-VariantFiltration ETC_InitialFiltered ETC
+#+ hard-VariantFiltration Mito_InitialFiltered Mito
+#+ hard-VariantFiltration Stress_InitialFiltered Stress
 #+ hard-VariantFiltration SeqCap_InitialFiltered SeqCap
 #+ hard-VariantFiltration All_InitialFiltered All
 #+ ## -- Examine Hard Filtered Variants
 #+ plotVariants IILS_HardFiltered.vcf
+#+ plotVariants ETC_HardFiltered.vcf
+#+ plotVariants Mito_HardFiltered.vcf
+#+ plotVariants Stress_HardFiltered.vcf
 #+ plotVariants SeqCap_HardFiltered.vcf
 #+ plotVariants All_HardFiltered.vcf
 #+ cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/variantFiltration/isec
@@ -946,14 +1023,10 @@ cd $WorkingDirectory/variantFiltration
 #+ use-BaseRecalibrator 2 RNA
 #+ use-AnalyzeCovariates 1 2 RNA
 #+ ## -- Filter Variants
-combine-VCF
 #+ use-VariantFiltration 2
 #+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #+ +++++++++++++++++++++++++++  Completed  +++++++++++++++++++++++++++ +#
-#+ # copy gff annotated genome to references
-#+ cp /home/rlk0015/SeqCap/code/References/T_elegans_genome/latest_assembly_versions/GCF_009769535.1_rThaEle1.pri/GCF_009769535.1_rThaEle1.pri_genomic.gff.gz $WorkingDirectory/References/TelagGenome.gff.gz
-#+ cd $WorkingDirectory/References
 #+ gunzip TelagGenome.gff.gz
 #+ echo "RLK_report: REFERENCE GFF COPY COMPLETE"
 #+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
