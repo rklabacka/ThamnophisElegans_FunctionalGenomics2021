@@ -653,22 +653,11 @@ function combine-VCF {
     # Move into isec directory
     ## -- This directory contains the output from the isec command
     ## -- Look at the README to understand the files output from isec
-    ## -- 0002 is the records from just DNA shared by both DNA and RNA
     ## -- 0003 is the records from just RNA shared by both DNA and RNA
     cd isec
-    bgzip 0002.vcf
     bgzip 0003.vcf
-    bcftools index 0002.vcf.gz
     bcftools index 0003.vcf.gz
-    # Create merged VCF file with the intersected sites
-    bcftools merge 0002.vcf.gz 0003.vcf.gz -O v -o Iseced.vcf
-    vcf2bed < Iseced.vcf > isec.bed
-    vcftools --gzvcf 0003.vcf.gz --bed isec.bed --out IsecedRNA.vcf --recode --keep-INFO-all
-    mv IsecedRNA.vcf.recode.vcf IsecedRNA.vcf
-    bgzip IsecedRNA.vcf
-    bcftools index IsecedRNA.vcf.gz
-    cp ../JustSNPs_DNA.vcf.gz* .
-    bcftools merge IsecedRNA.vcf.gz JustSNPs_DNA.vcf.gz -O v -o Merged.vcf
+    bcftools merge 0003.vcf.gz JustSNPs_DNA.vcf.gz -O v -o Merged.vcf
     mv Merged.vcf ..
 
 }
@@ -699,7 +688,7 @@ function annotateVariants {
   #+ DONE # Make blast database from T. elegans genome
   #+ makeblastdb -in TelagGenome.fasta -parse_seqids -dbtype nucl -out Genome.db
   # Extract genes from exons used for probe design
-  python ~/SeqCap/pythonScripts/filterExons.py Exons.fa "$2".txt "$2"TargetGenes.fa log.txt
+  python ~/SeqCap/pythonScripts/filterExons.py Exons.fa "$2".txt "$2"TargetGenes.fa ExtractGenesFromExons_log.txt
   # Use Blast with Exons.fa (the exons used for probe design) to filter the genome
   blastn -db Genome.db -query "$2"TargetGenes.fa -outfmt "7 qseqid sseqid evalue qstart qend sstart send" -out BlastResults_"$2".txt
   # Delete "^#" lines from blast output
@@ -708,7 +697,7 @@ function annotateVariants {
   sed -i.bak "s/ref|//" BlastResults_"$2".txt
   sed -i.bak "s/|//" BlastResults_"$2".txt
   # Use filtered genome results (blast output) to pull out targeted genes and create filtered gff
-  python ~/SeqCap/pythonScripts/shrinkGFF_v2.py BlastResults_"$2".txt TelagGenome.gff "$2"TargetGenes.gff log.txt
+  python ~/SeqCap/pythonScripts/shrinkGFF_v2.py BlastResults_"$2".txt TelagGenome.gff "$2"TargetGenes.gff PullTargetGenes_log.txt
   # Use bedops to convert gff to bed
   gff2bed < "$2"TargetGenes.gff > "$2"TargetGenes.bed
   # bgzip bed file
