@@ -446,16 +446,16 @@ do
     -O "$i"_"$1".g.vcf \
     -ERC GVCF
   echo "$i"$'\t'"$i""_""$1"".g.vcf" >> cohort.sample_map_"$1"
-done<$WorkingDirectory/mappedReadsDNA/samList
+done<$WorkingDirectory/mappedReads"$2"/samList
 }
 
-function get-filtered-SNPs {
+function get-just-SNPs {
     # Combine GVCFs
     /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" GenomicsDBImport \
     	--sample-name-map cohort.sample_map_"$1" \
     	--genomicsdb-workspace-path SNP_database_"$1" \
     	--reader-threads 5 \
-    	--intervals DNA.intervals
+    	--intervals genome.intervals
     # Joint genotyping
     /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" GenotypeGVCFs \
     	-R $WorkingDirectory/References/TelagGenome.fasta \
@@ -464,7 +464,7 @@ function get-filtered-SNPs {
 # Get SNPs
 /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" SelectVariants \
 	-R $WorkingDirectory/References/TelagGenome.fasta \
-	-V filtered_"$1".vcf \
+	-V genotyped_"$1".vcf \
 	--select-type-to-include SNP \
 	-O JustSNPs_"$1".vcf
 }
@@ -475,7 +475,7 @@ do
   /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" BaseRecalibrator \
     -R $WorkingDirectory/References/TelagGenome.fasta \
     -I "$i"_"$1".bam \
-    --known-sites JustSNPs_"$1".vcf \
+    --known-sites filtered_0.vcf \
     -O "$i"_recalibration_"$1".table
 done<$WorkingDirectory/mappedReadsDNA/samList
 }
@@ -525,14 +525,14 @@ function use-VariantFiltration {
 	    # Estimate strand bias without penalizing reads that occur at the end of exons *FS is biased to penalize
 /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" VariantFiltration \
 	-R $WorkingDirectory/References/TelagGenome.fasta \
-	-V genotyped_"$1".vcf \
-        -O filtered.vcf \
+	-V JustSNPs_"$1".vcf \
+        -O filtered_"$1".vcf \
 	--filter-name "SOR" \
 	--filter-expression "SOR > 3.0" \
 	--filter-name "QD" \
 	--filter-expression "QD < 2.0" \
 	--filter-name "MQ" \
-	--filter-expression "MQ < 30.0" \
+	--filter-expression "MQ < 40.0" \
 	--filter-name "MQRankSum" \
 	--filter-expression "MQRankSum < -12.5" \
 	--filter-name "FS" \
@@ -558,57 +558,87 @@ function use-VariantFiltration {
 # == for GATK functions will be created.                                                    == #
 # ============================================================================================ #
 
-#+   +++++++++++++++++++++++++++++ Done June 27 : +++++++++++++++++++++++++++++++   +#
-cd $WorkingDirectory/mappedReadsDNA
-# make .sam files list for Samtools processing
-ls | grep "_IDed.sam" |cut -d "_" -f 1 | sort | uniq  > samList
+#+   +++++++++++++++++++++++++++++ Done July 4: 1994633 +++++++++++++++++++++++++++++++   +#
+#+   cd $WorkingDirectory/mappedReadsDNA
+#+   # make .sam files list for Samtools processing
+#+   ls | grep "_IDed.sam" |cut -d "_" -f 1 | sort | uniq  > samList
+#+   
+#+   while read i;
+#+   do
+#+   cd $WorkingDirectory/mappedReadsDNA
+#+   ###  convert .sam to .bam & sort  ###
+#+   samtools view -@ 2 -bS $WorkingDirectory/mappedReadsDNA/"$i"*_IDed.sam | samtools sort -@ 2 -o $WorkingDirectory/mappedReadsDNA/"$i"_sorted.bam
+#+   ###  remove duplicates  ###
+#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/MarkDuplicates.jar \
+#+       INPUT=$WorkingDirectory/mappedReadsDNA/"$i"_sorted.bam \
+#+       OUTPUT=$WorkingDirectory/GATKDNA/"$i"_0.bam \
+#+       METRICS_FILE=DuplicationMetrics \
+#+       CREATE_INDEX=true \
+#+       VALIDATION_STRINGENCY=SILENT \
+#+       MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=1000 \
+#+       ASSUME_SORTED=TRUE \
+#+       REMOVE_DUPLICATES=TRUE
+#+   #index sorted bam
+#+   samtools index $WorkingDirectory/GATKDNA/"$i"_0.bam
+#+   	
+#+   ###  Calculate Mapping Stats  ###
+#+   # tally mapped reads & calcuate the stats
+#+   samtools idxstats $WorkingDirectory/GATKDNA/"$i"_0.bam > $WorkingDirectory/StatsDNA/"$i"_counts.txt
+#+   samtools flagstat $WorkingDirectory/GATKDNA/"$i"_0.bam > $WorkingDirectory/StatsDNA/"$i"_stats.txt
+#+   samtools depth $WorkingDirectory/GATKDNA/"$i"_0.bam > $WorkingDirectory/StatsDNA/"$i"_depth.txt
+#+   done<$WorkingDirectory/mappedReadsDNA/samList
+#+   +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++   +#
 
-while read i;
-do
-cd $WorkingDirectory/mappedReadsDNA
-###  convert .sam to .bam & sort  ###
-samtools view -@ 2 -bS $WorkingDirectory/mappedReadsDNA/"$i"*_IDed.sam | samtools sort -@ 2 -o $WorkingDirectory/mappedReadsDNA/"$i"_sorted.bam
-###  remove duplicates  ###
-java -Xmx8g -jar /tools/picard-tools-2.4.1/MarkDuplicates.jar \
-    INPUT=$WorkingDirectory/mappedReadsDNA/"$i"_sorted.bam \
-    OUTPUT=$WorkingDirectory/GATKDNA/"$i"_0.bam \
-    METRICS_FILE=DuplicationMetrics \
-    CREATE_INDEX=true \
-    VALIDATION_STRINGENCY=SILENT \
-    MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=1000 \
-    ASSUME_SORTED=TRUE \
-    REMOVE_DUPLICATES=TRUE
-#index sorted bam
-samtools index $WorkingDirectory/GATKDNA/"$i"_0.bam
-	
-###  Calculate Mapping Stats  ###
-# tally mapped reads & calcuate the stats
-samtools idxstats $WorkingDirectory/GATKDNA/"$i"_0.bam > $WorkingDirectory/StatsDNA/"$i"_counts.txt
-samtools flagstat $WorkingDirectory/GATKDNA/"$i"_0.bam > $WorkingDirectory/StatsDNA/"$i"_stats.txt
-samtools depth $WorkingDirectory/GATKDNA/"$i"_0.bam > $WorkingDirectory/StatsDNA/"$i"_depth.txt
+#  ************************ Commented out because I don't want to worry about this right now- needs to be done eventually *******
+ #  # make results directory & move results
+ #  mkdir -p /home/rlk0015/SeqCap/May2020/stats
+ #  mkdir -p /home/rlk0015/SeqCap/May2020/counts
+ #  mkdir -p /home/rlk0015/SeqCap/May2020/avgDepth
+ #  
+ #  # cp results to respective directories
+ #  cp *stats.txt /home/rlk0015/SeqCap/May2020/stats
+ #  cp *counts.txt /home/rlk0015/SeqCap/May2020/counts
+ #  cp *depth.txt /home/rlk0015/SeqCap/May2020/avgDepth
+ #  *****************************************************************************************************
 
-###  First Round of Variant Calling  ###
-cd $WorkingDirectory/GATKDNA
-use-HaplotypeCaller 0
-
-done<$WorkingDirectory/mappedReadsDNA/samList
-
-# Get mapping depth for all individuals
-cd $WorkingDirectory/StatsDNA
-ls | grep "_depth.txt" | cut -d "_" -f 1 | sort | uniq > depthList
-# Add individual name to each line in depth file
-while read i
-do
-for f in "$i"_depth.txt
-do
-sed -i "s/$/\t$i/" $f; done
-done<depthList
- 
-# Generate file with all depth information
-cat *_depth.txt > DNA_depth.txt
-for f in DNA_depth.txt
-do
-sed -i "s/$/\tDNA/" $f; done
+#+   ++++++++++++++++++++++++ Done July 4: 1994303 & 1994412 ++++++++++++++++++++++++   +#
+#+   ### --------------------- Continue Variant Calling ----------------------- ###
+#+   # ============================================================================================ #
+#+   # ============================================================================================ #
+#+   # =====================    1st Round of SNP calling for RNAseq data    ======================= #
+#+   # ============================================================================================ #
+#+   # ============================================================================================ #
+#+   # == In this section mapped data will be prepped and analyzed, and all the required files   == #
+#+   # == for GATK functions will be created.                                                    == #
+#+   # ============================================================================================ #
+#+   
+#+   cd $WorkingDirectory/mappedReadsRNA
+#+   # make .sam files list for Samtools processing
+#+   ls | grep "_IDed.sam" |cut -d "_" -f 1 | sort | uniq  > samList
+#+   while read i;
+#+   do
+#+   ###  convert .sam to .bam & sort  ###
+#+   samtools view -@ 2 -bS $WorkingDirectory/mappedReadsRNA/"$i"*_IDed.sam | samtools sort -@ 2 -o $WorkingDirectory/mappedReadsRNA/"$i"_sorted.bam
+#+   ###  remove duplicates  ###
+#+   java -Xmx8g -jar /tools/picard-tools-2.4.1/MarkDuplicates.jar \
+#+       INPUT=$WorkingDirectory/mappedReadsRNA/"$i"_sorted.bam \
+#+       OUTPUT=$WorkingDirectory/GATKRNA/"$i"_0.bam \
+#+       METRICS_FILE=DuplicationMetrics \
+#+       CREATE_INDEX=true \
+#+       VALIDATION_STRINGENCY=SILENT \
+#+       MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=1000 \
+#+       ASSUME_SORTED=TRUE \
+#+       REMOVE_DUPLICATES=TRUE
+#+   #index sorted bam
+#+   samtools index $WorkingDirectory/GATKRNA/"$i"_0.bam
+#+   	
+#+   ###  Calculate Mapping Stats  ###
+#+   # tally mapped reads & calcuate the stats
+#+   samtools idxstats $WorkingDirectory/GATKRNA/"$i"_0.bam > $WorkingDirectory/StatsRNA/"$i"_counts.txt
+#+   samtools flagstat $WorkingDirectory/GATKRNA/"$i"_0.bam > $WorkingDirectory/StatsRNA/"$i"_stats.txt
+#+   samtools depth $WorkingDirectory/GATKRNA/"$i"_0.bam > $WorkingDirectory/StatsRNA/"$i"_depth.txt
+#+   done<$WorkingDirectory/mappedReadsRNA/samList
+#+   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++   +#
 
 #  ************************ Commented out because I don't want to worry about this right now- needs to be done eventually *******
  #  # make results directory & move results
@@ -623,98 +653,27 @@ sed -i "s/$/\tDNA/" $f; done
  #  *****************************************************************************************************
 
 ### --------------------- Continue Variant Calling ----------------------- ###
-# Create interval list - this is needed for the GATK DBImport
-cd $WorkingDirectory/StatsDNA
-python /home/rlk0015/SeqCap/pythonScripts/createIntervalList.py $WorkingDirectory/StatsDNA/DNA_depth.txt $WorkingDirectory/GATKDNA/DNA.intervals
-  
-# ============================================================================================ #
-# ============================================================================================ #
-# =====================    1st Round of SNP calling for RNAseq data    ======================= #
-# ============================================================================================ #
-# ============================================================================================ #
-# == In this section mapped data will be prepped and analyzed, and all the required files   == #
-# == for GATK functions will be created.                                                    == #
-# ============================================================================================ #
-
-cd $WorkingDirectory/mappedReadsRNA
-# make .sam files list for Samtools processing
-ls | grep "_IDed.sam" |cut -d "_" -f 1 | sort | uniq  > samList
-while read i;
-do
-###  convert .sam to .bam & sort  ###
-samtools view -@ 2 -bS $WorkingDirectory/mappedReadsRNA/"$i"*_IDed.sam | samtools sort -@ 2 -o $WorkingDirectory/mappedReadsRNA/"$i"_sorted.bam
-###  remove duplicates  ###
-java -Xmx8g -jar /tools/picard-tools-2.4.1/MarkDuplicates.jar \
-    INPUT=$WorkingDirectory/mappedReadsRNA/"$i"_sorted.bam \
-    OUTPUT=$WorkingDirectory/GATKRNA/"$i"_0.bam \
-    METRICS_FILE=DuplicationMetrics \
-    CREATE_INDEX=true \
-    VALIDATION_STRINGENCY=SILENT \
-    MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=1000 \
-    ASSUME_SORTED=TRUE \
-    REMOVE_DUPLICATES=TRUE
-#index sorted bam
-samtools index $WorkingDirectory/GATKRNA/"$i"_0.bam
-	
-###  Calculate Mapping Stats  ###
-# tally mapped reads & calcuate the stats
-samtools idxstats $WorkingDirectory/GATKRNA/"$i"_0.bam > $WorkingDirectory/StatsRNA/"$i"_counts.txt
-samtools flagstat $WorkingDirectory/GATKRNA/"$i"_0.bam > $WorkingDirectory/StatsRNA/"$i"_stats.txt
-samtools depth $WorkingDirectory/GATKRNA/"$i"_0.bam > $WorkingDirectory/StatsRNA/"$i"_depth.txt
-
-###  First Round of Variant Calling  ###
-use-HaplotypeCaller 0
-
-done<$WorkingDirectory/mappedReadsRNA/samList
-
-# Get mapping depth for all individuals
-cd $WorkingDirectory/StatsRNA
-ls | grep "_depth.txt" | cut -d "_" -f 1 | sort | uniq > depthList
-# Add individual name to each line in depth file
-while read i
-do
-for f in "$i"_depth.txt
-do
-sed -i "s/$/\t$i/" $f; done
-done<depthList
- 
-# Generate file with all depth information
-cat *_depth.txt > RNA_depth.txt
-for f in RNA_depth.txt
-do
-sed -i "s/$/\tRNA/" $f; done
-
-#  ************************ Commented out because I don't want to worry about this right now- needs to be done eventually *******
- #  # make results directory & move results
- #  mkdir -p /home/rlk0015/SeqCap/May2020/stats
- #  mkdir -p /home/rlk0015/SeqCap/May2020/counts
- #  mkdir -p /home/rlk0015/SeqCap/May2020/avgDepth
- #  
- #  # cp results to respective directories
- #  cp *stats.txt /home/rlk0015/SeqCap/May2020/stats
- #  cp *counts.txt /home/rlk0015/SeqCap/May2020/counts
- #  cp *depth.txt /home/rlk0015/SeqCap/May2020/avgDepth
- #  *****************************************************************************************************
-
-### --------------------- Continue Variant Calling ----------------------- ###
-# Create interval list - this is needed for the GATK DBImport
-cd $WorkingDirectory/StatsRNA
-python /home/rlk0015/SeqCap/pythonScripts/createIntervalList.py $WorkingDirectory/StatsRNA/RNA_depth.txt $WorkingDirectory/GATKRNA/RNA.intervals
-
 # Perform bqsr-'bootstraping', SNP calling, and hard filtration on Seq Cap data
 cd $WorkingDirectory/GATKDNA
 ## Replicate 1
-get-filtered-SNPs 0
+#+ Done July 4 + use-HaplotypeCaller 0 DNA
+#+ Done July 4 (except for SelectVariants, which is being done below- delete when finished + get-just-SNPs 0 
+/tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" SelectVariants \
+	-R $WorkingDirectory/References/TelagGenome.fasta \
+	-V genotyped_0.vcf \
+	--select-type-to-include SNP \
+	-O JustSNPs_0.vcf
+use-VariantFiltration 0
 use-BaseRecalibrator 0
 use-BQSR 0 1
-use-HaplotypeCaller 1
-get-filtered-SNPs 1
+use-HaplotypeCaller 1 DNA
+get-just-SNPs 1
 use-BaseRecalibrator 1
 use-AnalyzeCovariates 0 1
 ## -- Replicate 2
 use-BQSR 1 2
-use-HaplotypeCaller 2
-get-filtered-SNPs 2
+use-HaplotypeCaller 2 DNA
+get-just-SNPs 2
 use-BaseRecalibrator 2
 use-AnalyzeCovariates 1 2
 ## -- Filter Variants
@@ -723,488 +682,21 @@ use-VariantFiltration 2
 # Perform bqsr-'bootstraping', SNP calling, and hard filtration on RNA-seq data
 cd $WorkingDirectory/GATKRNA
 ## Replicate 1
-get-filtered-SNPs 0
+use-HaplotypeCaller 0 RNA
+get-just-SNPs 0
+use-VariantFiltration 0
 use-BaseRecalibrator 0
 use-BQSR 0 1
-use-HaplotypeCaller 1
-get-filtered-SNPs 1
+use-HaplotypeCaller 1 RNA
+get-just-SNPs 1
 use-BaseRecalibrator 1
 use-AnalyzeCovariates 0 1
 ## -- Replicate 2
 use-BQSR 1 2
-use-HaplotypeCaller 2
-get-filtered-SNPs 2
+use-HaplotypeCaller 2 RNA
+get-just-SNPs 2
 use-BaseRecalibrator 2
 use-AnalyzeCovariates 1 2
 ## -- Filter Variants
 use-VariantFiltration 2
 
-# §§§§§§§§§ I don't think you want to do the stuff below §§§§§§§§§§ #
-# § ### merge .bam files ###
-# § samtools merge -f $WorkingDirectory/GATKDNA/dupsRemoved.bam $WorkingDirectory/GATKDNA/*_dupsRemoved.bam
-# § ### index the merged .bam ###
-# § samtools index $WorkingDirectory/GATKDNA/dupsRemoved.bam
-# § # Recalibrate SNP calling accounting for sequencing error
-# § /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" BaseRecalibrator \
-# § 	-R $WorkingDirectory/References/TelagGenome.fasta \
-# § 	-I $WorkingDirectory/GATKDNA/dupsRemoved.bam \
-# § 	--known-sites $WorkingDirectory/GATKDNA/JustSNPs_0.vcf \
-# § 	-o $WorkingDirectory/GATKDNA/recal_data_1.table
-# §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§ #
-
-	
-#  # realign indels
-#  java -Xmx16g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-#      -T IndelRealigner \
-#      -R $WorkingDirectory/GATKDNA/HybPiperContigs.fa \
-#      -I $WorkingDirectory/GATKDNA/dupsRemoved.bam \
-#      -targetIntervals $WorkingDirectory/GATKDNA/indelsCalled.intervals \
-#      -LOD 3.0 \
-#      -o $WorkingDirectory/GATKDNA/indelsRealigned.bam
-#  ## -- CALL SNPS -- ##
-#  java -Xmx16g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-#      -T UnifiedGenotyper \
-#      -R $WorkingDirectory/GATKDNA/HybPiperContigs.fa \
-#      -I $WorkingDirectory/GATKDNA/indelsRealigned.bam \
-#      -o $WorkingDirectory/GATKDNA/calledSNPs.vcf \
-#      -gt_mode DISCOVERY \
-#      -ploidy 2 \
-#      -stand_call_conf 30 \
-#      -stand_emit_conf 10 \
-#      -rf BadCigar
-#  # annotate variants
-#  java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-#      -T VariantAnnotator \
-#      -R $WorkingDirectory/GATKDNA/HybPiperContigs.fa \
-#      -I $WorkingDirectory/GATKDNA/indelsRealigned.bam \
-#      -G StandardAnnotation \
-#      -V:variant,VCF $WorkingDirectory/GATKDNA/calledSNPs.vcf \
-#      -XA SnpEff \
-#      -o $WorkingDirectory/GATKDNA/annotatedSNPs.vcf \
-#      -rf BadCigar
-#  # annotate indels
-#  java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-#      -T UnifiedGenotyper \
-#      -R $WorkingDirectory/GATKDNA/HybPiperContigs.fa \
-#      -I $WorkingDirectory/GATKDNA/indelsRealigned.bam \
-#      -gt_mode DISCOVERY \
-#      -glm INDEL \
-#      -o $WorkingDirectory/GATKDNA/annotatedIndels.vcf \
-#      -stand_call_conf 30 \
-#      -stand_emit_conf 10 \
-#      -rf BadCigar
-#  # mask indels
-#  java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-#      -T VariantFiltration \
-#      -R $WorkingDirectory/GATKDNA/HybPiperContigs.fa \
-#      -V $WorkingDirectory/GATKDNA/calledSNPs.vcf \
-#      --mask $WorkingDirectory/GATKDNA/annotatedIndels.vcf \
-#      -o $WorkingDirectory/GATKDNA/SNPsMaskedIndels.vcf/ \
-#      -rf BadCigar
-#  # restrict to high-quality variant calls
-#  cat $WorkingDirectory/GATKDNA/SNPsMaskedIndels.vcf | grep 'PASS\|^#' > $WorkingDirectory/GATKDNA/qualitySNPs.vcf
-#  # read-backed phasing
-#  java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-#      -T ReadBackedPhasing \
-#      -R $WorkingDirectory/GATKDNA/HybPiperContigs.fa \
-#      -I $WorkingDirectory/GATKDNA/indelsRealigned.bam \
-#      --variant $WorkingDirectory/GATKDNA/qualitySNPs.vcf \
-#      -L $WorkingDirectory/GATKDNA/qualitySNPs.vcf \
-#      -o $WorkingDirectory/GATKDNA/phasedSNPs.vcf \
-#      --phaseQualityThresh 20.0 \
-#      -rf BadCigar
-#  
-#  ## Make Sample List from VCF ##
-#  cd $WorkingDirectory/GATKDNA
-#  bcftools query -l phasedSNPs.vcf > VcfSampleList
-#  
-#  while read i;
-#  do
-#  # VCF for each sample
-#  java -Xmx2g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-#      -T SelectVariants \
-#      -R $WorkingDirectory/GATKDNA/HybPiperContigs.fa \
-#      --variant $WorkingDirectory/GATKDNA/phasedSNPs.vcf \
-#      -o $WorkingDirectory/GATKDNA/"$i"_phasedSNPs.vcf \
-#      -sn "$i" \
-#      -rf BadCigar
-#  # make SNPs table
-#  java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-#      -T VariantsToTable \
-#      -R $WorkingDirectory/GATKDNA/HybPiperContigs.fa \
-#      -V $WorkingDirectory/GATKDNA/"$i"_phasedSNPs.vcf \
-#      -F CHROM -F POS -F QUAL -GF GT -GF DP -GF HP -GF AD \
-#      -o $WorkingDirectory/HybPiperSNPTables/"$i"_tableSNPs.txt \
-#      -rf BadCigar
-#  # Add phased SNPs to reference and filter
-#  python /home/rlk0015/SeqCap/seqcap_pop/bin/add_phased_snps_to_seqs_filter.py \
-#      $WorkingDirectory/GATKDNA/HybPiperContigs.fa \
-#      $WorkingDirectory/HybPiperSNPTables/"$i"_tableSNPs.txt \
-#      $WorkingDirectory/HybPiperSequenceTables/"$i"_tableSequences.txt \
-#      1
-#  done<VcfSampleList
-# 
-# # ºººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººº #
-# # ºººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººº #
-# # ºººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººº #
-# # ºººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººº #
-# # ºººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººººº #
-# 
-# 
-# # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ TRANSCRIPTS BLOCK ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# # &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& Following is complete &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-# # && cd $WorkingDirectory/mappedReadsDNA/Transcripts
-# # && # make .sam files list for Samtools processing
-# # && ls | grep "_IDed.sam" |cut -d "_" -f 1 | sort | uniq  > samList
-# # && # make result directories
-# mkdir -p $WorkingDirectory/TranscriptsGATK
-# mkdir -p $WorkingDirectory/Sequences
-# # && mkdir -p $WorkingDirectory/TranscriptsSNPTables
-# # && mkdir -p $WorkingDirectory/TranscriptsSequenceTables
-# # && # copy reference for SNP calling
-# cp /home/rlk0015/SeqCap/code/References/Transcripts.fa $WorkingDirectory/TranscriptsGATK/Transcripts.fa
-# # && # index ref
-# # && samtools faidx $WorkingDirectory/TranscriptsGATK/Transcripts.fa
-# # && java -Xmx8g -jar /tools/picard-tools-2.4.1/CreateSequenceDictionary.jar \
-# # &&     R= $WorkingDirectory/TranscriptsGATK/Transcripts.fa \
-# # &&     O= $WorkingDirectory/TranscriptsGATK/Transcripts.dict
-# # && cd $WorkingDirectory/mappedReadsDNA/Transcripts
-# # && while read i;
-# # && do
-# # && # convert .sam to .bam & sort ###
-# # && samtools view -@ 2 -bS $WorkingDirectory/mappedReadsDNA/Transcripts/"$i"*_IDed.sam | samtools sort -@ 2 -o $WorkingDirectory/mappedReadsDNA/Transcripts/"$i"_sorted.bam
-# # && ### remove duplicates ###
-# # && java -Xmx8g -jar /tools/picard-tools-2.4.1/MarkDuplicates.jar \
-# # &&     INPUT=$WorkingDirectory/mappedReadsDNA/Transcripts/"$i"_sorted.bam \
-# # &&     OUTPUT=$WorkingDirectory/TranscriptsGATK/"$i"_0.bam \
-# # &&     METRICS_FILE=DuplicationMetrics \
-# # &&     CREATE_INDEX=true \
-# # &&     VALIDATION_STRINGENCY=SILENT \
-# # &&     MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=1000 \
-# # &&     ASSUME_SORTED=TRUE \
-# # &&     REMOVE_DUPLICATES=TRUE
-# # && #index sorted bam
-# # && samtools index $WorkingDirectory/TranscriptsGATK/"$i"_0.bam
-# # && 
-# # && ## Calculate Stats ##
-# # && cd $WorkingDirectory_ReducedTranscriptome/mappedReadsDNA/Transcripts
-# # && # make stats folder
-# # && mkdir -p $WorkingDirectory/TranscriptsStats
-# # && # tally mapped reads & calcuate the stats
-# # && samtools idxstats $WorkingDirectory/TranscriptsGATK/"$i"_0.bam > $WorkingDirectory/TranscriptsStats/"$i"_counts.txt
-# # && samtools flagstat $WorkingDirectory/TranscriptsGATK/"$i"_0.bam > $WorkingDirectory/TranscriptsStats/"$i"_stats.txt
-# # && samtools depth $WorkingDirectory/TranscriptsGATK/"$i"_0.bam > $WorkingDirectory/TranscriptsStats/"$i"_depth.txt
-# # && done<samList
-# # && 
-# # && cd $WorkingDirectory/TranscriptsStats
-# # && ls | grep "_depth.txt" | cut -d "_" -f 1 | sort | uniq > depthList
-# # && # Add individual name to each line in depth file
-# # && while read i
-# # && do
-# # && for f in "$i"_depth.txt
-# # && do
-# # && sed -i "s/$/\t$i/" $f; done
-# # && done<depthList
-# # && 
-# # && # Generate file with all depth information
-# # && cat *_depth.txt > Transcripts_depth.txt
-# # && for f in Transcripts_depth.txt
-# # && do
-# # && sed -i "s/$/\tTranscripts/" $f; done
-# # && 
-# # && # Create file with avg depth per exon using Randy's python script
-# # && #!!!!!!!! CHANGE THIS TO "PER CONTIG" FOR TRANSCRIPTOME (WILL HAVE TO CHANGE CODE)
-# # && python /home/rlk0015/SeqCap/pythonScripts/avgDepth.py Transcripts_depth.txt Transcripts_avgDepth.txt
-# # && 
-# # && #  ************************ Commented out because I don't want to worry about this right now- needs to be done eventually *******
-# # && #  # make results directory & move results
-# # && #  mkdir -p /home/rlk0015/SeqCap/May2020/stats
-# # && #  mkdir -p /home/rlk0015/SeqCap/May2020/counts
-# # && #  mkdir -p /home/rlk0015/SeqCap/May2020/avgDepth
-# # && #  
-# # && #  # cp results to respective directories
-# # && #  cp *stats.txt /home/rlk0015/SeqCap/May2020/stats
-# # && #  cp *counts.txt /home/rlk0015/SeqCap/May2020/counts
-# # && #  cp *depth.txt /home/rlk0015/SeqCap/May2020/avgDepth
-# # && #  *****************************************************************************************************
-# # && 
-# # && 
-# # && ### move to GATK directory ###
-# # && cd $WorkingDirectory/TranscriptsGATK/
-# # && ### merge .bam files ###
-# # && samtools merge -f $WorkingDirectory/TranscriptsGATK/dupsRemoved.bam $WorkingDirectory/TranscriptsGATK/*_dupsRemoved.bam
-# # && ### index the merged .bam ###
-# # && samtools index $WorkingDirectory/TranscriptsGATK/dupsRemoved.bam
-# # && ## -- CALL SNPS -- ##
-# /tools/gatk-4.1.2.0/gatk --java-options "-Xmx16g" HaplotypeCaller\
-#   -R $WorkingDirectory/TranscriptsGATK/Transcripts.fa \
-#   -I dupsRemoved.bam \
-#   -stand_emit_conf 10 \
-#   -stand_call_conf 30 \
-#   -O rawVariants.vcf 
-#   # The following read filters are applied automatically: HCMappingQualityFilter, MalformedReadFilter, BadCigarFilter, UnmappedReadFilter, NotPrimaryAlignmentFilter, FailsVendorQualityCheckFilter, DuplicateReadFilter, MappingQualityUnavailableFilter
-# # annotate variants
-# java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-# # &&     -T VariantAnnotator \
-# # &&     -R $WorkingDirectory/TranscriptsGATK/Transcripts.fa \
-# # &&     -I $WorkingDirectory/TranscriptsGATK/indelsRealigned.bam \
-# # &&     -G StandardAnnotation \
-# # &&     -V:variant,VCF $WorkingDirectory/TranscriptsGATK/calledSNPs.vcf \
-# # &&     -XA SnpEff \
-# # &&     -o $WorkingDirectory/TranscriptsGATK/annotatedSNPs.vcf \
-# # &&     -rf BadCigar
-# # && # annotate indels
-# # && java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-# # &&     -T UnifiedGenotyper \
-# # &&     -R $WorkingDirectory/TranscriptsGATK/Transcripts.fa \
-# # &&     -I $WorkingDirectory/TranscriptsGATK/indelsRealigned.bam \
-# # &&     -gt_mode DISCOVERY \
-# # &&     -glm INDEL \
-# # &&     -o $WorkingDirectory/TranscriptsGATK/annotatedIndels.vcf \
-# # &&     -stand_call_conf 30 \
-# # &&     -stand_emit_conf 10 \
-# # &&     -rf BadCigar
-# # && # mask indels
-# # && java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-# # &&     -T VariantFiltration \
-# # &&     -R $WorkingDirectory/TranscriptsGATK/Transcripts.fa \
-# # &&     -V $WorkingDirectory/TranscriptsGATK/calledSNPs.vcf \
-# # &&     --mask $WorkingDirectory/TranscriptsGATK/annotatedIndels.vcf \
-# # &&     -o $WorkingDirectory/TranscriptsGATK/SNPsMaskedIndels.vcf/ \
-# # &&     -rf BadCigar
-# # && # restrict to high-quality variant calls
-# # && cat $WorkingDirectory/TranscriptsGATK/SNPsMaskedIndels.vcf | grep 'PASS\|^#' > $WorkingDirectory/TranscriptsGATK/qualitySNPs.vcf
-# # && # read-backed phasing
-# # && java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-# # &&     -T ReadBackedPhasing \
-# # &&     -R $WorkingDirectory/TranscriptsGATK/Transcripts.fa \
-# # &&     -I $WorkingDirectory/TranscriptsGATK/indelsRealigned.bam \
-# # &&     --variant $WorkingDirectory/TranscriptsGATK/qualitySNPs.vcf \
-# # &&     -L $WorkingDirectory/TranscriptsGATK/qualitySNPs.vcf \
-# # &&     -o $WorkingDirectory/TranscriptsGATK/phasedSNPs.vcf \
-# # &&     --phaseQualityThresh 20.0 \
-# # &&     -rf BadCigar
-# # && 
-# # && ## Make Sample List from VCF ##
-# # && cd $WorkingDirectory/TranscriptsGATK
-# # && bcftools query -l phasedSNPs.vcf > VcfSampleList
-# # && 
-# # && while read i;
-# # && do
-# # && # VCF for each sample
-# # && java -Xmx2g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-# # &&     -T SelectVariants \
-# # &&     -R $WorkingDirectory/TranscriptsGATK/Transcripts.fa \
-# # &&     --variant $WorkingDirectory/TranscriptsGATK/phasedSNPs.vcf \
-# # &&     -o $WorkingDirectory/TranscriptsGATK/"$i"_phasedSNPs.vcf \
-# # &&     -sn "$i" \
-# # &&     -rf BadCigar
-# # && # make SNPs table
-# # && java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-# # &&     -T VariantsToTable \
-# # &&     -R $WorkingDirectory/TranscriptsGATK/Transcripts.fa \
-# # &&     -V $WorkingDirectory/TranscriptsGATK/"$i"_phasedSNPs.vcf \
-# # &&     -F CHROM -F POS -F QUAL -GF GT -GF DP -GF HP -GF AD \
-# # &&     -o $WorkingDirectory/TranscriptsSNPTables/"$i"_tableSNPs.txt \
-# # &&     -rf BadCigar
-# # && # Add phased SNPs to reference and filter
-# # && python /home/rlk0015/SeqCap/seqcap_pop/bin/add_phased_snps_to_seqs_filter.py \
-# # &&     $WorkingDirectory/TranscriptsGATK/Transcripts.fa \
-# # &&     $WorkingDirectory/TranscriptsSNPTables/"$i"_tableSNPs.txt \
-# # &&     $WorkingDirectory/TranscriptsSequenceTables/"$i"_tableSequences.txt \
-# # &&     1
-# # && done<VcfSampleList
-# # &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& End && block &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-# 
-# # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ RNA SEQ BLOCK ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# #  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# cd $WorkingDirectory/mappedReadsRNA
-# # +++++++++++++++++++++++++ Already done +++++++++++++++++++++++++++++
-# # ++ # make .sam files list for Samtools processing
-# # ++ ls | grep "_IDed.sam" |cut -d "_" -f 1 | sort | uniq  > samList
-# # ++ # make result directories
-# # ++ mkdir -p $WorkingDirectory/RNAGATK
-# # ++ mkdir -p $WorkingDirectory/RNASNPTables
-# # ++ mkdir -p $WorkingDirectory/RNASequenceTables
-# # ++ # copy reference for SNP calling
-# # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# cp /home/rlk0015/SeqCap/code/References/TranscriptomePlusTranscripts.fa $WorkingDirectory/RNAGATK/Transcriptome.fa
-# # index ref
-# samtools faidx $WorkingDirectory/RNAGATK/Transcriptome.fa
-# java -Xmx8g -jar /tools/picard-tools-2.4.1/CreateSequenceDictionary.jar \
-#     R= $WorkingDirectory/RNAGATK/Transcriptome.fa \
-#     O= $WorkingDirectory/RNAGATK/Transcriptome.dict
-# # =========================== Already done ===========================
-# # == cd $WorkingDirectory/mappedReadsRNA
-# # == while read i;
-# # == do
-# # == # convert .sam to .bam & sort ###
-# # == samtools view -@ 2 -bS $WorkingDirectory/mappedReadsRNA/"$i"*_IDed.sam | samtools sort -@ 2 -o $WorkingDirectory/mappedReadsRNA/"$i"_sorted.bam
-# # == ### remove duplicates ###
-# # == java -Xmx8g -jar /tools/picard-tools-2.4.1/MarkDuplicates.jar \
-# # ==     INPUT=$WorkingDirectory/mappedReadsRNA/"$i"_sorted.bam \
-# # ==     OUTPUT=$WorkingDirectory/RNAGATK/"$i"_0.bam \
-# # ==     METRICS_FILE=DuplicationMetrics \
-# # ==     CREATE_INDEX=true \
-# # ==     VALIDATION_STRINGENCY=SILENT \
-# # ==     MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=1000 \
-# # ==     ASSUME_SORTED=TRUE \
-# # ==     REMOVE_DUPLICATES=TRUE
-# # == #index sorted bam
-# # == samtools index $WorkingDirectory/RNAGATK/"$i"_0.bam
-# # == 
-# # == ## Calculate Stats ##
-# # == cd $WorkingDirectory_ReducedTranscriptome/mappedReadsRNA
-# # == # make stats folder
-# # == mkdir -p $WorkingDirectory/RNAStats
-# # == # tally mapped reads & calcuate the stats
-# # == samtools idxstats $WorkingDirectory/RNAGATK/"$i"_0.bam > $WorkingDirectory/RNAStats/"$i"_counts.txt
-# # == samtools flagstat $WorkingDirectory/RNAGATK/"$i"_0.bam > $WorkingDirectory/RNAStats/"$i"_stats.txt
-# # == samtools depth $WorkingDirectory/RNAGATK/"$i"_0.bam > $WorkingDirectory/RNAStats/"$i"_depth.txt
-# # == done<samList
-# # == 
-# # == cd $WorkingDirectory/RNAStats
-# # == ls | grep "_depth.txt" | cut -d "_" -f 1 | sort | uniq > depthList
-# # == # Add individual name to each line in depth file
-# # == while read i
-# # == do
-# # == for f in "$i"_depth.txt
-# # == do
-# # == sed -i "s/$/\t$i/" $f; done
-# # == done<depthList
-# # == 
-# # == # Generate file with all depth information
-# # == cat *_depth.txt > RNA_depth.txt
-# # == for f in RNA_depth.txt
-# # == do
-# # == sed -i "s/$/\tRNA/" $f; done
-# # == 
-# # == # Create file with avg depth per exon using Randy's python script
-# # == #!!!!!!!! CHANGE THIS TO "PER CONTIG" FOR TRANSCRIPTOME (WILL HAVE TO CHANGE CODE)
-# # == python /home/rlk0015/SeqCap/pythonScripts/avgDepth.py RNA_depth.txt RNA_avgDepth.txt
-# # == 
-# # == #  ************************ Commented out because I don't want to worry about this right now- needs to be done eventually *******
-# # == #  # make results directory & move results
-# # == #  mkdir -p /home/rlk0015/SeqCap/May2020/stats
-# # == #  mkdir -p /home/rlk0015/SeqCap/May2020/counts
-# # == #  mkdir -p /home/rlk0015/SeqCap/May2020/avgDepth
-# # == #  
-# # == #  # cp results to respective directories
-# # == #  cp *stats.txt /home/rlk0015/SeqCap/May2020/stats
-# # == #  cp *counts.txt /home/rlk0015/SeqCap/May2020/counts
-# # == #  cp *depth.txt /home/rlk0015/SeqCap/May2020/avgDepth
-# # == #  *****************************************************************************************************
-# # == =================================================================================== 
-# 
-# 
-# ### move to GATK directory ###
-# cd $WorkingDirectory/RNAGATK/
-# # .......................... Already done ..............................
-# # .. ### merge .bam files ###
-# # .. samtools merge -f $WorkingDirectory/RNAGATK/dupsRemoved.bam $WorkingDirectory/RNAGATK/*_dupsRemoved.bam
-# # .. ### index the merged .bam ###
-# # .. samtools index $WorkingDirectory/RNAGATK/dupsRemoved.bam
-# # call indels
-# # ......................................................................
-# java -Xmx16g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-#     -T RealignerTargetCreator \
-#     -R $WorkingDirectory/RNAGATK/Transcriptome.fa \
-#     -I $WorkingDirectory/RNAGATK/dupsRemoved.bam \
-#     -o $WorkingDirectory/RNAGATK/indelsCalled.intervals
-# # realign indels
-# java -Xmx16g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-#     -T IndelRealigner \
-#     -R $WorkingDirectory/RNAGATK/Transcriptome.fa \
-#     -I $WorkingDirectory/RNAGATK/dupsRemoved.bam \
-#     -targetIntervals $WorkingDirectory/RNAGATK/indelsCalled.intervals \
-#     -LOD 3.0 \
-#     -o $WorkingDirectory/RNAGATK/indelsRealigned.bam
-# ## -- CALL SNPS -- ##
-# java -Xmx16g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-#     -T UnifiedGenotyper \
-#     -R $WorkingDirectory/RNAGATK/Transcriptome.fa \
-#     -I $WorkingDirectory/RNAGATK/indelsRealigned.bam \
-#     -o $WorkingDirectory/RNAGATK/calledSNPs.vcf \
-#     -gt_mode DISCOVERY \
-#     -ploidy 2 \
-#     -stand_call_conf 30 \
-#     -stand_emit_conf 10 \
-#     -rf BadCigar
-# # annotate variants
-# java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-#     -T VariantAnnotator \
-#     -R $WorkingDirectory/RNAGATK/Transcriptome.fa \
-#     -I $WorkingDirectory/RNAGATK/indelsRealigned.bam \
-#     -G StandardAnnotation \
-#     -V:variant,VCF $WorkingDirectory/RNAGATK/calledSNPs.vcf \
-#     -XA SnpEff \
-#     -o $WorkingDirectory/RNAGATK/annotatedSNPs.vcf \
-#     -rf BadCigar
-# # annotate indels
-# java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-#     -T UnifiedGenotyper \
-#     -R $WorkingDirectory/RNAGATK/Transcriptome.fa \
-#     -I $WorkingDirectory/RNAGATK/indelsRealigned.bam \
-#     -gt_mode DISCOVERY \
-#     -glm INDEL \
-#     -o $WorkingDirectory/RNAGATK/annotatedIndels.vcf \
-#     -stand_call_conf 30 \
-#     -stand_emit_conf 10 \
-#     -rf BadCigar
-# # mask indels
-# java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-#     -T VariantFiltration \
-#     -R $WorkingDirectory/RNAGATK/Transcriptome.fa \
-#     -V $WorkingDirectory/RNAGATK/calledSNPs.vcf \
-#     --mask $WorkingDirectory/RNAGATK/annotatedIndels.vcf \
-#     -o $WorkingDirectory/RNAGATK/SNPsMaskedIndels.vcf/ \
-#     -rf BadCigar
-# # restrict to high-quality variant calls
-# cat $WorkingDirectory/RNAGATK/SNPsMaskedIndels.vcf | grep 'PASS\|^#' > $WorkingDirectory/RNAGATK/qualitySNPs.vcf
-# # read-backed phasing
-# java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-#     -T ReadBackedPhasing \
-#     -R $WorkingDirectory/RNAGATK/Transcriptome.fa \
-#     -I $WorkingDirectory/RNAGATK/indelsRealigned.bam \
-#     --variant $WorkingDirectory/RNAGATK/qualitySNPs.vcf \
-#     -L $WorkingDirectory/RNAGATK/qualitySNPs.vcf \
-#     -o $WorkingDirectory/RNAGATK/phasedSNPs.vcf \
-#     --phaseQualityThresh 20.0 \
-#     -rf BadCigar
-# 
-# ## Make Sample List from VCF ##
-# cd $WorkingDirectory/RNAGATK
-# bcftools query -l phasedSNPs.vcf > VcfSampleList
-# 
-# while read i;
-# do
-# # VCF for each sample
-# java -Xmx2g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-#     -T SelectVariants \
-#     -R $WorkingDirectory/RNAGATK/Transcriptome.fa \
-#     --variant $WorkingDirectory/RNAGATK/phasedSNPs.vcf \
-#     -o $WorkingDirectory/RNAGATK/"$i"_phasedSNPs.vcf \
-#     -sn "$i" \
-#     -rf BadCigar
-# # make SNPs table
-# java -Xmx8g -jar /tools/gatk-3.6/GenomeAnalysisTK.jar \
-#     -T VariantsToTable \
-#     -R $WorkingDirectory/RNAGATK/Transcriptome.fa \
-#     -V $WorkingDirectory/RNAGATK/"$i"_phasedSNPs.vcf \
-#     -F CHROM -F POS -F QUAL -GF GT -GF DP -GF HP -GF AD \
-#     -o $WorkingDirectory/RNASNPTables/"$i"_tableSNPs.txt \
-#     -rf BadCigar
-# # Add phased SNPs to reference and filter
-# python /home/rlk0015/SeqCap/seqcap_pop/bin/add_phased_snps_to_seqs_filter.py \
-#     $WorkingDirectory/RNAGATK/Transcriptome.fa \
-#     $WorkingDirectory/RNASNPTables/"$i"_tableSNPs.txt \
-#     $WorkingDirectory/RNASequenceTables/"$i"_tableSequences.txt \
-#     1
-# done<VcfSampleList
