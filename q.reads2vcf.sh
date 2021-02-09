@@ -11,7 +11,7 @@
 #-- Hopper's standard compute nodes have a total of 20 cores each
 #-- so, to use all the processors on a single machine, set your
 #-- ppn (processors per node) to 20.
-#PBS -l nodes=2:ppn=10,walltime=05:00:00:00
+#PBS -l nodes=3:ppn=10,walltime=05:00:00:00
 #-- Indicate if\when you want to receive email about your job
 #-- The directive below sends email if the job is (a) aborted, 
 #-- when it (b) begins, and when it (e) ends
@@ -45,6 +45,10 @@ module load htslib/1.3.3
 module load python/3.6.4
 module load gatk/4.1.7.0
 module load R/3.6.0
+module load bedtools/2.29.0
+module load ncbi-blast/2.9.0+
+module load bcftools/1.3.2
+module load vcftools/v0.1.17
 
 #+   ++++++++++++++++++++++++ Done June 29: 1994303 & 1994412 ++++++++++++++++++++++++   +#
 #+   #create working directory ###
@@ -477,7 +481,7 @@ do
     -I "$i"_"$1".bam \
     --known-sites filtered_0.vcf \
     -O "$i"_recalibration_"$1".table
-done<$WorkingDirectory/mappedReadsDNA/samList
+done<$WorkingDirectory/mappedReads"$2"/samList
 }
 
 function use-AnalyzeCovariates {
@@ -488,7 +492,7 @@ do
     -after "$i"_recalibration_"$2".table \
     -plots "$i"_recalComparison_"$1".pdf \
     -csv "$i"_recalComparison_"$1".csv
-done<$WorkingDirectory/mappedReadsDNA/samList
+done<$WorkingDirectory/mappedReads"$3"/samList
 }
 
 function use-BQSR {
@@ -499,7 +503,7 @@ do
     -I "$i"_"$1".bam \
     --bqsr-recal-file "$i"_recalibration_"$1".table \
     -O "$i"_"$2".bam
-done<$WorkingDirectory/mappedReadsDNA/samList
+done<$WorkingDirectory/mappedReads"$3"/samList
 }
 
 function use-VariantFiltration {
@@ -652,51 +656,99 @@ function use-VariantFiltration {
  #  cp *depth.txt /home/rlk0015/SeqCap/May2020/avgDepth
  #  *****************************************************************************************************
 
-### --------------------- Continue Variant Calling ----------------------- ###
-# Perform bqsr-'bootstraping', SNP calling, and hard filtration on Seq Cap data
-cd $WorkingDirectory/GATKDNA
-## Replicate 1
-#+ Done July 4 + use-HaplotypeCaller 0 DNA
-#+ Done July 4 (except for SelectVariants, which is being done below- delete when finished + get-just-SNPs 0 
-/tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" SelectVariants \
-	-R $WorkingDirectory/References/TelagGenome.fasta \
-	-V genotyped_0.vcf \
-	--select-type-to-include SNP \
-	-O JustSNPs_0.vcf
-use-VariantFiltration 0
-use-BaseRecalibrator 0
-use-BQSR 0 1
-use-HaplotypeCaller 1 DNA
-get-just-SNPs 1
-use-BaseRecalibrator 1
-use-AnalyzeCovariates 0 1
+#+ +++++++++++++++++++++++++++ Completed July 2020 +++++++++++++++++++++++++++ +#
+#+ ### --------------------- Continue Variant Calling ----------------------- ###
+#+ # Perform bqsr-'bootstraping', SNP calling, and hard filtration on Seq Cap data
+#+ cd $WorkingDirectory/GATKDNA
+#+ ## Replicate 1
+#+ use-HaplotypeCaller 0 DNA
+#+ get-just-SNPs 0 
+#+ use-VariantFiltration 0
+#+ use-BaseRecalibrator 0 DNA
+#+ use-BQSR 0 1 DNA
+#+ use-HaplotypeCaller 1 DNA
+#+ get-just-SNPs 1
+#+ use-BaseRecalibrator 1 DNA
+#+ use-AnalyzeCovariates 0 1 DNA
 ## -- Replicate 2
-use-BQSR 1 2
-use-HaplotypeCaller 2 DNA
-get-just-SNPs 2
-use-BaseRecalibrator 2
-use-AnalyzeCovariates 1 2
-## -- Filter Variants
-use-VariantFiltration 2
+#+ use-BQSR 1 2 DNA
+#+ use-HaplotypeCaller 2 DNA
+#+ get-just-SNPs 2
+#+ use-BaseRecalibrator 2 DNA
+#+ use-AnalyzeCovariates 1 2 DNA
+#+ ## -- Filter Variants
+#+ use-VariantFiltration 2
+#+ 
+#+ # Perform bqsr-'bootstraping', SNP calling, and hard filtration on RNA-seq data
+#+ cd $WorkingDirectory/GATKRNA
+#+ ## Replicate 1
+#+ use-HaplotypeCaller 0 RNA
+#+ get-just-SNPs 0
+#+ use-VariantFiltration 0
+#+ use-BaseRecalibrator 0 RNA
+#+ use-BQSR 0 1 RNA
+#+ use-HaplotypeCaller 1 RNA
+#+ get-just-SNPs 1
+#+ use-BaseRecalibrator 1 RNA
+#+ use-AnalyzeCovariates 0 1 RNA
+#+ ## -- Replicate 2
+#+ use-BQSR 1 2 RNA
+#+ use-HaplotypeCaller 2 RNA
+#+ get-just-SNPs 2
+#+ use-BaseRecalibrator 2 RNA
+#+ use-AnalyzeCovariates 1 2 RNA
+#+ ## -- Filter Variants
+#+ use-VariantFiltration 2
+#+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-# Perform bqsr-'bootstraping', SNP calling, and hard filtration on RNA-seq data
+#+ +++++++++++++++++++++++++++ Completed August 2020 +++++++++++++++++++++++++++ +#
+#+ # copy gff annotated genome to references
+#+ cp /home/rlk0015/SeqCap/code/References/T_elegans_genome/latest_assembly_versions/GCF_009769535.1_rThaEle1.pri/GCF_009769535.1_rThaEle1.pri_genomic.gff.gz $WorkingDirectory/References/TelagGenome.gff.gz
+#+ cd $WorkingDirectory/References
+#+ gunzip TelagGenome.gff.gz
+#+ echo "RLK_report: REFERENCE GFF COPY COMPLETE"
+
+#+ ## ANNOTATE FILTERED VARIANT FILES FOR SEQCAP DATA
+#+ cd $WorkingDirectory/References
+#+ # Use Blast with Exons.fa (the exons used for probe design) to filter the genome
+#+ makeblastdb -in TelagGenome.fasta -parse_seqids -dbtype nucl -out Genome.db
+#+ blastn -db Genome.db -query Exons.fa -outfmt "7 qseqid sseqid evalue qstart qend sstart send" -out BlastResults.txt
+#+ # Use filtered genome results (blast output) to create filtered gff
+#+ python ~/SeqCap/pythonScripts/shrinkGFF_v2.py BlastResults.txt TelagGenome.gff TargetedMitoGenes.gff log.txt
+#+ # Use bedops to convert gff to bed
+#+ gff2bed < TargetedMitoGenes.gff > TargetedMitoGenes.bed
+#+ # bgzip bed file
+#+ bgzip TargetedMitoGenes.bed TargetedMitoGenes.bed.gz
+#+ # tabix index .bed.gz file
+#+ tabix -p bed TargetedMitoGenes.bed.gz
+#+ # Annotate SNP file
+#+ cd $WorkingDirectory/GATKDNA
+#+ bcftools annotate \
+#+ 	-a $WorkingDirectory/References/TargetedMitoGenes.bed.gz \
+#+ 	-c CHROM,FROM,TO,GENE \
+#+         -o annotatedSNPs_DNA.vcf \
+#+ 	-O v \
+#+ 	-h <(echo '##INFO=<ID=GENE,Number=1,Type=String,Description="Gene name">') \
+#+ 	filtered_2.vcf
+#+ 
+#+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ +#
+## ANNOTATE FILTERED VARIANT FILES FOR RNASEQ DATA
+cd $WorkingDirectory/References
+# Create "just genes" gff
+python ~/SeqCap/pythonScripts/shrinkGFF_v3.sh TelagGenome.gff TelagGenome_justGenes.gff
+# Use bedops to convert gff to bed
+gff2bed < TelagGenome_justGenes.gff > TelagGenome_justGenes.bed
+# bgzip bed file
+bgzip TelagGenome_justGenes.bed TelagGenome_justGenes.bed.gz
+# tabix index .bed.gz file
+tabix -p bed TelagGenome_justGenes.bed.gz
+# Annotate SNP file
 cd $WorkingDirectory/GATKRNA
-## Replicate 1
-use-HaplotypeCaller 0 RNA
-get-just-SNPs 0
-use-VariantFiltration 0
-use-BaseRecalibrator 0
-use-BQSR 0 1
-use-HaplotypeCaller 1 RNA
-get-just-SNPs 1
-use-BaseRecalibrator 1
-use-AnalyzeCovariates 0 1
-## -- Replicate 2
-use-BQSR 1 2
-use-HaplotypeCaller 2 RNA
-get-just-SNPs 2
-use-BaseRecalibrator 2
-use-AnalyzeCovariates 1 2
-## -- Filter Variants
-use-VariantFiltration 2
+bcftools annotate \
+	-a $WorkingDirectory/References/TelagGenome_justGenes.bed.gz \
+	-c CHROM,FROM,TO,GENE \
+        -o annotatedSNPs_RNA.vcf \
+	-O v \
+	-h <(echo '##INFO=<ID=GENE,Number=1,Type=String,Description="Gene name">') \
+	filtered_2.vcf
 
