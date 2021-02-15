@@ -109,6 +109,26 @@ for gene in gene_dict:
     capturedGene = most_frequent(gene_dict[gene].getCandLoci())
     log.write(gene + ": " + capturedGene + "\n")
     capturedGenes.append(capturedGene)
+
+# Here I'm adding and removing genes I found via manual search to the capturedGene list 15 Feb 2021
+capturedGenes.remove("FGFR2")
+capturedGenes.remove("GRIN2B")
+capturedGenes.remove("UPF3B")
+capturedGenes.remove("LOC116518885")
+capturedGenes.remove("SEC31A")
+capturedGenes.remove("IFNGR1")
+capturedGenes.remove("SNTG1")
+capturedGenes.remove("LOC116520613")
+capturedGenes.remove("LOC116503105")
+capturedGenes.remove("LOC116524024")
+capturedGenes.remove("LOC116520185")
+capturedGenes.remove("SYMPK")
+capturedGenes.remove("SYMPK")
+capturedGenes.remove("LOC116522919")
+capturedGenes.remove("LOC116519247")
+capturedGenes.remove("LOC116515672")
+capturedGenes.remove("LOC116516442")
+capturedGenes.extend("ATP5MC2", "CATSPER1", "RNH1", "LOC116522919", "LOC116503212", "TRPC6", "SV2A", "LOC116503105", , "LOC116507994", "MDM2", "FOXA3", "AMDHD1", "HSPA2", "LOC116507565")
           
 log.write("\n\nFinding the captured genes in the GFF\n")
 
