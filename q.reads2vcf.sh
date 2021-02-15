@@ -413,19 +413,19 @@ function readGroupsRNA {
   cd $WorkingDirectory/mappedReadsRNA
   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629651_sorted.bam" O="SRR629651_IDed.bam" RGPU="MAR" RGSM="MAR627-1" RGPL="illumina" RGLB="RNASeq2012" 
   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629599_sorted.bam" O="SRR629599_IDed.bam" RGPU="MAH" RGSM="MAH6372" RGPL="illumina" RGLB="RNASeq2012" 
-  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629652_sorted.bam" O="SRR629652_IDed.bam" RGPU="MAR" RGSM="MAR6287" RGPL="illumina" RGLB="RNASeq2012" 
-  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629653_sorted.bam" O="SRR629653_IDed.bam" RGPU="MAR" RGSM="MAR276" RGPL="illumina" RGLB="RNASeq2012" 
-  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629654_sorted.bam" O="SRR629654_IDed.bam" RGPU="MAR" RGSM="MAR6299" RGPL="illumina" RGLB="RNASeq2012" 
-  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629655_sorted.bam" O="SRR629655_IDed.bam" RGPU="NAM" RGSM="NAM2064" RGPL="illumina" RGLB="RNASeq2012" 
-  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629656_sorted.bam" O="SRR629656_IDed.bam" RGPU="MAR" RGSM="MAR6326" RGPL="illumina" RGLB="RNASeq2012" 
-  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629657_sorted.bam" O="SRR629657_IDed.bam" RGPU="MAR" RGSM="MAR6326dup" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629652_sorted.bam" O="SRR629652_IDed.bam" RGPU="MAH" RGSM="MAH6381" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629653_sorted.bam" O="SRR629653_IDed.bam" RGPU="MAR" RGSM="MAR6287" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629654_sorted.bam" O="SRR629654_IDed.bam" RGPU="MAR" RGSM="MAR276" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629655_sorted.bam" O="SRR629655_IDed.bam" RGPU="MAR" RGSM="MAR6299" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629656_sorted.bam" O="SRR629656_IDed.bam" RGPU="NAM" RGSM="NAM2064" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629657_sorted.bam" O="SRR629657_IDed.bam" RGPU="MAR" RGSM="MAR6326" RGPL="illumina" RGLB="RNASeq2012" 
   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629658_sorted.bam" O="SRR629658_IDed.bam" RGPU="NAM" RGSM="NAM60603" RGPL="illumina" RGLB="RNASeq2012" 
   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629659_sorted.bam" O="SRR629659_IDed.bam" RGPU="MAR" RGSM="MAR6463" RGPL="illumina" RGLB="RNASeq2012" 
-  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629661_sorted.bam" O="SRR629661_IDed.bam" RGPU="NAM" RGSM="NAM6153" RGPL="illumina" RGLB="RNASeq2012" 
-  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629660_sorted.bam" O="SRR629660_IDed.bam" RGPU="NAM" RGSM="NAM6193" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629661_sorted.bam" O="SRR629661_IDed.bam" RGPU="NAM" RGSM="NAM6193" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629660_sorted.bam" O="SRR629660_IDed.bam" RGPU="NAM" RGSM="NAM6153" RGPL="illumina" RGLB="RNASeq2012" 
   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629662_sorted.bam" O="SRR629662_IDed.bam" RGPU="MAR" RGSM="MAR6099" RGPL="illumina" RGLB="RNASeq2012"
-  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629663_sorted.bam" O="SRR629663_IDed.bam" RGPU="NAM" RGSM="NAM6161" RGPL="illumina" RGLB="RNASeq2012" 
-  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629664_sorted.bam" O="SRR629664_IDed.bam" RGPU="MAR" RGSM="MAR6311" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629663_sorted.bam" O="SRR629663_IDed.bam" RGPU="NAM" RGSM="MAR6311" RGPL="illumina" RGLB="RNASeq2012" 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629664_sorted.bam" O="SRR629664_IDed.bam" RGPU="MAR" RGSM="NAM6161" RGPL="illumina" RGLB="RNASeq2012" 
   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629665_sorted.bam" O="SRR629665_IDed.bam" RGPU="MAR" RGSM="MAR6341" RGPL="illumina" RGLB="RNASeq2012" 
   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629666_sorted.bam" O="SRR629666_IDed.bam" RGPU="MAH" RGSM="MAH252" RGPL="illumina" RGLB="RNASeq2012" 
   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629667_sorted.bam" O="SRR629667_IDed.bam" RGPU="MAR" RGSM="MAR6503" RGPL="illumina" RGLB="RNASeq2012" 
@@ -587,22 +587,23 @@ cd $WorkingDirectory/mappedReadsRNA
     mv $WorkingDirectory/mappedReadsRNA/SRR497745_sorted.bam $WorkingDirectory/mappedReadsAll/PAP53307.bam
     mv $WorkingDirectory/mappedReadsRNA/SRR497746_sorted.bam $WorkingDirectory/mappedReadsAll/PAP53205.bam
     mv $WorkingDirectory/mappedReadsRNA/SRR497747_sorted.bam $WorkingDirectory/mappedReadsAll/ELF517102.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR497748_sorted.bam $WorkingDirectory/mappedReadsAll/ELF52403.bam
     mv $WorkingDirectory/mappedReadsRNA/SRR497749_sorted.bam $WorkingDirectory/mappedReadsAll/PAP50403.bam
     mv $WorkingDirectory/mappedReadsRNA/SRR629599_sorted.bam $WorkingDirectory/mappedReadsAll/MAH6372.bam
     mv $WorkingDirectory/mappedReadsRNA/SRR629651_sorted.bam $WorkingDirectory/mappedReadsAll/MAR6271.bam
-    mv $WorkingDirectory/mappedReadsRNA/SRR629652_sorted.bam $WorkingDirectory/mappedReadsAll/MAR6287.bam
-    mv $WorkingDirectory/mappedReadsRNA/SRR629653_sorted.bam $WorkingDirectory/mappedReadsAll/MAR276.bam
-    mv $WorkingDirectory/mappedReadsRNA/SRR629654_sorted.bam $WorkingDirectory/mappedReadsAll/MAR6299.bam
-    mv $WorkingDirectory/mappedReadsRNA/SRR629655_sorted.bam $WorkingDirectory/mappedReadsAll/NAM2064.bam
-    mv $WorkingDirectory/mappedReadsRNA/SRR629656_sorted.bam $WorkingDirectory/mappedReadsAll/MAR6326.bam
-    mv $WorkingDirectory/mappedReadsRNA/SRR629657_sorted.bam $WorkingDirectory/mappedReadsAll/MAR6326dup.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629652_sorted.bam $WorkingDirectory/mappedReadsAll/MAH6381.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629653_sorted.bam $WorkingDirectory/mappedReadsAll/MAR6287.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629654_sorted.bam $WorkingDirectory/mappedReadsAll/MAR276.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629655_sorted.bam $WorkingDirectory/mappedReadsAll/MAR6299.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629656_sorted.bam $WorkingDirectory/mappedReadsAll/NAM2064.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629657_sorted.bam $WorkingDirectory/mappedReadsAll/MAR6326.bam
     mv $WorkingDirectory/mappedReadsRNA/SRR629658_sorted.bam $WorkingDirectory/mappedReadsAll/NAM60603.bam
     mv $WorkingDirectory/mappedReadsRNA/SRR629659_sorted.bam $WorkingDirectory/mappedReadsAll/MAR6463.bam
-    mv $WorkingDirectory/mappedReadsRNA/SRR629660_sorted.bam $WorkingDirectory/mappedReadsAll/NAM6193.bam
-    mv $WorkingDirectory/mappedReadsRNA/SRR629661_sorted.bam $WorkingDirectory/mappedReadsAll/NAM6153.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629660_sorted.bam $WorkingDirectory/mappedReadsAll/NAM6153.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629661_sorted.bam $WorkingDirectory/mappedReadsAll/NAM6193.bam
     mv $WorkingDirectory/mappedReadsRNA/SRR629662_sorted.bam $WorkingDirectory/mappedReadsAll/MAR6099.bam
-    mv $WorkingDirectory/mappedReadsRNA/SRR629663_sorted.bam $WorkingDirectory/mappedReadsAll/NAM6161.bam
-    mv $WorkingDirectory/mappedReadsRNA/SRR629664_sorted.bam $WorkingDirectory/mappedReadsAll/MAR6311.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629663_sorted.bam $WorkingDirectory/mappedReadsAll/MAR6311.bam
+    mv $WorkingDirectory/mappedReadsRNA/SRR629664_sorted.bam $WorkingDirectory/mappedReadsAll/NAM6161.bam
     mv $WorkingDirectory/mappedReadsRNA/SRR629665_sorted.bam $WorkingDirectory/mappedReadsAll/MAR6341.bam
     mv $WorkingDirectory/mappedReadsRNA/SRR629666_sorted.bam $WorkingDirectory/mappedReadsAll/MAH252.bam
     mv $WorkingDirectory/mappedReadsRNA/SRR629667_sorted.bam $WorkingDirectory/mappedReadsAll/MAR6503.bam
