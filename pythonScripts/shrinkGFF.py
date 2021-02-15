@@ -71,7 +71,6 @@ for blast in BlastResults:
     blast = blast.split("\t")
     exon = blast[0]
     gene = exon.split("_")[0]
-    log.write("Gene: " + gene + '\n')
     if exon not in exon_dict:
         contig = blast[1]
         start = blast[5]
@@ -113,22 +112,27 @@ for gene in gene_dict:
 # Here I'm adding and removing genes I found via manual search to the capturedGene list 15 Feb 2021
 capturedGenes.remove("FGFR2")
 capturedGenes.remove("GRIN2B")
-capturedGenes.remove("UPF3B")
-capturedGenes.remove("LOC116518885")
 capturedGenes.remove("SEC31A")
 capturedGenes.remove("IFNGR1")
 capturedGenes.remove("SNTG1")
 capturedGenes.remove("LOC116520613")
-capturedGenes.remove("LOC116503105")
 capturedGenes.remove("LOC116524024")
 capturedGenes.remove("LOC116520185")
-capturedGenes.remove("SYMPK")
-capturedGenes.remove("SYMPK")
-capturedGenes.remove("LOC116522919")
 capturedGenes.remove("LOC116519247")
-capturedGenes.remove("LOC116515672")
-capturedGenes.remove("LOC116516442")
-capturedGenes.extend("ATP5MC2", "CATSPER1", "RNH1", "LOC116522919", "LOC116503212", "TRPC6", "SV2A", "LOC116503105", "LOC116507994", "MDM2", "FOXA3", "AMDHD1", "HSPA2", "LOC116507565")
+
+capturedGenes.append("ATP5MC2")
+capturedGenes.append("CATSPER1")
+capturedGenes.append("RNH1")
+capturedGenes.append("LOC116503212")
+capturedGenes.append("TRPC6")
+capturedGenes.append("SV2A")
+capturedGenes.append("LOC116503105")
+capturedGenes.append("LOC116507994")
+capturedGenes.append("MDM2")
+capturedGenes.append("FOXA3")
+capturedGenes.append("AMDHD1")
+capturedGenes.append("HSPA2")
+capturedGenes.append("LOC116507565")
           
 log.write("\n\nFinding the captured genes in the GFF\n")
 
@@ -139,7 +143,6 @@ for region in GFF_read:
     if "gene=" in region_split[8]:
         gene_inquire = region_split[8].split("gene=")[1]
         gene_inquire = gene_inquire.split(";")[0]
-        log.write("GFF gene: " + gene_inquire + "\n")
         if gene_inquire in capturedGenes:
             if kind == "gene":
                 GFF_genes_out.write(region) 
@@ -148,15 +151,13 @@ for region in GFF_read:
                 GFF_exons_out.write(region)
             elif kind == "CDS":
                 GFF_cds_out.write(region)
-        else:
-            log.write(gene_inquire + " has no match\n")
 
 log.write("\n\nCaptured gene list:\n")
 for i in capturedGenes:
     log.write(i + "\n")
 
 log.write("\n\nDuplicates in captured gene list:\n")
-log.write([item for item, count in Counter(capturedGenes).items() if count > 1])
+#log.write([item for item, count in Counter(capturedGenes).items() if count > 1])
 
 BlastResults.close()
 GFF_read.close()
