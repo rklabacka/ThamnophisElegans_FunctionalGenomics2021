@@ -855,15 +855,15 @@ function getNetworkFasta {
 function probes2gff {
  ## ANNOTATE FILTERED VARIANT FILES FOR SEQCAP DATA
  cd $WorkingDirectory/References
- #+ COMPLETED #+ DONE # Make blast database from T. elegans genome
- #+ COMPLETED #+ makeblastdb -in TelagGenome.fasta -parse_seqids -dbtype nucl -out Genome.db
- # Use Blast with Exons_2021.fa (the exons used for probe design) to filter the genome
- blastn -db Genome.db -query "$1" -outfmt "7 qseqid sseqid evalue qstart qend sstart send" -out BlastResults_"$2".txt
- # Delete "^#" lines from blast output
- cp BlastResults_"$2".txt BlastResults_"$2"_original.txt
- sed -i.bak '/^#/d' BlastResults_"$2".txt
- sed -i.bak "s/ref|//" BlastResults_"$2".txt
- sed -i.bak "s/|//" BlastResults_"$2".txt
+ #+ COMPLETED # Make blast database from T. elegans genome
+ #+ COMPLETED makeblastdb -in TelagGenome.fasta -parse_seqids -dbtype nucl -out Genome.db
+ #+ COMPLETED # Use Blast with Exons_2021.fa (the exons used for probe design) to filter the genome
+ #+ COMPLETED blastn -db Genome.db -query "$1" -outfmt "7 qseqid sseqid evalue qstart qend sstart send" -out BlastResults_"$2".txt
+ #+ COMPLETED # Delete "^#" lines from blast output
+ #+ COMPLETED cp BlastResults_"$2".txt BlastResults_"$2"_original.txt
+ #+ COMPLETED sed -i.bak '/^#/d' BlastResults_"$2".txt
+ #+ COMPLETED sed -i.bak "s/ref|//" BlastResults_"$2".txt
+ #+ COMPLETED sed -i.bak "s/|//" BlastResults_"$2".txt
  # Use filtered genome results (blast output) to pull out targeted genes and create filtered gff
  python ~/SeqCap/pythonScripts/shrinkGFF_v5.py BlastResults_"$2".txt TelagGenome.gff "$2"_CapturedGenes.gff "$2"_CapturedExons.gff "$2"_CapturedCDS.gff Pull"$2"CapturedGenes_log.txt
  # Use bedops to convert gff to bed
