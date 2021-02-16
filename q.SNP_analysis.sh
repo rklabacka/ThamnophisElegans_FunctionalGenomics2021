@@ -64,14 +64,25 @@ bcftools merge SeqCap_Genes.vcf.gz Genes_WGS.recode.vcf.gz -O v -o Full_Genes.vc
 
 function sortVariants {
 cd $WorkingDirectory/variantFiltration
-cp SeqCap_"$1".vcf SeqCap_"$1"_original.vcf
-bgzip SeqCap_"$1".vcf
-bcftools index -f SeqCap_"$1".vcf.gz
-bcftools norm -d snps SeqCap_"$1".vcf.gz -O v -o SeqCap_"$1"_dupsRemoved.vcf
-bcftools sort SeqCap_"$1"_dupsRemoved.vcf.gz -O z -o SeqCap_"$1"_sorted.vcf.gz
-mv SeqCap_"$1"_sorted.vcf.gz SeqCap_"$1".vcf.gz
-rm SeqCap_"$1"_dupsRemoved.vcf.gz
-bcftools index -f SeqCap_"$1".vcf.gz
+cp "$1"_"$2".vcf.gz "$1"_"$2"_original.vcf.gz
+bcftools index -f "$1"_"$2".vcf.gz
+bcftools norm -d snps "$1"_"$2".vcf.gz -O v -o "$1"_"$2"_dupsRemoved.vcf
+vcftools --remove "$3" --gzvcf "$1"_"$2"_dupsRemoved.vcf --recode --out "$1"_"$2"_dupsRemoved.vcf
+mv "$1"_"$2"_dupsRemoved.vcf.recode.vcf "$1"_"$2"_dupsRemoved.vcf
+vcftools --mac 2 --vcf "$1"_"$2"_dupsRemoved.vcf --recode --recode-INFO-all --out "$1"_"$2"_singletonsRemoved.vcf
+mv "$1"_"$2"_singletonsRemoved.vcf.recode.vcf "$1"_"$2"_singletonsRemoved.vcf
+bgzip "$1"_"$2"_singletonsRemoved.vcf
+bcftools index -f "$1"_"$2"_singletonsRemoved.vcf
+bcftools sort "$1"_"$2"_singletonsRemoved.vcf.gz -O z -o "$1"_"$2"_sorted.vcf.gz
+gunzip "$1"_"$2".vcf.gz
+echo "original:  $(grep -v "^#" "$1"_"$2".vcf | wc -l)" >> Log.txt
+echo "with dups removed: $(grep -v "^#" "$1"_"$2"_dupsRemoved.vcf | wc -l)" >> Log.txt
+echo "with singletons removed: $(grep -v "^#" "$1"_"$2"_singletonsRemoved.vcf | wc -l)" >> Log.txt
+# rm "$1"_"$2"_singletonsRemoved.vcf.gz
+# rm "$1"_"$2"_dupsRemoved.vcf
+# rm "$1"_"$2".vcf
+mv "$1"_"$2"_sorted.vcf.gz "$1"_"$2".vcf.gz
+bcftools index -f "$1"_"$2".vcf.gz
 # I also did this with the SeqCap_HardFilterStep3.vcf - which is the "Genes" vcf
 # The file named SeqCap_Genes.vcf.gz is sorted with dups removed from the HardFilterStep3.vcf file
 }
@@ -250,24 +261,24 @@ done
 # MAIN
 loadModules
 WorkingDirectory=/scratch/rlk0015/Telag/May2020/WorkingDirectory
-#+ COMPLETED combineDatasets
-#+ COMPLETED sortVariants CDS
-#+ COMPLETED sortVariants Exons
-#+ COMPLETED sortVariants Genes
-#+ COMPLETED 
-#+ COMPLETED getGeneVariants CDS
-#+ COMPLETED getGeneVariants Exons
-#+ COMPLETED getGeneVariants Genes
-#+ COMPLETED 
-#+ COMPLETED getTranscriptLengths CDS
-#+ COMPLETED getTranscriptLengths Exons
-#+ COMPLETED getTranscriptLengths Genes
-#+ COMPLETED 
-#+ COMPLETED vcf2faa
-#+ COMPLETED reference2faa
-# createMSA fna gene
-#+ COMPLETED createMSA faa protein Sequences maskedMSA
+#+ combineDatasets
+sortVariants SeqCap CDS SeqCap_duplicateIndividuals
+#+ sortVariants CDS
+#+ sortVariants Exons
+#+ sortVariants Genes
+#+ 
+getGeneVariants CDS
+getGeneVariants Exons
+getGeneVariants Genes
+#+ 
+getTranscriptLengths CDS
+getTranscriptLengths Exons
+getTranscriptLengths Genes
+#+ 
+vcf2faa
+reference2faa
+createMSA faa protein Sequences maskedMSA
 #+ COMPLETED vcf2faa_unmasked
 #+ COMPLETED createMSA faa protein UnmaskedSequences unmaskedMSA
 #+ COMPLETED combineDatasets
-functionalAnnotation
+#+ functionalAnnotation
