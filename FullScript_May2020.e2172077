@@ -1,0 +1,94 @@
+[E::hts_open_format] Failed to open file /scratch/rlk0015/Telag/May2020/WorkingDirectory/References/SeqCap_CapturedGenes.bed.gz
+/cm/local/apps/torque/var/spool/mom_priv/jobs/2172077.hopper-mgt.SC: line 884:  4813 Segmentation fault      bcftools annotate -a $WorkingDirectory/References/"$2"_CapturedGenes.bed.gz -c CHROM,FROM,TO,GENE -o "$2"_Annotated_Init.vcf -O v -h <(echo '##INFO=<ID=GENE,Number=1,Type=String,Description="Gene name">') "$1".vcf
+awk: cmd. line:1: fatal: cannot open file `SeqCap_Annotated_Init.vcf' for reading (No such file or directory)
+Using GATK jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -Xmx16g -jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar VariantFiltration -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome.fasta -V SeqCap_Annotated.vcf -O filtered_SeqCap_InitialFilteredInit.vcf --filter-name SOR --filter-expression SOR > 3.0 --filter-name QD --filter-expression QD < 2.0 --filter-name MQ --filter-expression MQ < 40.0 --filter-name MQRankSum --filter-expression MQRankSum < -12.5 --filter-name FS --filter-expression FS > 60.0 --filter-name ReadPosRankSum --filter-expression ReadPosRankSum < -5.0
+17:13:55.297 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar!/com/intel/gkl/native/libgkl_compression.so
+Feb 15, 2021 5:13:55 PM shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials runningOnComputeEngine
+INFO: Failed to detect whether we are running on Google Compute Engine.
+17:13:55.468 INFO  VariantFiltration - ------------------------------------------------------------
+17:13:55.468 INFO  VariantFiltration - The Genome Analysis Toolkit (GATK) v4.1.7.0
+17:13:55.468 INFO  VariantFiltration - For support and documentation go to https://software.broadinstitute.org/gatk/
+17:13:55.468 INFO  VariantFiltration - Executing as rlk0015@node091 on Linux v2.6.32-754.22.1.el6.x86_64 amd64
+17:13:55.468 INFO  VariantFiltration - Java runtime: Java HotSpot(TM) 64-Bit Server VM v1.8.0_91-b14
+17:13:55.468 INFO  VariantFiltration - Start Date/Time: February 15, 2021 5:13:55 PM CST
+17:13:55.468 INFO  VariantFiltration - ------------------------------------------------------------
+17:13:55.468 INFO  VariantFiltration - ------------------------------------------------------------
+17:13:55.469 INFO  VariantFiltration - HTSJDK Version: 2.21.2
+17:13:55.469 INFO  VariantFiltration - Picard Version: 2.21.9
+17:13:55.469 INFO  VariantFiltration - HTSJDK Defaults.COMPRESSION_LEVEL : 2
+17:13:55.469 INFO  VariantFiltration - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+17:13:55.469 INFO  VariantFiltration - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+17:13:55.469 INFO  VariantFiltration - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+17:13:55.469 INFO  VariantFiltration - Deflater: IntelDeflater
+17:13:55.469 INFO  VariantFiltration - Inflater: IntelInflater
+17:13:55.469 INFO  VariantFiltration - GCS max retries/reopens: 20
+17:13:55.469 INFO  VariantFiltration - Requester pays: disabled
+17:13:55.469 INFO  VariantFiltration - Initializing engine
+17:13:55.779 INFO  VariantFiltration - Shutting down engine
+[February 15, 2021 5:13:55 PM CST] org.broadinstitute.hellbender.tools.walkers.filters.VariantFiltration done. Elapsed time: 0.01 minutes.
+Runtime.totalMemory()=2239758336
+***********************************************************************
+
+A USER ERROR has occurred: Cannot read file:///gpfs01/scratch/rlk0015/Telag/May2020/WorkingDirectory/variantFiltration/SeqCap_Annotated.vcf because no suitable codecs found
+
+***********************************************************************
+Set the system property GATK_STACKTRACE_ON_USER_EXCEPTION (--java-options '-DGATK_STACKTRACE_ON_USER_EXCEPTION=true') to print the stack trace.
+awk: cmd. line:1: fatal: cannot open file `filtered_SeqCap_InitialFilteredInit.vcf' for reading (No such file or directory)
+Failed to open filtered_SeqCap_InitialFiltered.vcf: unknown file type
+Failed to open SeqCap_HardFilterStep1.vcf: unknown file type
+
+VCFtools - 0.1.17
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf SeqCap_HardFilterStep2.vcf
+	--recode-INFO-all
+	--mac 2
+	--out SeqCap_HardFilterStep3.vcf
+	--recode
+
+After filtering, kept 0 out of 0 Individuals
+Outputting VCF file...
+After filtering, kept 0 out of a possible 0 Sites
+File does not contain any sites
+Run Time = 0.00 seconds
+Failed to open SeqCap_HardFilterStep3.vcf: unknown file type
+[E::hts_open_format] Failed to open file /scratch/rlk0015/Telag/May2020/WorkingDirectory/References/SeqCap_CapturedCDS.bed.gz
+/cm/local/apps/torque/var/spool/mom_priv/jobs/2172077.hopper-mgt.SC: line 898:  4875 Segmentation fault      bcftools annotate -a $WorkingDirectory/References/"$1"_Captured"$2".bed.gz -c CHROM,FROM,TO,GENE -o "$1"_"$2"_Init.vcf -O v -h <(echo '##INFO=<ID=GENE,Number=1,Type=String,Description="Gene name">') "$1"_Deannotated.vcf
+awk: cmd. line:1: fatal: cannot open file `SeqCap_CDS_Init.vcf' for reading (No such file or directory)
+Failed to open SeqCap_HardFilterStep3.vcf: unknown file type
+[E::hts_open_format] Failed to open file /scratch/rlk0015/Telag/May2020/WorkingDirectory/References/SeqCap_CapturedExons.bed.gz
+/cm/local/apps/torque/var/spool/mom_priv/jobs/2172077.hopper-mgt.SC: line 898:  4882 Segmentation fault      bcftools annotate -a $WorkingDirectory/References/"$1"_Captured"$2".bed.gz -c CHROM,FROM,TO,GENE -o "$1"_"$2"_Init.vcf -O v -h <(echo '##INFO=<ID=GENE,Number=1,Type=String,Description="Gene name">') "$1"_Deannotated.vcf
+awk: cmd. line:1: fatal: cannot open file `SeqCap_Exons_Init.vcf' for reading (No such file or directory)
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).

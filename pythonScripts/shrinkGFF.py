@@ -63,7 +63,7 @@ log = open(sys.argv[6], 'w')
 
 exon_dict = {}
 gene_dict = {}
-capturedGenes = []
+capturedGenes = set()
 gffGenes = []
 num = 0 
 
@@ -107,7 +107,7 @@ log.write("\n\n\nFIND CAPTURED GENES:")
 for gene in gene_dict:
     capturedGene = most_frequent(gene_dict[gene].getCandLoci())
     log.write(gene + ": " + capturedGene + "\n")
-    capturedGenes.append(capturedGene)
+    capturedGenes.add(capturedGene)
 
 # Here I'm adding and removing genes I found via manual search to the capturedGene list 15 Feb 2021
 capturedGenes.remove("FGFR2")
@@ -120,19 +120,19 @@ capturedGenes.remove("LOC116524024")
 capturedGenes.remove("LOC116520185")
 capturedGenes.remove("LOC116519247")
 
-capturedGenes.append("ATP5MC2")
-capturedGenes.append("CATSPER1")
-capturedGenes.append("RNH1")
-capturedGenes.append("LOC116503212")
-capturedGenes.append("TRPC6")
-capturedGenes.append("SV2A")
-capturedGenes.append("LOC116503105")
-capturedGenes.append("LOC116507994")
-capturedGenes.append("MDM2")
-capturedGenes.append("FOXA3")
-capturedGenes.append("AMDHD1")
-capturedGenes.append("HSPA2")
-capturedGenes.append("LOC116507565")
+capturedGenes.add("ATP5MC2")
+capturedGenes.add("CATSPER1")
+capturedGenes.add("RNH1")
+capturedGenes.add("LOC116503212")
+capturedGenes.add("TRPC6")
+capturedGenes.add("SV2A")
+capturedGenes.add("LOC116503105")
+capturedGenes.add("LOC116507994")
+capturedGenes.add("MDM2")
+capturedGenes.add("FOXA3")
+capturedGenes.add("AMDHD1")
+capturedGenes.add("HSPA2")
+capturedGenes.add("LOC116507565")
           
 log.write("\n\nFinding the captured genes in the GFF\n")
 

@@ -865,7 +865,7 @@ function probes2gff {
  #+ COMPLETED sed -i.bak "s/ref|//" BlastResults_"$2".txt
  #+ COMPLETED sed -i.bak "s/|//" BlastResults_"$2".txt
  # Use filtered genome results (blast output) to pull out targeted genes and create filtered gff
- python ~/SeqCap/pythonScripts/shrinkGFF_v5.py BlastResults_"$2".txt TelagGenome.gff "$2"_CapturedGenes.gff "$2"_CapturedExons.gff "$2"_CapturedCDS.gff Pull"$2"CapturedGenes_log.txt
+ python $pythonScripts/shrinkGFF.py BlastResults_"$2".txt TelagGenome.gff "$2"_CapturedGenes.gff "$2"_CapturedExons.gff "$2"_CapturedCDS.gff Pull"$2"CapturedGenes_log.txt
  # Use bedops to convert gff to bed
  gff2bed < "$2"_CapturedGenes.gff > "$2"_CapturedGenes.bed
  gff2bed < "$2"_CapturedExons.gff > "$2"_CapturedExons.bed
@@ -1008,6 +1008,7 @@ function hard-VariantFiltration {
 ### *** MAIN *** ###
 loadModules
 WorkingDirectory=/scratch/rlk0015/Telag/May2020/WorkingDirectory
+pythonScripts=/home/rlk0015/SeqCap/code/GenomicProcessingPipeline/pythonScripts
 createWorkingEnvironment
 #+ COMPLETED copyRawReadsDNA
 #+ COMPLETED performFASTQC rawReadsDNA
@@ -1072,7 +1073,7 @@ cd $WorkingDirectory/variantFiltration
 #+ COMPLETED removeRNAedits Merged
 ## -- Annotate variants
 #+ COMPLETED getNetworkFasta IILS
-#+ COMPLETED probes2gff Exons_2021.fa SeqCap
+probes2gff Exons_2021.fa SeqCap
 #+ COMPLETED probes2gff IILSTargetGenes.fa IILS
 annotateVariants removedRNAedits SeqCap
 ## -- Initial Filter Variants
