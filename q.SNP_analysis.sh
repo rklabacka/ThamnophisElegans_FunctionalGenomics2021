@@ -89,79 +89,83 @@ bcftools index -f "$1"_"$2".vcf.gz
 
 function functionalAnnotation {
 #+ COMPLETED # Step 1: Download and install
-#+ COMPLETED   cd ~
+  cd ~
 #+ COMPLETED   wget wget https://snpeff.blob.core.windows.net/versions/snpEff_latest_core.zip
 #+ COMPLETED   gunzip snpEff_latest_core.zip
-#+ COMPLETED # Step 2: Create genome annotation database
-#+ COMPLETED   cd snpEff
-#+ COMPLETED   mkdir data
-#+ COMPLETED   cd data
-#+ COMPLETED   mkdir rThaEle1 genomes
-#+ COMPLETED   cp $WorkingDirectory/References/SeqCap_CapturedCDS.gff rThaEle1/genes.gff
-#+ COMPLETED   cp $WorkingDirectory/References/TelagGenome.fasta genomes/rThaEle1.fa
-#+ COMPLETED   cd rThaEle1
-#+ COMPLETED   bgzip genes.gff
-#+ COMPLETED   cd ../genomes
-#+ COMPLETED   bgzip rThaEle1.gff # This could take a while, you may need to submit a job
-#+ COMPLETED   cd ~/snpEff
-#+ COMPLETED   java -jar /tools/snpeff-4.3p/snpEff.jar build -gff3 -v rThaEle1
-#+ COMPLETED # Step 3: Run snpEff
+# Step 2: Create genome annotation database
+  cd snpEff
+  mkdir -p data
+  cd data
+  mkdir -p rThaEle1 genomes
+  cp $WorkingDirectory/References/"$1"_CapturedCDS.gff rThaEle1/genes.gff
+#+ COMPLETED cp $WorkingDirectory/References/TelagGenome.fasta genomes/rThaEle1.fa
+  cd rThaEle1
+  bgzip genes.gff
+  cd ../genomes
+  bgzip rThaEle1.gff # This could take a while, you may need to submit a job
+  cd ~/snpEff
+  java -jar /tools/snpeff-4.3p/snpEff.jar build -gff3 -v rThaEle1
+# Step 3: Run snpEff
 cd $WorkingDirectory/variantFiltration
 # remove singletons
-#+ COMPLETED  vcftools --mac 2 --vcf Full_CDS.vcf --recode --recode-INFO-all --out Full_CDS_noSingletons.vcf
-#+ COMPLETED  mv Full_CDS_noSingletons.vcf.recode.vcf Full_CDS_noSingletons.vcf
-#+ COMPLETED  java -jar /tools/snpeff-4.3p/snpEff.jar -c ~/snpEff/snpEff.config -v rThaEle1 Full_CDS_noSingletons.vcf > Full_CDS_ann.vcf
-#+ COMPLETED   # This didn't work with the raw gff downloaded from genbank (TelagGenome.gff). 
-#+ COMPLETED   # Instead, I had to use the SeqCap_CapturedCDS.gff file I modified to only include CDS in genes of interest.
+#+ COMPLETED  vcftools --mac 2 --vcf "$1"_CDS.vcf --recode --recode-INFO-all --out "$1"_CDS_noSingletons.vcf
+#+ COMPLETED  mv "$1"_CDS_noSingletons.vcf.recode.vcf "$1"_CDS_noSingletons.vcf
+gunzip "$1"_CDS.vcf.gz
+java -jar /tools/snpeff-4.3p/snpEff.jar -c ~/snpEff/snpEff.config -v rThaEle1 "$1"_CDS.vcf > "$1"_CDS_ann.vcf
+# This didn't work with the raw gff downloaded from genbank (TelagGenome.gff). 
+# Instead, I had to use the "$1"_CapturedCDS.gff file I modified to only include CDS in genes of interest.
 # Step 4: Pull out missense and synonymous mutations
-#+ COMPLETED  awk '/^#|missense_variant/' Full_CDS_ann.vcf > Full_CDS_missense.vcf
-#+ COMPLETED  awk '/^#|synonymous_variant/' Full_CDS_ann.vcf > Full_CDS_synonymous.vcf
-#+ COMPLETED  echo "total CDS SNP count: $(grep -v "^#" Full_CDS_ann.vcf | wc -l)" >> Log.txt
-#+ COMPLETED  echo "missense SNP count: $(grep -v "^#" Full_CDS_missense.vcf | wc -l)" >> Log.txt
-#+ COMPLETED  echo "synonymous SNP count: $(grep -v "^#" Full_CDS_synonymous.vcf | wc -l)" >> Log.txt
-
-   bgzip Full_CDS_ann.vcf
-   bcftools index -f Full_CDS_ann.vcf.gz
-   bcftools view -R $WorkingDirectory/References/IILS_CapturedCDS.bed.gz Full_CDS_ann.vcf.gz -O v -o Full_IILS_CDS_ann.vcf
-
-
-  awk '/^#|missense_variant/' Full_IILS_CDS_ann.vcf > Full_IILS_CDS_missense.vcf
-  awk '/^#|synonymous_variant/' Full_IILS_CDS_ann.vcf > Full_IILS_CDS_synonymous.vcf
-  echo "IILS total CDS SNP count: $(grep -v "^#" Full_IILS_CDS_ann.vcf | wc -l)" >> Log.txt
-  echo "IILS missense SNP count: $(grep -v "^#" Full_IILS_CDS_missense.vcf | wc -l)" >> Log.txt
-  echo "IILS synonymous SNP count: $(grep -v "^#" Full_IILS_CDS_synonymous.vcf | wc -l)" >> Log.txt
+awk '/^#|missense_variant/' "$1"_CDS_ann.vcf > "$1"_CDS_missense.vcf
+awk '/^#|synonymous_variant/' "$1"_CDS_ann.vcf > "$1"_CDS_synonymous.vcf
+echo "total CDS SNP count: $(grep -v "^#" "$1"_CDS_ann.vcf | wc -l)" >> Log.txt
+echo "missense SNP count: $(grep -v "^#" "$1"_CDS_missense.vcf | wc -l)" >> Log.txt
+echo "synonymous SNP count: $(grep -v "^#" "$1"_CDS_synonymous.vcf | wc -l)" >> Log.txt
+bgzip "$1"_CDS_missense.vcf
+bgzip "$1"_CDS_synonymous.vcf
+bcftools index -f "$1"_CDS_missense.vcf
+bcftools index -f "$1"_CDS_synonymous.vcf
+#   bgzip "$1"_CDS_ann.vcf
+#   bcftools index -f "$1"_CDS_ann.vcf.gz
+#   bcftools view -R $WorkingDirectory/References/IILS_CapturedCDS.bed.gz "$1"_CDS_ann.vcf.gz -O v -o "$1"_IILS_CDS_ann.vcf
+#
+#
+#  awk '/^#|missense_variant/' "$1"_IILS_CDS_ann.vcf > "$1"_IILS_CDS_missense.vcf
+#  awk '/^#|synonymous_variant/' "$1"_IILS_CDS_ann.vcf > "$1"_IILS_CDS_synonymous.vcf
+#  echo "IILS total CDS SNP count: $(grep -v "^#" "$1"_IILS_CDS_ann.vcf | wc -l)" >> Log.txt
+#  echo "IILS missense SNP count: $(grep -v "^#" "$1"_IILS_CDS_missense.vcf | wc -l)" >> Log.txt
+#  echo "IILS synonymous SNP count: $(grep -v "^#" "$1"_IILS_CDS_synonymous.vcf | wc -l)" >> Log.txt
 
 }
 
 function getGeneVariants {
 # Get CDS SNPs and prepare for extraction
-mkdir -p $WorkingDirectory/SNP_analysis/variantsByGene/"$1"
-cd $WorkingDirectory/SNP_analysis/variantsByGene/"$1"
-cp $WorkingDirectory/variantFiltration/SeqCap_"$1".vcf.gz .
-bcftools index -f SeqCap_"$1".vcf.gz
+mkdir -p $WorkingDirectory/SNP_analysis/variantsByGene/"$1""$2"
+cd $WorkingDirectory/SNP_analysis/variantsByGene/"$1""$2"
+cp $WorkingDirectory/variantFiltration/SeqCap_"$1""$2".vcf.gz .
+bcftools index -f SeqCap_"$1""$2".vcf.gz
 # Create bed file for each gene
 cp $WorkingDirectory/References/SeqCap_CapturedGenes.bed.gz .
 gunzip SeqCap_CapturedGenes.bed.gz
-python ~/SeqCap/pythonScripts/parseBED.py SeqCap_CapturedGenes.bed SeqCap_"$1"_Captures.txt "$1"
-sort -u SeqCap_"$1"_Captures.txt > SeqCap_"$1"_CapturedGeneList.txt
+python ~/SeqCap/pythonScripts/parseBED.py SeqCap_CapturedGenes.bed SeqCap_"$1""$2"_Captures.txt "$1"
+sort -u SeqCap_"$1""$2"_Captures.txt > SeqCap_"$1""$2"_CapturedGeneList.txt
 # Extract SNPs by gene from vcf
 locivar=0
 while read i
   do
   mkdir -p "$i"
   mv "$i"_"$1".bed "$i"/
-  bcftools view -R "$i"/"$i"_"$1".bed SeqCap_"$1".vcf.gz > "$i"/"$i"_"$1".vcf
-  locusvar="$(grep -v "^#" "$i"/"$i"_"$1".vcf | wc -l)"
-  echo "$i	$locusvar" >> SeqCap_"$1"_Nvariants.txt
+  bcftools view -R "$i"/"$i"_"$1".bed SeqCap_"$1""$2".vcf.gz > "$i"/"$i"_"$1""$2".vcf
+  locusvar="$(grep -v "^#" "$i"/"$i"_"$1""$2".vcf | wc -l)"
+  echo "$i	$locusvar" >> SeqCap_"$1""$2"_Nvariants.txt
   locivar=$((locusvar + locivar))
-done<SeqCap_"$1"_CapturedGeneList.txt
+done<SeqCap_"$1""$2"_CapturedGeneList.txt
   echo "total variants: $locivar" >> SeqCap_"$1"_Nvariants.txt
 }
 
 function getTranscriptLengths {
-cd $WorkingDirectory/SNP_analysis/variantsByGene/"$1"
-python ~/SeqCap/pythonScripts/getTranscriptLengths.py $WorkingDirectory/References/SeqCap_Captured"$1".gff SeqCap_"$1"_Nvariants.txt SeqCap_"$1"_TranscriptLengths.txt
-python ~/SeqCap/pythonScripts/getVariableRegionsGFF.py SeqCap_"$1"_TranscriptLengths.txt $WorkingDirectory/References/SeqCap_Captured"$1".gff $WorkingDirectory/References/SeqCap_Variable"$1".gff SeqCap_"$1"_variableGenes.txt
+cd $WorkingDirectory/SNP_analysis/variantsByGene/"$1""$2"
+python ~/SeqCap/pythonScripts/getTranscriptLengths.py $WorkingDirectory/References/SeqCap_Captured"$1".gff SeqCap_"$1""$2"_Nvariants.txt SeqCap_"$1""$2"_TranscriptLengths.txt
+python ~/SeqCap/pythonScripts/getVariableRegionsGFF.py SeqCap_"$1""$2"_TranscriptLengths.txt $WorkingDirectory/References/SeqCap_Captured"$1".gff $WorkingDirectory/References/SeqCap_Variable"$1""$2".gff SeqCap_"$1""$2"_variableGenes.txt
 }
 
 function vcf2faa {
@@ -262,23 +266,26 @@ done
 loadModules
 WorkingDirectory=/scratch/rlk0015/Telag/May2020/WorkingDirectory
 #+ combineDatasets
-sortVariants SeqCap CDS SeqCap_duplicateIndividuals
+#+ RUNNING sortVariants SeqCap CDS SeqCap_duplicateIndividuals
 #+ sortVariants CDS
 #+ sortVariants Exons
 #+ sortVariants Genes
 #+ 
-getGeneVariants CDS
-getGeneVariants Exons
-getGeneVariants Genes
+#+ COMPLETED functionalAnnotation SeqCap
+#+
+#+ RUNNING getGeneVariants CDS
+#+ RUNNING getGeneVariants Exons
+#+ RUNNING getGeneVariants Genes
+getGeneVariants CDS _missense
 #+ 
-getTranscriptLengths CDS
-getTranscriptLengths Exons
-getTranscriptLengths Genes
+#+ RUNNING getTranscriptLengths CDS
+#+ RUNNING getTranscriptLengths Exons
+#+ RUNNING getTranscriptLengths Genes
+getTranscriptLengths CDS _missense
 #+ 
-vcf2faa
-reference2faa
-createMSA faa protein Sequences maskedMSA
+#+ RUNNING vcf2faa
+#+ RUNNING reference2faa
+#+ RUNNING createMSA faa protein Sequences maskedMSA
 #+ COMPLETED vcf2faa_unmasked
 #+ COMPLETED createMSA faa protein UnmaskedSequences unmaskedMSA
 #+ COMPLETED combineDatasets
-#+ functionalAnnotation
