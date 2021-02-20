@@ -1,0 +1,267 @@
+index: "CDS_WGS.recode.vcf.gz" is in a format that cannot be usefully indexed
+index: "Exons_WGS.recode.vcf.gz" is in a format that cannot be usefully indexed
+index: "Genes_WGS.recode.vcf.gz" is in a format that cannot be usefully indexed
+Failed to open CDS_WGS.recode.vcf.gz: not compressed with bgzip
+Failed to open Exons_WGS.recode.vcf.gz: not compressed with bgzip
+Failed to open Genes_WGS.recode.vcf.gz: not compressed with bgzip
+[bgzip] No such file or directory: Full_CDS.vcf
+[bgzip] No such file or directory: Full_Exons.vcf
+[bgzip] No such file or directory: Full_Genes.vcf
+cp: cannot stat `Full_CDS.vcf.gz': No such file or directory
+[E::hts_open_format] Failed to open file Full_CDS.vcf.gz
+index: failed to open "Full_CDS.vcf.gz"
+[E::hts_open_format] Failed to open file Full_CDS.vcf.gz
+Failed to open Full_CDS.vcf.gz: No such file or directory
+
+VCFtools - 0.1.17
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf Full_CDS_dupsRemoved.vcf
+	--remove 
+	--out Full_CDS_dupsRemoved.vcf
+	--recode
+
+stat error: No such file or directory
+Error: Can't determine file type of Full_CDS_dupsRemoved.vcf
+mv: cannot stat `Full_CDS_dupsRemoved.vcf.recode.vcf': No such file or directory
+
+VCFtools - 0.1.17
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf Full_CDS_dupsRemoved.vcf
+	--recode-INFO-all
+	--mac 2
+	--out Full_CDS_singletonsRemoved.vcf
+	--recode
+
+stat error: No such file or directory
+Error: Can't determine file type of Full_CDS_dupsRemoved.vcf
+mv: cannot stat `Full_CDS_singletonsRemoved.vcf.recode.vcf': No such file or directory
+[bgzip] No such file or directory: Full_CDS_singletonsRemoved.vcf
+[E::hts_open_format] Failed to open file Full_CDS_singletonsRemoved.vcf
+index: failed to open "Full_CDS_singletonsRemoved.vcf"
+Writing to /tmp/bcftools-sort.stVlLh
+[E::hts_open_format] Failed to open file Full_CDS_singletonsRemoved.vcf.gz
+Could not read Full_CDS_singletonsRemoved.vcf.gz
+gzip: Full_CDS.vcf.gz: No such file or directory
+grep: Full_CDS.vcf: No such file or directory
+grep: Full_CDS_dupsRemoved.vcf: No such file or directory
+grep: Full_CDS_singletonsRemoved.vcf: No such file or directory
+mv: cannot stat `Full_CDS_sorted.vcf.gz': No such file or directory
+[E::hts_open_format] Failed to open file Full_CDS.vcf.gz
+index: failed to open "Full_CDS.vcf.gz"
+rm: cannot remove `Full_CDS.vcf': No such file or directory
+cp: cannot stat `Full_Exons.vcf.gz': No such file or directory
+[E::hts_open_format] Failed to open file Full_Exons.vcf.gz
+index: failed to open "Full_Exons.vcf.gz"
+[E::hts_open_format] Failed to open file Full_Exons.vcf.gz
+Failed to open Full_Exons.vcf.gz: No such file or directory
+
+VCFtools - 0.1.17
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf Full_Exons_dupsRemoved.vcf
+	--remove 
+	--out Full_Exons_dupsRemoved.vcf
+	--recode
+
+stat error: No such file or directory
+Error: Can't determine file type of Full_Exons_dupsRemoved.vcf
+mv: cannot stat `Full_Exons_dupsRemoved.vcf.recode.vcf': No such file or directory
+
+VCFtools - 0.1.17
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf Full_Exons_dupsRemoved.vcf
+	--recode-INFO-all
+	--mac 2
+	--out Full_Exons_singletonsRemoved.vcf
+	--recode
+
+stat error: No such file or directory
+Error: Can't determine file type of Full_Exons_dupsRemoved.vcf
+mv: cannot stat `Full_Exons_singletonsRemoved.vcf.recode.vcf': No such file or directory
+[bgzip] No such file or directory: Full_Exons_singletonsRemoved.vcf
+[E::hts_open_format] Failed to open file Full_Exons_singletonsRemoved.vcf
+index: failed to open "Full_Exons_singletonsRemoved.vcf"
+Writing to /tmp/bcftools-sort.IS8xkt
+[E::hts_open_format] Failed to open file Full_Exons_singletonsRemoved.vcf.gz
+Could not read Full_Exons_singletonsRemoved.vcf.gz
+gzip: Full_Exons.vcf.gz: No such file or directory
+grep: Full_Exons.vcf: No such file or directory
+grep: Full_Exons_dupsRemoved.vcf: No such file or directory
+grep: Full_Exons_singletonsRemoved.vcf: No such file or directory
+mv: cannot stat `Full_Exons_sorted.vcf.gz': No such file or directory
+[E::hts_open_format] Failed to open file Full_Exons.vcf.gz
+index: failed to open "Full_Exons.vcf.gz"
+rm: cannot remove `Full_Exons.vcf': No such file or directory
+cp: cannot stat `Full_Genes.vcf.gz': No such file or directory
+[E::hts_open_format] Failed to open file Full_Genes.vcf.gz
+index: failed to open "Full_Genes.vcf.gz"
+[E::hts_open_format] Failed to open file Full_Genes.vcf.gz
+Failed to open Full_Genes.vcf.gz: No such file or directory
+
+VCFtools - 0.1.17
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf Full_Genes_dupsRemoved.vcf
+	--remove 
+	--out Full_Genes_dupsRemoved.vcf
+	--recode
+
+stat error: No such file or directory
+Error: Can't determine file type of Full_Genes_dupsRemoved.vcf
+mv: cannot stat `Full_Genes_dupsRemoved.vcf.recode.vcf': No such file or directory
+
+VCFtools - 0.1.17
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf Full_Genes_dupsRemoved.vcf
+	--recode-INFO-all
+	--mac 2
+	--out Full_Genes_singletonsRemoved.vcf
+	--recode
+
+stat error: No such file or directory
+Error: Can't determine file type of Full_Genes_dupsRemoved.vcf
+mv: cannot stat `Full_Genes_singletonsRemoved.vcf.recode.vcf': No such file or directory
+[bgzip] No such file or directory: Full_Genes_singletonsRemoved.vcf
+[E::hts_open_format] Failed to open file Full_Genes_singletonsRemoved.vcf
+index: failed to open "Full_Genes_singletonsRemoved.vcf"
+Writing to /tmp/bcftools-sort.ZPNBTB
+[E::hts_open_format] Failed to open file Full_Genes_singletonsRemoved.vcf.gz
+Could not read Full_Genes_singletonsRemoved.vcf.gz
+gzip: Full_Genes.vcf.gz: No such file or directory
+grep: Full_Genes.vcf: No such file or directory
+grep: Full_Genes_dupsRemoved.vcf: No such file or directory
+grep: Full_Genes_singletonsRemoved.vcf: No such file or directory
+mv: cannot stat `Full_Genes_sorted.vcf.gz': No such file or directory
+[E::hts_open_format] Failed to open file Full_Genes.vcf.gz
+index: failed to open "Full_Genes.vcf.gz"
+rm: cannot remove `Full_Genes.vcf': No such file or directory
+gzip: Full_CDS.vcf.gz: No such file or directory
+00:00:00	SnpEff version SnpEff 4.3p (build 2017-06-06 09:55), by Pablo Cingolani
+00:00:00	Command: 'ann'
+Error        :	Cannot read input file 'Full_CDS.vcf'
+Command line :	SnpEff  rThaEle1 Full_CDS.vcf 
+
+snpEff version SnpEff 4.3p (build 2017-06-06 09:55), by Pablo Cingolani
+Usage: snpEff [eff] [options] genome_version [input_file]
+
+
+	variants_file                   : Default is STDIN
+
+
+
+Options:
+	-chr <string>                   : Prepend 'string' to chromosome name (e.g. 'chr1' instead of '1'). Only on TXT output.
+	-classic                        : Use old style annotations instead of Sequence Ontology and Hgvs.
+	-csvStats <file>                : Create CSV summary file.
+	-download                       : Download reference genome if not available. Default: true
+	-i <format>                     : Input format [ vcf, bed ]. Default: VCF.
+	-fileList                       : Input actually contains a list of files to process.
+	-o <format>                     : Ouput format [ vcf, gatk, bed, bedAnn ]. Default: VCF.
+	-s , -stats, -htmlStats         : Create HTML summary file.  Default is 'snpEff_summary.html'
+	-noStats                        : Do not create stats (summary) file
+
+Results filter options:
+	-fi , -filterInterval  <file>   : Only analyze changes that intersect with the intervals specified in this file (you may use this option many times)
+	-no-downstream                  : Do not show DOWNSTREAM changes
+	-no-intergenic                  : Do not show INTERGENIC changes
+	-no-intron                      : Do not show INTRON changes
+	-no-upstream                    : Do not show UPSTREAM changes
+	-no-utr                         : Do not show 5_PRIME_UTR or 3_PRIME_UTR changes
+	-no <effectType>                : Do not show 'EffectType'. This option can be used several times.
+
+Annotations options:
+	-cancer                         : Perform 'cancer' comparisons (Somatic vs Germline). Default: false
+	-cancerSamples <file>           : Two column TXT file defining 'oringinal \t derived' samples.
+	-formatEff                      : Use 'EFF' field compatible with older versions (instead of 'ANN').
+	-geneId                         : Use gene ID instead of gene name (VCF output). Default: false
+	-hgvs                           : Use HGVS annotations for amino acid sub-field. Default: true
+	-hgvsOld                        : Use old HGVS notation. Default: false
+	-hgvs1LetterAa                  : Use one letter Amino acid codes in HGVS notation. Default: false
+	-hgvsTrId                       : Use transcript ID in HGVS notation. Default: false
+	-lof                            : Add loss of function (LOF) and Nonsense mediated decay (NMD) tags.
+	-noHgvs                         : Do not add HGVS annotations.
+	-noLof                          : Do not add LOF and NMD annotations.
+	-noShiftHgvs                    : Do not shift variants according to HGVS notation (most 3prime end).
+	-oicr                           : Add OICR tag in VCF file. Default: false
+	-sequenceOntology               : Use Sequence Ontology terms. Default: true
+
+Generic options:
+	-c , -config                 : Specify config file
+	-configOption name=value     : Override a config file option
+	-d , -debug                  : Debug mode (very verbose).
+	-dataDir <path>              : Override data_dir parameter from config file.
+	-download                    : Download a SnpEff database, if not available locally. Default: true
+	-nodownload                  : Do not download a SnpEff database, if not available locally.
+	-h , -help                   : Show this help and exit
+	-noLog                       : Do not report usage statistics to server
+	-t                           : Use multiple threads (implies '-noStats'). Default 'off'
+	-q , -quiet                  : Quiet mode (do not show any messages or errors)
+	-v , -verbose                : Verbose mode
+	-version                     : Show version number and exit
+
+Database options:
+	-canon                       : Only use canonical transcripts.
+	-canonList <file>            : Only use canonical transcripts, replace some transcripts using the 'gene_id 	 transcript_id' entries in <file>.
+	-interaction                 : Annotate using inteactions (requires interaciton database). Default: true
+	-interval <file>             : Use a custom intervals in TXT/BED/BigBed/VCF/GFF file (you may use this option many times)
+	-maxTSL <TSL_number>         : Only use transcripts having Transcript Support Level lower than <TSL_number>.
+	-motif                       : Annotate using motifs (requires Motif database). Default: true
+	-nextProt                    : Annotate using NextProt (requires NextProt database).
+	-noGenome                    : Do not load any genomic database (e.g. annotate using custom files).
+	-noExpandIUB                 : Disable IUB code expansion in input variants
+	-noInteraction               : Disable inteaction annotations
+	-noMotif                     : Disable motif annotations.
+	-noNextProt                  : Disable NextProt annotations.
+	-onlyReg                     : Only use regulation tracks.
+	-onlyProtein                 : Only use protein coding transcripts. Default: false
+	-onlyTr <file.txt>           : Only use the transcripts in this file. Format: One transcript ID per line.
+	-reg <name>                  : Regulation track to use (this option can be used add several times).
+	-ss , -spliceSiteSize <int>  : Set size for splice sites (donor and acceptor) in bases. Default: 2
+	-spliceRegionExonSize <int>  : Set size for splice site region within exons. Default: 3 bases
+	-spliceRegionIntronMin <int> : Set minimum number of bases for splice site region within intron. Default: 3 bases
+	-spliceRegionIntronMax <int> : Set maximum number of bases for splice site region within intron. Default: 8 bases
+	-strict                      : Only use 'validated' transcripts (i.e. sequence has been checked). Default: false
+	-ud , -upDownStreamLen <int> : Set upstream downstream interval length (in bases)
+[bgzip] No such file or directory: Full_CDS.vcf.gz
+index: "Full_CDS_missense.vcf.gz" is in a format that cannot be usefully indexed
+index: "Full_CDS_synonymous.vcf.gz" is in a format that cannot be usefully indexed
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).

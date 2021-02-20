@@ -1,0 +1,835 @@
+cp: cannot stat `/scratch/rlk0015/Telag/May2020/WorkingDirectory/variantFiltration/SeqCap_CDS_synonymous.vcf.gz': No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+index: failed to open "SeqCap_CDS_synonymous.vcf.gz"
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+[E::hts_open_format] Failed to open file SeqCap_CDS_synonymous.vcf.gz
+Failed to open SeqCap_CDS_synonymous.vcf.gz: No such file or directory
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).

@@ -59,32 +59,43 @@ bcftools index -f Genes_WGS.recode.vcf.gz
 bcftools merge SeqCap_CDS.vcf.gz CDS_WGS.recode.vcf.gz -O v -o Full_CDS.vcf
 bcftools merge SeqCap_Exons.vcf.gz Exons_WGS.recode.vcf.gz -O v -o Full_Exons.vcf
 bcftools merge SeqCap_Genes.vcf.gz Genes_WGS.recode.vcf.gz -O v -o Full_Genes.vcf
-
+bgzip Full_CDS.vcf
+bgzip Full_Exons.vcf
+bgzip Full_Genes.vcf
 }
 
 function sortVariants {
 cd $WorkingDirectory/variantFiltration
-cp "$1"_"$2".vcf.gz "$1"_"$2"_original.vcf.gz
-bcftools index -f "$1"_"$2".vcf.gz
-bcftools norm -d snps "$1"_"$2".vcf.gz -O v -o "$1"_"$2"_dupsRemoved.vcf
-vcftools --remove "$3" --gzvcf "$1"_"$2"_dupsRemoved.vcf --recode --out "$1"_"$2"_dupsRemoved.vcf
-mv "$1"_"$2"_dupsRemoved.vcf.recode.vcf "$1"_"$2"_dupsRemoved.vcf
-vcftools --mac 2 --vcf "$1"_"$2"_dupsRemoved.vcf --recode --recode-INFO-all --out "$1"_"$2"_singletonsRemoved.vcf
-mv "$1"_"$2"_singletonsRemoved.vcf.recode.vcf "$1"_"$2"_singletonsRemoved.vcf
-bgzip "$1"_"$2"_singletonsRemoved.vcf
-bcftools index -f "$1"_"$2"_singletonsRemoved.vcf
-bcftools sort "$1"_"$2"_singletonsRemoved.vcf.gz -O z -o "$1"_"$2"_sorted.vcf.gz
-gunzip "$1"_"$2".vcf.gz
-echo "original:  $(grep -v "^#" "$1"_"$2".vcf | wc -l)" >> Log.txt
-echo "with dups removed: $(grep -v "^#" "$1"_"$2"_dupsRemoved.vcf | wc -l)" >> Log.txt
-echo "with singletons removed: $(grep -v "^#" "$1"_"$2"_singletonsRemoved.vcf | wc -l)" >> Log.txt
-# rm "$1"_"$2"_singletonsRemoved.vcf.gz
-# rm "$1"_"$2"_dupsRemoved.vcf
-# rm "$1"_"$2".vcf
-mv "$1"_"$2"_sorted.vcf.gz "$1"_"$2".vcf.gz
-bcftools index -f "$1"_"$2".vcf.gz
+cp "$1".vcf.gz "$1"_original.vcf.gz
+bcftools index -f "$1".vcf.gz
+bcftools norm -d snps "$1".vcf.gz -O v -o "$1"_dupsRemoved.vcf
+vcftools --remove "$2" --vcf "$1"_dupsRemoved.vcf --recode --out "$1"_indsRemoved.vcf
+mv "$1"_indsRemoved.vcf.recode.vcf "$1"_indsRemoved.vcf
+vcftools --mac 2 --vcf "$1"_indsRemoved.vcf --recode --recode-INFO-all --out "$1"_singletonsRemoved.vcf
+mv "$1"_singletonsRemoved.vcf.recode.vcf "$1"_singletonsRemoved.vcf
+bgzip "$1"_singletonsRemoved.vcf
+bcftools index -f "$1"_singletonsRemoved.vcf.gz
+bcftools sort "$1"_singletonsRemoved.vcf.gz -O z -o "$1"_sorted.vcf.gz
+gunzip "$1".vcf.gz
+echo "original:  $(grep -v "^#" "$1".vcf | wc -l)" >> Log.txt
+echo "with dups removed: $(grep -v "^#" "$1"_dupsRemoved.vcf | wc -l)" >> Log.txt
+echo "with singletons removed: $(grep -v "^#" "$1"_singletonsRemoved.vcf | wc -l)" >> Log.txt
+# rm "$1"_singletonsRemoved.vcf.gz
+# rm "$1"_dupsRemoved.vcf
+# rm "$1".vcf
+mv "$1"_sorted.vcf.gz "$1".vcf.gz
+bcftools index -f "$1".vcf.gz
+rm "$1".vcf
 # I also did this with the SeqCap_HardFilterStep3.vcf - which is the "Genes" vcf
 # The file named SeqCap_Genes.vcf.gz is sorted with dups removed from the HardFilterStep3.vcf file
+}
+
+function getVariantBED {
+cd $WorkingDirectory/variantFiltration
+gunzip "$1".vcf.gz
+vcf2bed < "$1".vcf > "$1"_variants.bed
+bgzip "$1"_variants.bed
+bgzip "$1".vcf
 }
 
 function functionalAnnotation {
@@ -92,19 +103,15 @@ function functionalAnnotation {
   cd ~
 #+ COMPLETED   wget wget https://snpeff.blob.core.windows.net/versions/snpEff_latest_core.zip
 #+ COMPLETED   gunzip snpEff_latest_core.zip
-# Step 2: Create genome annotation database
-  cd snpEff
-  mkdir -p data
-  cd data
-  mkdir -p rThaEle1 genomes
-  cp $WorkingDirectory/References/"$1"_CapturedCDS.gff rThaEle1/genes.gff
-#+ COMPLETED cp $WorkingDirectory/References/TelagGenome.fasta genomes/rThaEle1.fa
-  cd rThaEle1
-  bgzip genes.gff
-  cd ../genomes
-  bgzip rThaEle1.gff # This could take a while, you may need to submit a job
-  cd ~/snpEff
-  java -jar /tools/snpeff-4.3p/snpEff.jar build -gff3 -v rThaEle1
+#+ COMPLETED # Step 2: Create genome annotation database
+#+ COMPLETED   cd snpEff
+#+ COMPLETED   mkdir -p data
+#+ COMPLETED   cd data
+#+ COMPLETED   mkdir -p rThaEle1 genomes
+#+ COMPLETED   cp $WorkingDirectory/References/"$1"_CapturedCDS.gff rThaEle1/genes.gff
+#+ COMPLETED #+ COMPLETED cp $WorkingDirectory/References/TelagGenome.fasta genomes/rThaEle1.fa
+#+ COMPLETED   cd ~/snpEff
+#+ COMPLETED   java -jar /tools/snpeff-4.3p/snpEff.jar build -gff3 -v rThaEle1
 # Step 3: Run snpEff
 cd $WorkingDirectory/variantFiltration
 # remove singletons
@@ -120,10 +127,11 @@ awk '/^#|synonymous_variant/' "$1"_CDS_ann.vcf > "$1"_CDS_synonymous.vcf
 echo "total CDS SNP count: $(grep -v "^#" "$1"_CDS_ann.vcf | wc -l)" >> Log.txt
 echo "missense SNP count: $(grep -v "^#" "$1"_CDS_missense.vcf | wc -l)" >> Log.txt
 echo "synonymous SNP count: $(grep -v "^#" "$1"_CDS_synonymous.vcf | wc -l)" >> Log.txt
+bgzip "$1"_CDS.vcf.gz
 bgzip "$1"_CDS_missense.vcf
 bgzip "$1"_CDS_synonymous.vcf
-bcftools index -f "$1"_CDS_missense.vcf
-bcftools index -f "$1"_CDS_synonymous.vcf
+bcftools index -f "$1"_CDS_missense.vcf.gz
+bcftools index -f "$1"_CDS_synonymous.vcf.gz
 #   bgzip "$1"_CDS_ann.vcf
 #   bcftools index -f "$1"_CDS_ann.vcf.gz
 #   bcftools view -R $WorkingDirectory/References/IILS_CapturedCDS.bed.gz "$1"_CDS_ann.vcf.gz -O v -o "$1"_IILS_CDS_ann.vcf
@@ -141,41 +149,45 @@ function getGeneVariants {
 # Get CDS SNPs and prepare for extraction
 mkdir -p $WorkingDirectory/SNP_analysis/variantsByGene/"$1""$2"
 cd $WorkingDirectory/SNP_analysis/variantsByGene/"$1""$2"
-cp $WorkingDirectory/variantFiltration/SeqCap_"$1""$2".vcf.gz .
-bcftools index -f SeqCap_"$1""$2".vcf.gz
+cp $WorkingDirectory/variantFiltration/Full_"$1""$2".vcf.gz .
+bcftools index -f Full_"$1""$2".vcf.gz
 # Create bed file for each gene
 cp $WorkingDirectory/References/SeqCap_CapturedGenes.bed.gz .
 gunzip SeqCap_CapturedGenes.bed.gz
-python ~/SeqCap/pythonScripts/parseBED.py SeqCap_CapturedGenes.bed SeqCap_"$1""$2"_Captures.txt "$1"
-sort -u SeqCap_"$1""$2"_Captures.txt > SeqCap_"$1""$2"_CapturedGeneList.txt
+python ~/SeqCap/pythonScripts/parseBED.py SeqCap_CapturedGenes.bed Full_"$1""$2"_Captures.txt "$1"
+sort -u Full_"$1""$2"_Captures.txt > Full_"$1""$2"_CapturedGeneList.txt
 # Extract SNPs by gene from vcf
 locivar=0
 while read i
   do
   mkdir -p "$i"
   mv "$i"_"$1".bed "$i"/
-  bcftools view -R "$i"/"$i"_"$1".bed SeqCap_"$1""$2".vcf.gz > "$i"/"$i"_"$1""$2".vcf
+  bcftools view -R "$i"/"$i"_"$1".bed Full_"$1""$2".vcf.gz > "$i"/"$i"_"$1""$2".vcf
   locusvar="$(grep -v "^#" "$i"/"$i"_"$1""$2".vcf | wc -l)"
-  echo "$i	$locusvar" >> SeqCap_"$1""$2"_Nvariants.txt
+  echo "$i	$locusvar" >> Full_"$1""$2"_Nvariants.txt
   locivar=$((locusvar + locivar))
-done<SeqCap_"$1""$2"_CapturedGeneList.txt
-  echo "total variants: $locivar" >> SeqCap_"$1"_Nvariants.txt
+done<Full_"$1""$2"_CapturedGeneList.txt
+  echo "total variants: $locivar" >> Full_"$1"_Nvariants.txt
 }
 
 function getTranscriptLengths {
 cd $WorkingDirectory/SNP_analysis/variantsByGene/"$1""$2"
-python ~/SeqCap/pythonScripts/getTranscriptLengths.py $WorkingDirectory/References/SeqCap_Captured"$1".gff SeqCap_"$1""$2"_Nvariants.txt SeqCap_"$1""$2"_TranscriptLengths.txt
-python ~/SeqCap/pythonScripts/getVariableRegionsGFF.py SeqCap_"$1""$2"_TranscriptLengths.txt $WorkingDirectory/References/SeqCap_Captured"$1".gff $WorkingDirectory/References/SeqCap_Variable"$1""$2".gff SeqCap_"$1""$2"_variableGenes.txt
+python ~/SeqCap/pythonScripts/getTranscriptLengths.py $WorkingDirectory/References/SeqCap_Captured"$1".gff Full_"$1""$2"_Nvariants.txt Full_"$1""$2"_TranscriptLengths.txt
+python ~/SeqCap/pythonScripts/getVariableRegionsGFF.py Full_"$1""$2"_TranscriptLengths.txt $WorkingDirectory/References/SeqCap_Captured"$1".gff $WorkingDirectory/References/Full_Variable"$1""$2".gff Full_"$1""$2"_variableGenes.txt
 }
 
 function vcf2faa {
 # Prepare GFF for gffread
-python ~/SeqCap/pythonScripts/modifyGFF_gffread.py $WorkingDirectory/References/SeqCap_VariableCDS.gff $WorkingDirectory/References/SeqCap_VariableCDS_gffread.gff
+python ~/SeqCap/pythonScripts/modifyGFF_gffread.py $WorkingDirectory/References/Full_VariableCDS.gff $WorkingDirectory/References/Full_VariableCDS_gffread.gff
 mkdir -p $WorkingDirectory/SNP_analysis/vcf2fasta
+cp $WorkingDirectory/variantFiltration/Full_CDS.vcf.gz $WorkingDirectory/SNP_analysis/vcf2fasta
 cp $WorkingDirectory/variantFiltration/SeqCap_CDS.vcf.gz $WorkingDirectory/SNP_analysis/vcf2fasta
 cd $WorkingDirectory/SNP_analysis/vcf2fasta
+gunzip Full_CDS.vcf.gz
 gunzip SeqCap_CDS.vcf.gz
+cp $WorkingDirectory/variantFiltration/Full_CDS.vcf.gz .
 cp $WorkingDirectory/variantFiltration/SeqCap_CDS.vcf.gz .
+bcftools index -f Full_CDS.vcf.gz
 bcftools index -f SeqCap_CDS.vcf.gz
 for sample in `bcftools query -l SeqCap_CDS.vcf`
 do
@@ -183,7 +195,7 @@ do
   mkdir -p "$sample"
   /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" SelectVariants \
     -R $WorkingDirectory/References/TelagGenome.fasta \
-    -V SeqCap_CDS.vcf \
+    -V Full_CDS.vcf \
     -O "$sample"/"$sample".vcf \
     -sn "$sample"
   /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" FastaAlternateReferenceMaker \
@@ -265,27 +277,36 @@ done
 # MAIN
 loadModules
 WorkingDirectory=/scratch/rlk0015/Telag/May2020/WorkingDirectory
-#+ combineDatasets
-#+ RUNNING sortVariants SeqCap CDS SeqCap_duplicateIndividuals
-#+ sortVariants CDS
-#+ sortVariants Exons
-#+ sortVariants Genes
+#+ COMPLETED combineDatasets
+#+ COMPLETED sortVariants SeqCap_CDS   SeqCap_IndividualsToRemove 
+#+ COMPLETED sortVariants SeqCap_Exons  SeqCap_IndividualsToRemoves
+#+ COMPLETED sortVariants SeqCap_Genes  SeqCap_IndividualsToRemoves
+sortVariants Full_CDS Full_IndividualsToRemove
+#+ COMPLETED sortVariants Full_Exons Full_IndividualsToRemove
+#+ COMPLETED sortVariants Full_Genes Full_IndividualsToRemove
+
+#+ COMPLETED getVariantBED SeqCap_CDS
+#+ COMPLETED getVariantBED SeqCap_Exons
+#+ COMPLETED getVariantBED SeqCap_Genes
 #+ 
-#+ COMPLETED functionalAnnotation SeqCap
+#+ COMPLETED and deleted... functionalAnnotation SeqCap
+#+ COMPLETED functionalAnnotation Full
 #+
-#+ RUNNING getGeneVariants CDS
-#+ RUNNING getGeneVariants Exons
-#+ RUNNING getGeneVariants Genes
-getGeneVariants CDS _missense
+getGeneVariants CDS
+#+ COMPLETED getGeneVariants Exons
+#+ COMPLETED getGeneVariants Genes
+#+ COMPLETED getGeneVariants CDS _missense
+#+ COMPLETED getGeneVariants CDS _synonymous
 #+ 
-#+ RUNNING getTranscriptLengths CDS
-#+ RUNNING getTranscriptLengths Exons
-#+ RUNNING getTranscriptLengths Genes
-getTranscriptLengths CDS _missense
+getTranscriptLengths CDS
+#+ COMPLETED getTranscriptLengths Exons
+#+ COMPLETED getTranscriptLengths Genes
+#+ COMPLETED getTranscriptLengths CDS _missense
+#+ COMPLETED getTranscriptLengths CDS _synonymous
 #+ 
-#+ RUNNING vcf2faa
-#+ RUNNING reference2faa
-#+ RUNNING createMSA faa protein Sequences maskedMSA
+vcf2faa
+reference2faa
+createMSA faa protein Sequences maskedMSA
 #+ COMPLETED vcf2faa_unmasked
 #+ COMPLETED createMSA faa protein UnmaskedSequences unmaskedMSA
 #+ COMPLETED combineDatasets

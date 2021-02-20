@@ -1,0 +1,1182 @@
+------------------------------------------------------
+Job is running on node node013
+node013
+node013
+node013
+node013
+node013
+node013
+node013
+node013
+node013
+------------------------------------------------------
+PBS: qsub is running on hopper-login
+PBS: originating queue is general
+PBS: executing queue is general
+PBS: working directory is /gpfs01/home/rlk0015/SeqCap/code/GenomicProcessingPipeline
+PBS: execution mode is PBS_BATCH
+PBS: job identifier is 2173915.hopper-mgt
+PBS: job name is FullScript_May2020
+PBS: node file is /cm/local/apps/torque/var/spool/aux//2173915.hopper-mgt
+PBS: current home directory is /home/rlk0015
+PBS: PATH = /home/rlk0015/.linuxbrew/bin:/home/rlk0015/bin:/home/rlk0015/bin:/home/rlk0015/miniconda3/condabin:/tools/bedtools-2.29.0/bin:/tools/gcc-5.3.0/bin:/tools/bcftools-1.3.2/bin:/tools/vcftools-v0.1.17/bin:/tools/hpclib/bzlib-1.6.0/bin:/tools/perl-5.26.1/bin:/tools/python-3.6.4/bin:/cm/shared/apps/torque/6.1.3.h4/sbin:/cm/shared/apps/torque/6.1.3.h4/bin:/tools/gcc-4.9.3/bin:/home/rlk0015/anaconda3/bin:/gpfs01/tools/starccm-11.06.011.01/11.06.011/STAR-View+11.06.011/bin:/gpfs01/tools/starccm-11.06.011.01/11.06.011/STAR-CCM+11.06.011/star/bin:/gpfs01/tools/sratoolkit-2.10.5/bin:/usr/lib64/qt-3.3/bin:/cm/shared/apps/moab/current/bin:/opt/mam/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/tools/scripts:/opt/ibutils/bin:/sbin:/usr/sbin:/cm/local/apps/environment-modules/3.2.10/bin:/usr/local/rvm/bin:/home/rlk0015/bin
+------------------------------------------------------
+Reading GFF3 data file  : '/gpfs01/home/rlk0015/snpEff/./data/rThaEle1/genes.gff'
+	Total: 0 markers added.
+
+	Create exons from CDS (if needed): ............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+	Exons created for 283 transcripts.
+
+	Deleting redundant exons (if needed): 
+		Total transcripts with deleted exons: 0
+
+	Collapsing zero length introns (if needed): 
+		Total collapsed transcripts: 0
+	Reading sequences   :
+	Reading FASTA file: '/gpfs01/home/rlk0015/snpEff/./data/genomes/rThaEle1.fa'
+		Reading sequence 'NC_045541.1', length: 186725308
+		Adding genomic sequences to exons: 	Done (769 sequences added, 0 ignored).
+		Reading sequence 'NC_045542.1', length: 174860051
+		Adding genomic sequences to exons: 	Done (708 sequences added, 0 ignored).
+		Reading sequence 'NC_045543.1', length: 152012178
+		Adding genomic sequences to exons: 	Done (731 sequences added, 0 ignored).
+		Reading sequence 'NC_045544.1', length: 142845885
+		Adding genomic sequences to exons: 	Done (486 sequences added, 0 ignored).
+		Reading sequence 'NC_045545.1', length: 100851885
+		Adding genomic sequences to exons: 	Done (198 sequences added, 0 ignored).
+		Reading sequence 'NC_045546.1', length: 88492469
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NC_045547.1', length: 85988580
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NC_045548.1', length: 80819035
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NC_045549.1', length: 77618485
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NC_045550.1', length: 71714719
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NC_045551.1', length: 71291765
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NC_045552.1', length: 60626299
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NC_045553.1', length: 50576291
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NC_045554.1', length: 49402056
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NC_045555.1', length: 49092584
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NC_045556.1', length: 39734741
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NC_045557.1', length: 17174197
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NC_045558.1', length: 145130870
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473574.1', length: 184947
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473575.1', length: 181776
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473576.1', length: 166649
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473577.1', length: 166507
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473578.1', length: 163733
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473579.1', length: 159789
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473580.1', length: 154914
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473581.1', length: 151765
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473582.1', length: 146366
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473583.1', length: 145615
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473584.1', length: 145802
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473585.1', length: 137075
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473586.1', length: 137889
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473587.1', length: 127237
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473588.1', length: 120708
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473589.1', length: 120393
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473590.1', length: 116445
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473591.1', length: 164849
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473592.1', length: 115286
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473593.1', length: 112364
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473594.1', length: 112622
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473595.1', length: 111685
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473596.1', length: 110909
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473597.1', length: 109814
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473598.1', length: 101222
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473599.1', length: 99449
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473600.1', length: 97779
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473601.1', length: 97185
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473602.1', length: 94718
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473603.1', length: 95381
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473604.1', length: 93777
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473605.1', length: 91890
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473606.1', length: 91038
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473607.1', length: 91329
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473608.1', length: 91251
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473609.1', length: 90081
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473610.1', length: 88286
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473611.1', length: 87831
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473612.1', length: 85917
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473613.1', length: 85929
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473614.1', length: 84702
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473615.1', length: 84866
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473616.1', length: 81658
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473617.1', length: 81050
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473618.1', length: 81130
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473619.1', length: 79992
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473620.1', length: 78913
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473621.1', length: 77695
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473622.1', length: 76518
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473623.1', length: 76895
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473624.1', length: 76442
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473625.1', length: 75511
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473626.1', length: 73964
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473627.1', length: 72510
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473628.1', length: 72278
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473629.1', length: 71766
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473630.1', length: 71149
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473631.1', length: 70320
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473632.1', length: 70768
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473633.1', length: 69585
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473634.1', length: 69481
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473635.1', length: 69156
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473636.1', length: 68666
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473637.1', length: 67166
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473638.1', length: 66954
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473639.1', length: 90843
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473640.1', length: 66180
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473641.1', length: 63173
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473642.1', length: 63784
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473643.1', length: 62780
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473644.1', length: 61867
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473645.1', length: 60226
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473646.1', length: 60221
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473647.1', length: 59231
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473648.1', length: 58844
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473649.1', length: 58649
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473650.1', length: 58425
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473651.1', length: 58815
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473652.1', length: 58527
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473653.1', length: 58178
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473654.1', length: 58033
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473655.1', length: 58315
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473656.1', length: 57726
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473657.1', length: 58280
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473658.1', length: 57010
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473659.1', length: 56897
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473660.1', length: 56889
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473661.1', length: 56732
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473662.1', length: 57225
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473663.1', length: 56309
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473664.1', length: 56151
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473665.1', length: 55978
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473666.1', length: 55656
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473667.1', length: 55675
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473668.1', length: 55569
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473669.1', length: 55213
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473670.1', length: 54460
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473671.1', length: 54445
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473672.1', length: 54630
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473673.1', length: 53487
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473674.1', length: 53168
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473675.1', length: 53011
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473676.1', length: 53188
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473677.1', length: 52449
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473678.1', length: 51503
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473679.1', length: 51556
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473680.1', length: 51261
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473681.1', length: 50420
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473682.1', length: 49982
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473683.1', length: 49519
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473684.1', length: 49191
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473685.1', length: 49478
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473686.1', length: 49759
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473687.1', length: 48445
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473688.1', length: 48389
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473689.1', length: 48050
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473690.1', length: 47798
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473691.1', length: 47792
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473692.1', length: 47426
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473693.1', length: 47243
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473694.1', length: 47019
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473695.1', length: 47285
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473696.1', length: 47187
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473697.1', length: 47720
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473698.1', length: 46652
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473699.1', length: 46250
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473700.1', length: 46170
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473701.1', length: 46112
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473702.1', length: 45568
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473703.1', length: 45283
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473704.1', length: 45086
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473705.1', length: 44874
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473706.1', length: 44865
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473707.1', length: 45091
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473708.1', length: 44556
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473709.1', length: 44172
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473710.1', length: 44189
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473711.1', length: 43909
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473712.1', length: 44337
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473713.1', length: 43823
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473714.1', length: 44126
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473715.1', length: 43571
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473716.1', length: 43533
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473717.1', length: 43358
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473718.1', length: 43197
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473719.1', length: 229137
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473720.1', length: 42383
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473721.1', length: 42361
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473722.1', length: 42113
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473723.1', length: 42529
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473724.1', length: 41781
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473725.1', length: 41528
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473726.1', length: 41336
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473727.1', length: 41105
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473728.1', length: 40739
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473729.1', length: 40847
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473730.1', length: 40914
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473731.1', length: 40523
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473732.1', length: 40436
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473733.1', length: 40378
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473734.1', length: 40062
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473735.1', length: 40090
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473736.1', length: 39742
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473737.1', length: 39613
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473738.1', length: 39498
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473739.1', length: 39101
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473740.1', length: 38881
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473741.1', length: 38555
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473742.1', length: 38314
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473743.1', length: 38408
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473744.1', length: 38038
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473745.1', length: 37984
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473746.1', length: 37444
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473747.1', length: 36848
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473748.1', length: 37176
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473749.1', length: 78934
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473750.1', length: 37510
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473751.1', length: 36972
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473752.1', length: 36854
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473753.1', length: 36714
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473754.1', length: 36543
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473755.1', length: 36267
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473756.1', length: 35969
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473757.1', length: 35897
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473758.1', length: 35846
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473759.1', length: 35521
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473760.1', length: 57348
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473761.1', length: 35490
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473762.1', length: 35517
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473763.1', length: 35383
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473764.1', length: 35108
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473765.1', length: 35210
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473766.1', length: 35115
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473767.1', length: 34977
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473768.1', length: 34943
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473769.1', length: 34817
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473770.1', length: 34670
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473771.1', length: 34460
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473772.1', length: 34728
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473773.1', length: 34556
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473774.1', length: 34354
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473775.1', length: 34396
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473776.1', length: 34638
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473777.1', length: 34105
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473778.1', length: 33898
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473779.1', length: 33997
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473780.1', length: 33718
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473781.1', length: 33205
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473782.1', length: 32739
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473783.1', length: 32581
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473784.1', length: 32594
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473785.1', length: 32703
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473786.1', length: 32310
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473787.1', length: 32192
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473788.1', length: 32311
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473789.1', length: 32136
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473790.1', length: 31736
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473791.1', length: 31604
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473792.1', length: 31406
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473793.1', length: 31193
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473794.1', length: 31230
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473795.1', length: 31323
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473796.1', length: 31301
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473797.1', length: 31323
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473798.1', length: 31179
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473799.1', length: 30957
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473800.1', length: 30923
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473801.1', length: 31176
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473802.1', length: 30902
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473803.1', length: 30693
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473804.1', length: 30769
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473805.1', length: 30499
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473806.1', length: 30257
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473807.1', length: 30200
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473808.1', length: 29887
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473809.1', length: 29865
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473810.1', length: 29572
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473811.1', length: 29278
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473812.1', length: 28933
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473813.1', length: 28514
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473814.1', length: 27701
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473815.1', length: 27736
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473816.1', length: 27877
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473817.1', length: 27440
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473818.1', length: 27270
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473819.1', length: 27333
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473820.1', length: 26916
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473821.1', length: 26881
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473822.1', length: 26611
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473823.1', length: 26377
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473824.1', length: 26231
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473825.1', length: 25844
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473826.1', length: 26026
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473827.1', length: 25630
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473828.1', length: 25441
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473829.1', length: 25160
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473830.1', length: 25090
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473831.1', length: 25112
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473832.1', length: 25048
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473833.1', length: 24817
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473834.1', length: 24148
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473835.1', length: 24115
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473836.1', length: 24062
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473837.1', length: 23860
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473838.1', length: 23918
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473839.1', length: 23529
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473840.1', length: 23556
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473841.1', length: 23368
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473842.1', length: 23357
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473843.1', length: 23030
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473844.1', length: 23431
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473845.1', length: 23142
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473846.1', length: 23096
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473847.1', length: 23124
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473848.1', length: 22990
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473849.1', length: 22892
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473850.1', length: 22645
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473851.1', length: 22581
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473852.1', length: 22568
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473853.1', length: 22240
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473854.1', length: 22684
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473855.1', length: 21981
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473856.1', length: 22036
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473857.1', length: 22007
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473858.1', length: 21987
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473859.1', length: 21797
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473860.1', length: 21851
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473861.1', length: 1323886
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473862.1', length: 21662
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473863.1', length: 21806
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473864.1', length: 21332
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473865.1', length: 21238
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473866.1', length: 21352
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473867.1', length: 21158
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473868.1', length: 21028
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473869.1', length: 21190
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473870.1', length: 21016
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473871.1', length: 20982
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473872.1', length: 20886
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473873.1', length: 20865
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473874.1', length: 21007
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473875.1', length: 21078
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473876.1', length: 20728
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473877.1', length: 20389
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473878.1', length: 20546
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473879.1', length: 20444
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473880.1', length: 20792
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473881.1', length: 20068
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473882.1', length: 19036
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473883.1', length: 15544
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473884.1', length: 15153
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473885.1', length: 14482
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473886.1', length: 12981
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473887.1', length: 12414
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473888.1', length: 12173
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473889.1', length: 10905
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473890.1', length: 8386
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473891.1', length: 5101
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473892.1', length: 182509
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473893.1', length: 616
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473894.1', length: 516976
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473895.1', length: 169844
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473896.1', length: 9275
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473897.1', length: 1620852
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473898.1', length: 46418
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473899.1', length: 506059
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473900.1', length: 920387
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473901.1', length: 94997
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473902.1', length: 751883
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473903.1', length: 548212
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473904.1', length: 53934
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473905.1', length: 482532
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473906.1', length: 412849
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473907.1', length: 384866
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473908.1', length: 80731
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473909.1', length: 374670
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473910.1', length: 283318
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473911.1', length: 272376
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473912.1', length: 270497
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473913.1', length: 265445
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473914.1', length: 229175
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473915.1', length: 220794
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473916.1', length: 210915
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473917.1', length: 205935
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473918.1', length: 199148
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473919.1', length: 192218
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+		Reading sequence 'NW_022473920.1', length: 190181
+		Adding genomic sequences to exons: 	Done (0 sequences added, 0 ignored).
+	Total: 2892 sequences added, 0 sequences ignored.
+
+	Adjusting transcripts: 
+	Adjusting genes: 
+	Adjusting chromosomes lengths: 
+	Ranking exons: 
+	Create UTRs from CDS (if needed): 
+	Correcting exons based on frame information.
+	
+	Remove empty chromosomes: 
+
+	Marking as 'coding' from CDS information: 
+	Done: 0 transcripts marked
+#-----------------------------------------------
+# Genome name                : 'Thamnophis_elegans'
+# Genome version             : 'rThaEle1'
+# Genome ID                  : 'rThaEle1[0]'
+# Has protein coding info    : true
+# Has Tr. Support Level info : true
+# Genes                      : 283
+# Protein coding genes       : 283
+#-----------------------------------------------
+# Transcripts                : 283
+# Avg. transcripts per gene  : 1.00
+# TSL transcripts            : 0
+#-----------------------------------------------
+# Checked transcripts        : 
+#               AA sequences :      0 ( 0.00% )
+#              DNA sequences :      0 ( 0.00% )
+#-----------------------------------------------
+# Protein coding transcripts : 283
+#              Length errors :      1 ( 0.35% )
+#  STOP codons in CDS errors :      1 ( 0.35% )
+#         START codon errors :      0 ( 0.00% )
+#        STOP codon warnings :      1 ( 0.35% )
+#              UTR sequences :      0 ( 0.00% )
+#               Total Errors :      2 ( 0.71% )
+# WARNING                    : No protein coding transcript has UTR
+#-----------------------------------------------
+# Cds                        : 2892
+# Exons                      : 2892
+# Exons with sequence        : 2892
+# Exons without sequence     : 0
+# Avg. exons per transcript  : 10.22
+# WARNING                    : No mitochondrion chromosome found
+#-----------------------------------------------
+# Number of chromosomes      : 365
+# Chromosomes                : Format 'chromo_name size codon_table'
+#		'NC_045541.1'	186725308	Standard
+#		'NC_045542.1'	174860051	Standard
+#		'NC_045543.1'	152012178	Standard
+#		'NC_045558.1'	145130870	Standard
+#		'NC_045544.1'	142845885	Standard
+#		'NC_045545.1'	100851885	Standard
+#		'NC_045546.1'	88492469	Standard
+#		'NC_045547.1'	85988580	Standard
+#		'NC_045548.1'	80819035	Standard
+#		'NC_045549.1'	77618485	Standard
+#		'NC_045550.1'	71714719	Standard
+#		'NC_045551.1'	71291765	Standard
+#		'NC_045552.1'	60626299	Standard
+#		'NC_045553.1'	50576291	Standard
+#		'NC_045554.1'	49402056	Standard
+#		'NC_045555.1'	49092584	Standard
+#		'NC_045556.1'	39734741	Standard
+#		'NC_045557.1'	17174197	Standard
+#		'NW_022473897.1'	1620852	Standard
+#		'NW_022473861.1'	1323886	Standard
+#		'NW_022473900.1'	920387	Standard
+#		'NW_022473902.1'	751883	Standard
+#		'NW_022473903.1'	548212	Standard
+#		'NW_022473894.1'	516976	Standard
+#		'NW_022473899.1'	506059	Standard
+#		'NW_022473905.1'	482532	Standard
+#		'NW_022473906.1'	412849	Standard
+#		'NW_022473907.1'	384866	Standard
+#		'NW_022473909.1'	374670	Standard
+#		'NW_022473910.1'	283318	Standard
+#		'NW_022473911.1'	272376	Standard
+#		'NW_022473912.1'	270497	Standard
+#		'NW_022473913.1'	265445	Standard
+#		'NW_022473914.1'	229175	Standard
+#		'NW_022473719.1'	229137	Standard
+#		'NW_022473915.1'	220794	Standard
+#		'NW_022473916.1'	210915	Standard
+#		'NW_022473917.1'	205935	Standard
+#		'NW_022473918.1'	199148	Standard
+#		'NW_022473919.1'	192218	Standard
+#		'NW_022473920.1'	190181	Standard
+#		'NW_022473574.1'	184947	Standard
+#		'NW_022473892.1'	182509	Standard
+#		'NW_022473575.1'	181776	Standard
+#		'NW_022473895.1'	169844	Standard
+#		'NW_022473576.1'	166649	Standard
+#		'NW_022473577.1'	166507	Standard
+#		'NW_022473591.1'	164849	Standard
+#		'NW_022473578.1'	163733	Standard
+#		'NW_022473579.1'	159789	Standard
+#		'NW_022473580.1'	154914	Standard
+#		'NW_022473581.1'	151765	Standard
+#		'NW_022473582.1'	146366	Standard
+#		'NW_022473584.1'	145802	Standard
+#		'NW_022473583.1'	145615	Standard
+#		'NW_022473586.1'	137889	Standard
+#		'NW_022473585.1'	137075	Standard
+#		'NW_022473587.1'	127237	Standard
+#		'NW_022473588.1'	120708	Standard
+#		'NW_022473589.1'	120393	Standard
+#		'NW_022473590.1'	116445	Standard
+#		'NW_022473592.1'	115286	Standard
+#		'NW_022473594.1'	112622	Standard
+#		'NW_022473593.1'	112364	Standard
+#		'NW_022473595.1'	111685	Standard
+#		'NW_022473596.1'	110909	Standard
+#		'NW_022473597.1'	109814	Standard
+#		'NW_022473598.1'	101222	Standard
+#		'NW_022473599.1'	99449	Standard
+#		'NW_022473600.1'	97779	Standard
+#		'NW_022473601.1'	97185	Standard
+#		'NW_022473603.1'	95381	Standard
+#		'NW_022473901.1'	94997	Standard
+#		'NW_022473602.1'	94718	Standard
+#		'NW_022473604.1'	93777	Standard
+#		'NW_022473605.1'	91890	Standard
+#		'NW_022473607.1'	91329	Standard
+#		'NW_022473608.1'	91251	Standard
+#		'NW_022473606.1'	91038	Standard
+#		'NW_022473639.1'	90843	Standard
+#		'NW_022473609.1'	90081	Standard
+#		'NW_022473610.1'	88286	Standard
+#		'NW_022473611.1'	87831	Standard
+#		'NW_022473613.1'	85929	Standard
+#		'NW_022473612.1'	85917	Standard
+#		'NW_022473615.1'	84866	Standard
+#		'NW_022473614.1'	84702	Standard
+#		'NW_022473616.1'	81658	Standard
+#		'NW_022473618.1'	81130	Standard
+#		'NW_022473617.1'	81050	Standard
+#		'NW_022473908.1'	80731	Standard
+#		'NW_022473619.1'	79992	Standard
+#		'NW_022473749.1'	78934	Standard
+#		'NW_022473620.1'	78913	Standard
+#		'NW_022473621.1'	77695	Standard
+#		'NW_022473623.1'	76895	Standard
+#		'NW_022473622.1'	76518	Standard
+#		'NW_022473624.1'	76442	Standard
+#		'NW_022473625.1'	75511	Standard
+#		'NW_022473626.1'	73964	Standard
+#		'NW_022473627.1'	72510	Standard
+#		'NW_022473628.1'	72278	Standard
+#		'NW_022473629.1'	71766	Standard
+#		'NW_022473630.1'	71149	Standard
+#		'NW_022473632.1'	70768	Standard
+#		'NW_022473631.1'	70320	Standard
+#		'NW_022473633.1'	69585	Standard
+#		'NW_022473634.1'	69481	Standard
+#		'NW_022473635.1'	69156	Standard
+#		'NW_022473636.1'	68666	Standard
+#		'NW_022473637.1'	67166	Standard
+#		'NW_022473638.1'	66954	Standard
+#		'NW_022473640.1'	66180	Standard
+#		'NW_022473642.1'	63784	Standard
+#		'NW_022473641.1'	63173	Standard
+#		'NW_022473643.1'	62780	Standard
+#		'NW_022473644.1'	61867	Standard
+#		'NW_022473645.1'	60226	Standard
+#		'NW_022473646.1'	60221	Standard
+#		'NW_022473647.1'	59231	Standard
+#		'NW_022473648.1'	58844	Standard
+#		'NW_022473651.1'	58815	Standard
+#		'NW_022473649.1'	58649	Standard
+#		'NW_022473652.1'	58527	Standard
+#		'NW_022473650.1'	58425	Standard
+#		'NW_022473655.1'	58315	Standard
+#		'NW_022473657.1'	58280	Standard
+#		'NW_022473653.1'	58178	Standard
+#		'NW_022473654.1'	58033	Standard
+#		'NW_022473656.1'	57726	Standard
+#		'NW_022473760.1'	57348	Standard
+#		'NW_022473662.1'	57225	Standard
+#		'NW_022473658.1'	57010	Standard
+#		'NW_022473659.1'	56897	Standard
+#		'NW_022473660.1'	56889	Standard
+#		'NW_022473661.1'	56732	Standard
+#		'NW_022473663.1'	56309	Standard
+#		'NW_022473664.1'	56151	Standard
+#		'NW_022473665.1'	55978	Standard
+#		'NW_022473667.1'	55675	Standard
+#		'NW_022473666.1'	55656	Standard
+#		'NW_022473668.1'	55569	Standard
+#		'NW_022473669.1'	55213	Standard
+#		'NW_022473672.1'	54630	Standard
+#		'NW_022473670.1'	54460	Standard
+#		'NW_022473671.1'	54445	Standard
+#		'NW_022473904.1'	53934	Standard
+#		'NW_022473673.1'	53487	Standard
+#		'NW_022473676.1'	53188	Standard
+#		'NW_022473674.1'	53168	Standard
+#		'NW_022473675.1'	53011	Standard
+#		'NW_022473677.1'	52449	Standard
+#		'NW_022473679.1'	51556	Standard
+#		'NW_022473678.1'	51503	Standard
+#		'NW_022473680.1'	51261	Standard
+#		'NW_022473681.1'	50420	Standard
+#		'NW_022473682.1'	49982	Standard
+#		'NW_022473686.1'	49759	Standard
+#		'NW_022473683.1'	49519	Standard
+#		'NW_022473685.1'	49478	Standard
+#		'NW_022473684.1'	49191	Standard
+#		'NW_022473687.1'	48445	Standard
+#		'NW_022473688.1'	48389	Standard
+#		'NW_022473689.1'	48050	Standard
+#		'NW_022473690.1'	47798	Standard
+#		'NW_022473691.1'	47792	Standard
+#		'NW_022473697.1'	47720	Standard
+#		'NW_022473692.1'	47426	Standard
+#		'NW_022473695.1'	47285	Standard
+#		'NW_022473693.1'	47243	Standard
+#		'NW_022473696.1'	47187	Standard
+#		'NW_022473694.1'	47019	Standard
+#		'NW_022473698.1'	46652	Standard
+#		'NW_022473898.1'	46418	Standard
+#		'NW_022473699.1'	46250	Standard
+#		'NW_022473700.1'	46170	Standard
+#		'NW_022473701.1'	46112	Standard
+#		'NW_022473702.1'	45568	Standard
+#		'NW_022473703.1'	45283	Standard
+#		'NW_022473707.1'	45091	Standard
+#		'NW_022473704.1'	45086	Standard
+#		'NW_022473705.1'	44874	Standard
+#		'NW_022473706.1'	44865	Standard
+#		'NW_022473708.1'	44556	Standard
+#		'NW_022473712.1'	44337	Standard
+#		'NW_022473710.1'	44189	Standard
+#		'NW_022473709.1'	44172	Standard
+#		'NW_022473714.1'	44126	Standard
+#		'NW_022473711.1'	43909	Standard
+#		'NW_022473713.1'	43823	Standard
+#		'NW_022473715.1'	43571	Standard
+#		'NW_022473716.1'	43533	Standard
+#		'NW_022473717.1'	43358	Standard
+#		'NW_022473718.1'	43197	Standard
+#		'NW_022473723.1'	42529	Standard
+#		'NW_022473720.1'	42383	Standard
+#		'NW_022473721.1'	42361	Standard
+#		'NW_022473722.1'	42113	Standard
+#		'NW_022473724.1'	41781	Standard
+#		'NW_022473725.1'	41528	Standard
+#		'NW_022473726.1'	41336	Standard
+#		'NW_022473727.1'	41105	Standard
+#		'NW_022473730.1'	40914	Standard
+#		'NW_022473729.1'	40847	Standard
+#		'NW_022473728.1'	40739	Standard
+#		'NW_022473731.1'	40523	Standard
+#		'NW_022473732.1'	40436	Standard
+#		'NW_022473733.1'	40378	Standard
+#		'NW_022473735.1'	40090	Standard
+#		'NW_022473734.1'	40062	Standard
+#		'NW_022473736.1'	39742	Standard
+#		'NW_022473737.1'	39613	Standard
+#		'NW_022473738.1'	39498	Standard
+#		'NW_022473739.1'	39101	Standard
+#		'NW_022473740.1'	38881	Standard
+#		'NW_022473741.1'	38555	Standard
+#		'NW_022473743.1'	38408	Standard
+#		'NW_022473742.1'	38314	Standard
+#		'NW_022473744.1'	38038	Standard
+#		'NW_022473745.1'	37984	Standard
+#		'NW_022473750.1'	37510	Standard
+#		'NW_022473746.1'	37444	Standard
+#		'NW_022473748.1'	37176	Standard
+#		'NW_022473751.1'	36972	Standard
+#		'NW_022473752.1'	36854	Standard
+#		'NW_022473747.1'	36848	Standard
+#		'NW_022473753.1'	36714	Standard
+#		'NW_022473754.1'	36543	Standard
+#		'NW_022473755.1'	36267	Standard
+#		'NW_022473756.1'	35969	Standard
+#		'NW_022473757.1'	35897	Standard
+#		'NW_022473758.1'	35846	Standard
+#		'NW_022473759.1'	35521	Standard
+#		'NW_022473762.1'	35517	Standard
+#		'NW_022473761.1'	35490	Standard
+#		'NW_022473763.1'	35383	Standard
+#		'NW_022473765.1'	35210	Standard
+#		'NW_022473766.1'	35115	Standard
+#		'NW_022473764.1'	35108	Standard
+#		'NW_022473767.1'	34977	Standard
+#		'NW_022473768.1'	34943	Standard
+#		'NW_022473769.1'	34817	Standard
+#		'NW_022473772.1'	34728	Standard
+#		'NW_022473770.1'	34670	Standard
+#		'NW_022473776.1'	34638	Standard
+#		'NW_022473773.1'	34556	Standard
+#		'NW_022473771.1'	34460	Standard
+#		'NW_022473775.1'	34396	Standard
+#		'NW_022473774.1'	34354	Standard
+#		'NW_022473777.1'	34105	Standard
+#		'NW_022473779.1'	33997	Standard
+#		'NW_022473778.1'	33898	Standard
+#		'NW_022473780.1'	33718	Standard
+#		'NW_022473781.1'	33205	Standard
+#		'NW_022473782.1'	32739	Standard
+#		'NW_022473785.1'	32703	Standard
+#		'NW_022473784.1'	32594	Standard
+#		'NW_022473783.1'	32581	Standard
+#		'NW_022473788.1'	32311	Standard
+#		'NW_022473786.1'	32310	Standard
+#		'NW_022473787.1'	32192	Standard
+#		'NW_022473789.1'	32136	Standard
+#		'NW_022473790.1'	31736	Standard
+#		'NW_022473791.1'	31604	Standard
+#		'NW_022473792.1'	31406	Standard
+#		'NW_022473795.1'	31323	Standard
+#		'NW_022473797.1'	31323	Standard
+#		'NW_022473796.1'	31301	Standard
+#		'NW_022473794.1'	31230	Standard
+#		'NW_022473793.1'	31193	Standard
+#		'NW_022473798.1'	31179	Standard
+#		'NW_022473801.1'	31176	Standard
+#		'NW_022473799.1'	30957	Standard
+#		'NW_022473800.1'	30923	Standard
+#		'NW_022473802.1'	30902	Standard
+#		'NW_022473804.1'	30769	Standard
+#		'NW_022473803.1'	30693	Standard
+#		'NW_022473805.1'	30499	Standard
+#		'NW_022473806.1'	30257	Standard
+#		'NW_022473807.1'	30200	Standard
+#		'NW_022473808.1'	29887	Standard
+#		'NW_022473809.1'	29865	Standard
+#		'NW_022473810.1'	29572	Standard
+#		'NW_022473811.1'	29278	Standard
+#		'NW_022473812.1'	28933	Standard
+#		'NW_022473813.1'	28514	Standard
+#		'NW_022473816.1'	27877	Standard
+#		'NW_022473815.1'	27736	Standard
+#		'NW_022473814.1'	27701	Standard
+#		'NW_022473817.1'	27440	Standard
+#		'NW_022473819.1'	27333	Standard
+#		'NW_022473818.1'	27270	Standard
+#		'NW_022473820.1'	26916	Standard
+#		'NW_022473821.1'	26881	Standard
+#		'NW_022473822.1'	26611	Standard
+#		'NW_022473823.1'	26377	Standard
+#		'NW_022473824.1'	26231	Standard
+#		'NW_022473826.1'	26026	Standard
+#		'NW_022473825.1'	25844	Standard
+#		'NW_022473827.1'	25630	Standard
+#		'NW_022473828.1'	25441	Standard
+#		'NW_022473829.1'	25160	Standard
+#		'NW_022473831.1'	25112	Standard
+#		'NW_022473830.1'	25090	Standard
+#		'NW_022473832.1'	25048	Standard
+#		'NW_022473833.1'	24817	Standard
+#		'NW_022473834.1'	24148	Standard
+#		'NW_022473835.1'	24115	Standard
+#		'NW_022473836.1'	24062	Standard
+#		'NW_022473838.1'	23918	Standard
+#		'NW_022473837.1'	23860	Standard
+#		'NW_022473840.1'	23556	Standard
+#		'NW_022473839.1'	23529	Standard
+#		'NW_022473844.1'	23431	Standard
+#		'NW_022473841.1'	23368	Standard
+#		'NW_022473842.1'	23357	Standard
+#		'NW_022473845.1'	23142	Standard
+#		'NW_022473847.1'	23124	Standard
+#		'NW_022473846.1'	23096	Standard
+#		'NW_022473843.1'	23030	Standard
+#		'NW_022473848.1'	22990	Standard
+#		'NW_022473849.1'	22892	Standard
+#		'NW_022473854.1'	22684	Standard
+#		'NW_022473850.1'	22645	Standard
+#		'NW_022473851.1'	22581	Standard
+#		'NW_022473852.1'	22568	Standard
+#		'NW_022473853.1'	22240	Standard
+#		'NW_022473856.1'	22036	Standard
+#		'NW_022473857.1'	22007	Standard
+#		'NW_022473858.1'	21987	Standard
+#		'NW_022473855.1'	21981	Standard
+#		'NW_022473860.1'	21851	Standard
+#		'NW_022473863.1'	21806	Standard
+#		'NW_022473859.1'	21797	Standard
+#		'NW_022473862.1'	21662	Standard
+#		'NW_022473866.1'	21352	Standard
+#		'NW_022473864.1'	21332	Standard
+#		'NW_022473865.1'	21238	Standard
+#		'NW_022473869.1'	21190	Standard
+#		'NW_022473867.1'	21158	Standard
+#		'NW_022473875.1'	21078	Standard
+#		'NW_022473868.1'	21028	Standard
+#		'NW_022473870.1'	21016	Standard
+#		'NW_022473874.1'	21007	Standard
+#		'NW_022473871.1'	20982	Standard
+#		'NW_022473872.1'	20886	Standard
+#		'NW_022473873.1'	20865	Standard
+#		'NW_022473880.1'	20792	Standard
+#		'NW_022473876.1'	20728	Standard
+#		'NW_022473878.1'	20546	Standard
+#		'NW_022473879.1'	20444	Standard
+#		'NW_022473877.1'	20389	Standard
+#		'NW_022473881.1'	20068	Standard
+#		'NW_022473882.1'	19036	Standard
+#		'NW_022473883.1'	15544	Standard
+#		'NW_022473884.1'	15153	Standard
+#		'NW_022473885.1'	14482	Standard
+#		'NW_022473886.1'	12981	Standard
+#		'NW_022473887.1'	12414	Standard
+#		'NW_022473888.1'	12173	Standard
+#		'NW_022473889.1'	10905	Standard
+#		'NW_022473896.1'	9275	Standard
+#		'NW_022473890.1'	8386	Standard
+#		'NW_022473891.1'	5101	Standard
+#		'NW_022473893.1'	616	Standard
+#-----------------------------------------------
+
+		

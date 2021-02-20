@@ -1073,15 +1073,19 @@ cd $WorkingDirectory/variantFiltration
 #+ COMPLETED removeRNAedits Merged
 ## -- Annotate variants
 #+ COMPLETED getNetworkFasta IILS
-probes2gff Exons_2021.fa SeqCap
+#+ COMPLETED probes2gff Exons_2021.fa SeqCap
 #+ COMPLETED probes2gff IILSTargetGenes.fa IILS
-annotateVariants removedRNAedits SeqCap
-## -- Initial Filter Variants
-initial-VariantFiltration SeqCap_Annotated.vcf SeqCap_InitialFiltered
-## -- Perform Hard Filtering
-hard-VariantFiltration SeqCap_InitialFiltered SeqCap
-
-getSpecificVariants SeqCap CDS
-getSpecificVariants SeqCap Exons
+#+ COMPLETED annotateVariants removedRNAedits SeqCap
+#+ COMPLETED ## -- Initial Filter Variants
+#+ COMPLETED initial-VariantFiltration SeqCap_Annotated.vcf SeqCap_InitialFiltered
+#+ COMPLETED ## -- Perform Hard Filtering
+#+ COMPLETED hard-VariantFiltration SeqCap_InitialFiltered SeqCap
+#+ COMPLETED 
+#+ COMPLETED getSpecificVariants SeqCap CDS
+#+ COMPLETED getSpecificVariants SeqCap Exons
+cp SeqCap_HardFilterStep3.vcf SeqCap_Genes.vcf
+bgzip SeqCap_Genes.vcf
+bgzip SeqCap_Exons.vcf
+bgzip SeqCap_CDS.vcf
 
 #+ COMPLETED renameSortedBAMs
