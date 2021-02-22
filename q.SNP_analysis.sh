@@ -154,7 +154,7 @@ bcftools index -f Full_"$1""$2".vcf.gz
 # Create bed file for each gene
 cp $WorkingDirectory/References/SeqCap_CapturedGenes.bed.gz .
 gunzip SeqCap_CapturedGenes.bed.gz
-python ~/SeqCap/pythonScripts/parseBED.py SeqCap_CapturedGenes.bed Full_"$1""$2"_Captures.txt "$1"
+python $pythonScripts/parseBED.py SeqCap_CapturedGenes.bed Full_"$1""$2"_Captures.txt "$1"
 sort -u Full_"$1""$2"_Captures.txt > Full_"$1""$2"_CapturedGeneList.txt
 # Extract SNPs by gene from vcf
 locivar=0
@@ -172,13 +172,13 @@ done<Full_"$1""$2"_CapturedGeneList.txt
 
 function getTranscriptLengths {
 cd $WorkingDirectory/SNP_analysis/variantsByGene/"$1""$2"
-python ~/SeqCap/pythonScripts/getTranscriptLengths.py $WorkingDirectory/References/SeqCap_Captured"$1".gff Full_"$1""$2"_Nvariants.txt Full_"$1""$2"_TranscriptLengths.txt
-python ~/SeqCap/pythonScripts/getVariableRegionsGFF.py Full_"$1""$2"_TranscriptLengths.txt $WorkingDirectory/References/SeqCap_Captured"$1".gff $WorkingDirectory/References/Full_Variable"$1""$2".gff Full_"$1""$2"_variableGenes.txt
+python $pythonScripts/getTranscriptLengths.py $WorkingDirectory/References/SeqCap_Captured"$1".gff Full_"$1""$2"_Nvariants.txt Full_"$1""$2"_TranscriptLengths.txt
+python $pythonScripts/getVariableRegionsGFF.py Full_"$1""$2"_TranscriptLengths.txt $WorkingDirectory/References/SeqCap_Captured"$1".gff $WorkingDirectory/References/Full_Variable"$1""$2".gff Full_"$1""$2"_variableGenes.txt
 }
 
 function vcf2faa {
 # Prepare GFF for gffread
-python ~/SeqCap/pythonScripts/modifyGFF_gffread.py $WorkingDirectory/References/Full_VariableCDS.gff $WorkingDirectory/References/Full_VariableCDS_gffread.gff
+python $pythonScripts/modifyGFF_gffread.py $WorkingDirectory/References/Full_VariableCDS.gff $WorkingDirectory/References/Full_VariableCDS_gffread.gff
 mkdir -p $WorkingDirectory/SNP_analysis/vcf2fasta
 cp $WorkingDirectory/variantFiltration/Full_CDS.vcf.gz $WorkingDirectory/SNP_analysis/vcf2fasta
 cp $WorkingDirectory/variantFiltration/SeqCap_CDS.vcf.gz $WorkingDirectory/SNP_analysis/vcf2fasta
@@ -203,12 +203,12 @@ do
     -V "$sample"/"$sample".vcf \
     -O "$sample"/"$sample"_wholeGenome_wrongHeaders.fasta \
     --use-iupac-sample "$sample"
-  python ~/SeqCap/pythonScripts/changeGenomeHeaders.py $WorkingDirectory/References/TelagGenome.fasta "$sample"/"$sample"_wholeGenome_wrongHeaders.fasta "$sample"/"$sample"_wholeGenome.fasta
+  python $pythonScripts/changeGenomeHeaders.py $WorkingDirectory/References/TelagGenome.fasta "$sample"/"$sample"_wholeGenome_wrongHeaders.fasta "$sample"/"$sample"_wholeGenome.fasta
   bedtools genomecov \
     -ibam $WorkingDirectory/mappedReadsAll/"$sample".bam -bga | \
     awk '$4<2' | \
     bedtools maskfasta -fi "$sample"/"$sample"_wholeGenome.fasta -bed - -fo "$sample"/"$sample"_maskedGenome_wrongHeaders.fasta
-  python ~/SeqCap/pythonScripts/changeGenomeHeaders.py $WorkingDirectory/References/TelagGenome.fasta "$sample"/"$sample"_maskedGenome_wrongHeaders.fasta "$sample"/"$sample"_maskedGenome.fasta
+  python $pythonScripts/changeGenomeHeaders.py $WorkingDirectory/References/TelagGenome.fasta "$sample"/"$sample"_maskedGenome_wrongHeaders.fasta "$sample"/"$sample"_maskedGenome.fasta
   echo "$sample" >> Log.txt
   gffread \
     -x "$sample"/"$sample"_maskedCDS.fasta \
@@ -216,7 +216,7 @@ do
     $WorkingDirectory/References/SeqCap_VariableCDS_gffread.gff 
   mkdir "$sample"/Sequences
   cd "$sample"/Sequences
-  python ~/SeqCap/pythonScripts/parseAndTranslate.py ../"$sample"_maskedCDS.fasta "$sample"
+  python $pythonScripts/parseAndTranslate.py ../"$sample"_maskedCDS.fasta "$sample"
 done
 }
 
@@ -229,7 +229,7 @@ gffread \
   $WorkingDirectory/References/SeqCap_VariableCDS_gffread.gff 
 mkdir RefSeq/Sequences
 cd RefSeq/Sequences
-python ~/SeqCap/pythonScripts/parseAndTranslate.py ../RefSeq_maskedCDS.fasta RefSeq
+python $pythonScripts/parseAndTranslate.py ../RefSeq_maskedCDS.fasta RefSeq
 # echo RefSeq >> Log.txt
 }
 
@@ -270,7 +270,7 @@ do
     $WorkingDirectory/References/SeqCap_VariableCDS_gffread.gff 
   mkdir "$sample"/UnmaskedSequences
   cd "$sample"/UnmaskedSequences
-  python ~/SeqCap/pythonScripts/parseAndTranslate.py ../"$sample"_unmaskedCDS.fasta "$sample"
+  python $pythonScripts/parseAndTranslate.py ../"$sample"_unmaskedCDS.fasta "$sample"
 done
 }
 

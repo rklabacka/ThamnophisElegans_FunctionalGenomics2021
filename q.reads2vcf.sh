@@ -848,7 +848,7 @@ function removeRNAedits {
 function getNetworkFasta {
  # Extract genes from exons used for probe design
  cd $WorkingDirectory/References
- python ~/SeqCap/pythonScripts/filterExons.py Exons_2021.fa "$1".txt "$1"TargetGenes.fa Extract"$1"GenesFromExons_log.txt
+ python $pythonScripts/filterExons.py Exons_2021.fa "$1".txt "$1"TargetGenes.fa Extract"$1"GenesFromExons_log.txt
 }
 
 
@@ -933,7 +933,7 @@ function filterByPopulation {
 function plotVariants {
 source /home/rlk0015/miniconda3/etc/profile.d/conda.sh
 conda activate vcfEnv
-python ~/SeqCap/pythonScripts/vcf2table.py "$1" "$1"_table
+python $pythonScripts/vcf2table.py "$1" "$1"_table
 ~/SeqCap/RScripts/plotvcftable.R -I "$1"_table -O "$1"_plot.pdf
 }
 
