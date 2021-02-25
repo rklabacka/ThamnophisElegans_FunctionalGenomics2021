@@ -1,0 +1,23 @@
+------------------------------------------------------
+Job is running on node node178
+node178
+node178
+node178
+node178
+node178
+node178
+node178
+node178
+node178
+------------------------------------------------------
+PBS: qsub is running on hopper-login
+PBS: originating queue is general
+PBS: executing queue is general
+PBS: working directory is /gpfs01/home/rlk0015/SeqCap/code/GenomicProcessingPipeline
+PBS: execution mode is PBS_BATCH
+PBS: job identifier is 2176785.hopper-mgt
+PBS: job name is createSIFTdb
+PBS: node file is /cm/local/apps/torque/var/spool/aux//2176785.hopper-mgt
+PBS: current home directory is /home/rlk0015
+PBS: PATH = /home/rlk0015/.linuxbrew/bin:/home/rlk0015/bin:/home/rlk0015/bin:/home/rlk0015/miniconda3/condabin:/tools/bedtools-2.29.0/bin:/tools/gcc-5.3.0/bin:/tools/bcftools-1.3.2/bin:/tools/vcftools-v0.1.17/bin:/tools/hpclib/bzlib-1.6.0/bin:/tools/perl-5.26.1/bin:/tools/python-3.6.4/bin:/cm/shared/apps/torque/6.1.3.h4/sbin:/cm/shared/apps/torque/6.1.3.h4/bin:/tools/gcc-4.9.3/bin:/home/rlk0015/anaconda3/bin:/gpfs01/tools/starccm-11.06.011.01/11.06.011/STAR-View+11.06.011/bin:/gpfs01/tools/starccm-11.06.011.01/11.06.011/STAR-CCM+11.06.011/star/bin:/gpfs01/tools/sratoolkit-2.10.5/bin:/usr/lib64/qt-3.3/bin:/cm/shared/apps/moab/current/bin:/opt/mam/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/tools/scripts:/opt/ibutils/bin:/sbin:/usr/sbin:/cm/local/apps/environment-modules/3.2.10/bin:/usr/local/rvm/bin:/home/rlk0015/bin
+------------------------------------------------------

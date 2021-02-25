@@ -1,0 +1,43 @@
+Can't locate strict.pm in @INC (you may need to install the strict module) (@INC contains: /home/rlk0015/perl5/lib/perl5 /home/rlk0015/perl5/lib/perl5 /tools/perl-5.26.1/lib /cm/shared/apps/moab/current/lib/perl5 /home/rlk0015/localperl/lib/site_perl/5.32.1/x86_64-linux /home/rlk0015/localperl/lib/site_perl/5.32.1 /home/rlk0015/localperl/lib/5.32.1/x86_64-linux /home/rlk0015/localperl/lib/5.32.1) at gff_gene_format_to_ucsc.pl line 2.
+BEGIN failed--compilation aborted at gff_gene_format_to_ucsc.pl line 2.
+Can't locate strict.pm in @INC (you may need to install the strict module) (@INC contains: /home/rlk0015/perl5/lib/perl5 /home/rlk0015/perl5/lib/perl5 /tools/perl-5.26.1/lib /cm/shared/apps/moab/current/lib/perl5 /home/rlk0015/localperl/lib/site_perl/5.32.1/x86_64-linux /home/rlk0015/localperl/lib/site_perl/5.32.1 /home/rlk0015/localperl/lib/5.32.1/x86_64-linux /home/rlk0015/localperl/lib/5.32.1) at make-single-records-BIOPERL.pl line 21.
+BEGIN failed--compilation aborted at make-single-records-BIOPERL.pl line 21.
+Can't locate strict.pm in @INC (you may need to install the strict module) (@INC contains: /home/rlk0015/perl5/lib/perl5 /home/rlk0015/perl5/lib/perl5 /tools/perl-5.26.1/lib /cm/shared/apps/moab/current/lib/perl5 /home/rlk0015/localperl/lib/site_perl/5.32.1/x86_64-linux /home/rlk0015/localperl/lib/site_perl/5.32.1 /home/rlk0015/localperl/lib/5.32.1/x86_64-linux /home/rlk0015/localperl/lib/5.32.1) at make-single-records-noncoding.pl line 11.
+BEGIN failed--compilation aborted at make-single-records-noncoding.pl line 11.
+Can't locate strict.pm in @INC (you may need to install the strict module) (@INC contains: /home/rlk0015/perl5/lib/perl5 /home/rlk0015/perl5/lib/perl5 /tools/perl-5.26.1/lib /cm/shared/apps/moab/current/lib/perl5 /home/rlk0015/localperl/lib/site_perl/5.32.1/x86_64-linux /home/rlk0015/localperl/lib/site_perl/5.32.1 /home/rlk0015/localperl/lib/5.32.1/x86_64-linux /home/rlk0015/localperl/lib/5.32.1) at generate-fasta-subst-files-BIOPERL.pl line 22.
+BEGIN failed--compilation aborted at generate-fasta-subst-files-BIOPERL.pl line 22.
+cat: /home/rlk0015/scripts_to_build_SIFT_db/test_files/Thamnophis_elegans/fasta/*.fasta: No such file or directory
+** Checking query data and substitutions files **
+
+
+** EXITING! No valid queries to process. **
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
