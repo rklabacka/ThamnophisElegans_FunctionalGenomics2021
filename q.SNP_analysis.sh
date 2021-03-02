@@ -281,7 +281,7 @@ WorkingDirectory=/scratch/rlk0015/Telag/May2020/WorkingDirectory
 #+ COMPLETED sortVariants SeqCap_CDS   SeqCap_IndividualsToRemove 
 #+ COMPLETED sortVariants SeqCap_Exons  SeqCap_IndividualsToRemoves
 #+ COMPLETED sortVariants SeqCap_Genes  SeqCap_IndividualsToRemoves
-sortVariants Full_CDS Full_IndividualsToRemove
+#+ COMPLETED sortVariants Full_CDS Full_IndividualsToRemove
 #+ COMPLETED sortVariants Full_Exons Full_IndividualsToRemove
 #+ COMPLETED sortVariants Full_Genes Full_IndividualsToRemove
 
@@ -292,20 +292,20 @@ sortVariants Full_CDS Full_IndividualsToRemove
 #+ COMPLETED and deleted... functionalAnnotation SeqCap
 #+ COMPLETED functionalAnnotation Full
 #+
-getGeneVariants CDS
+#+ COMPLETED getGeneVariants CDS
 #+ COMPLETED getGeneVariants Exons
 #+ COMPLETED getGeneVariants Genes
 #+ COMPLETED getGeneVariants CDS _missense
 #+ COMPLETED getGeneVariants CDS _synonymous
 #+ 
-getTranscriptLengths CDS
+#+ COMPLETED getTranscriptLengths CDS
 #+ COMPLETED getTranscriptLengths Exons
 #+ COMPLETED getTranscriptLengths Genes
 #+ COMPLETED getTranscriptLengths CDS _missense
 #+ COMPLETED getTranscriptLengths CDS _synonymous
 #+ 
-vcf2faa
-reference2faa
+#+ COMPLETED vcf2faa
+#+ COMPLETED reference2faa
 createMSA faa protein Sequences maskedMSA
 #+ COMPLETED vcf2faa_unmasked
 #+ COMPLETED createMSA faa protein UnmaskedSequences unmaskedMSA

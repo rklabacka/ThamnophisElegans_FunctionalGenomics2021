@@ -1,4 +1,8 @@
 #! usr/bin/env/ python
+"""Script used for modifying a gff file
+to be compatible with gffread
+"""
+
 import sys
 
 GFF_in = open(sys.argv[1], 'r')

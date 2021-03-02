@@ -11,7 +11,7 @@
 #-- Hopper's standard compute nodes have a total of 20 cores each
 #-- so, to use all the processors on a single machine, set your
 #-- ppn (processors per node) to 20.
-#PBS -l nodes=1:ppn=10,walltime=05:00:00:00
+#PBS -l nodes=1:ppn=20,walltime=20:00:00:00
 #-- Indicate if\when you want to receive email about your job
 #-- The directive below sends email if the job is (a) aborted, 
 #-- when it (b) begins, and when it (e) ends
@@ -36,11 +36,18 @@ module load perl/5.26.1
 module load bedtools/2.29.0
 WorkingDirectory=/scratch/rlk0015/Telag/May2020/WorkingDirectory
 
-# -- Step 1: Set up working environment based on https://github.com/pauline-ng/SIFT4G_Create_Genomic_DB
-# cd $WorkingDirectory/SNP_analysis/proteinStructure/Thamnophis_elegans/proteinDB
-# wget ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.xml.gz
-# wget ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz
-cd $WorkingDirectory/SNP_analysis/proteinStructure/Thamnophis_elegans/chr-src
-gzip Thamnophis_elegans.fa
+# See if sift4g is working
 # cd /home/rlk0015/scripts_to_build_SIFT_db
-# /tools/perl-5.26.1/bin/perl make-SIFT-db-all.pl -config /scratch/rlk0015/Telag/May2020/WorkingDirectory/SNP_analysis/proteinStructure/Thamnophis_elegans/Thamnophis_elegans.txt
+# perl make-SIFT-db-all.pl -config test_files/candidatus_carsonella_ruddii_pv_config.txt --ensembl_download
+# -- Step 1: Set up working environment based on https://github.com/pauline-ng/SIFT4G_Create_Genomic_DB
+#+ COMPLETED cd $WorkingDirectory/SNP_analysis/proteinStructure/Thamnophis_elegans/proteinDB
+#+ COMPLETED wget ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.xml.gz
+#+ COMPLETED wget ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta
+#+ cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/SNP_analysis/proteinStructure/Thamnophis_elegans/proteinDB2
+#+ wget ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz
+#+ gunzip uniref90.fasta.gz
+# cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/SNP_analysis/proteinStructure/Thamnophis_elegans/proteinDB
+# gunzip uniref90.fasta.gz
+# cd $WorkingDirectory/SNP_analysis/proteinStructure/Thamnophis_elegans/chr-src
+cd /home/rlk0015/scripts_to_build_SIFT_db
+/tools/perl-5.26.1/bin/perl make-SIFT-db-all.pl -config /scratch/rlk0015/Telag/May2020/WorkingDirectory/SNP_analysis/proteinStructure/Thamnophis_elegans/Thamnophis_elegans.txt
