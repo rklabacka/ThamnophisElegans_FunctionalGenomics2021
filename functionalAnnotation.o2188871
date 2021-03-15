@@ -1,0 +1,71 @@
+------------------------------------------------------
+Job is running on node node178
+node178
+node178
+node178
+node178
+node178
+node178
+node178
+node178
+node178
+node178
+node178
+node178
+node178
+node178
+node178
+node178
+node178
+node178
+node178
+------------------------------------------------------
+PBS: qsub is running on hopper-login
+PBS: originating queue is general
+PBS: executing queue is general
+PBS: working directory is /gpfs01/home/rlk0015/SeqCap/code/GenomicProcessingPipeline
+PBS: execution mode is PBS_BATCH
+PBS: job identifier is 2188871.hopper-mgt
+PBS: job name is functionalAnnotation
+PBS: node file is /cm/local/apps/torque/var/spool/aux//2188871.hopper-mgt
+PBS: current home directory is /home/rlk0015
+PBS: PATH = /tools/binutils-2.31/x86_64-pc-linux-gnu:/tools/binutils-2.31/bin:/home/rlk0015/.linuxbrew/bin:/home/rlk0015/bin:/home/rlk0015/bin:/home/rlk0015/miniconda3/condabin:/tools/bedtools-2.29.0/bin:/tools/gcc-5.3.0/bin:/tools/bcftools-1.3.2/bin:/tools/vcftools-v0.1.17/bin:/tools/hpclib/bzlib-1.6.0/bin:/tools/perl-5.26.1/bin:/tools/python-3.6.4/bin:/cm/shared/apps/torque/6.1.3.h4/sbin:/cm/shared/apps/torque/6.1.3.h4/bin:/tools/gcc-4.9.3/bin:/home/rlk0015/myTools/perl-5.32.1:/home/rlk0015/anaconda3/bin:/gpfs01/tools/starccm-11.06.011.01/11.06.011/STAR-View+11.06.011/bin:/gpfs01/tools/starccm-11.06.011.01/11.06.011/STAR-CCM+11.06.011/star/bin:/gpfs01/tools/sratoolkit-2.10.5/bin:/usr/lib64/qt-3.3/bin:/cm/shared/apps/moab/current/bin:/opt/mam/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/tools/scripts:/opt/ibutils/bin:/sbin:/usr/sbin:/cm/local/apps/environment-modules/3.2.10/bin:/usr/local/rvm/bin:/home/rlk0015/bin
+------------------------------------------------------
+Start Time for SIFT4G code: Sat Mar 06 14:12:26 CST 2021
+
+Started Running .......
+Running in Multitranscripts mode
+
+Chromosome	WithSIFT4GAnnotations	WithoutSIFT4GAnnotations	Progress
+NW_022473730.1			9			0			Completed : 1/26
+NW_022473781.1			8			0			Completed : 2/26
+NW_022473751.1			21			0			Completed : 3/26
+NW_022473647.1			20			0			Completed : 4/26
+NW_022473598.1			47			0			Completed : 5/26
+NW_022473609.1			6			0			Completed : 6/26
+NW_022473899.1			18			0			Completed : 7/26
+NW_022473632.1			32			0			Completed : 8/26
+NC_045557.1			263			0			Completed : 9/26
+NC_045555.1			160			0			Completed : 10/26
+NC_045551.1			58			0			Completed : 11/26
+NC_045556.1			116			0			Completed : 12/26
+NC_045550.1			91			0			Completed : 13/26
+NC_045554.1			274			0			Completed : 14/26
+NC_045549.1			92			0			Completed : 15/26
+NC_045548.1			178			0			Completed : 16/26
+NC_045553.1			164			0			Completed : 17/26
+NC_045546.1			80			0			Completed : 18/26
+NC_045547.1			134			0			Completed : 19/26
+NC_045552.1			280			0			Completed : 20/26
+NC_045545.1			276			0			Completed : 21/26
+NC_045544.1			256			0			Completed : 22/26
+NC_045543.1			249			0			Completed : 23/26
+NC_045558.1			233			0			Completed : 24/26
+NC_045541.1			398			0			Completed : 25/26
+NC_045542.1			642			0			Completed : 26/26
+
+Merging temp files....
+SIFT4G Annotation completed !
+Output directory:/scratch/rlk0015/Telag/May2020/WorkingDirectory/SNP_analysis/proteinStructure/Thamnophis_elegans/SIFT_annotation
+End Time for parallel code: Sat Mar 06 14:13:24 CST 2021
+

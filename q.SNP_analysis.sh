@@ -189,6 +189,7 @@ cp $WorkingDirectory/variantFiltration/Full_CDS.vcf.gz .
 cp $WorkingDirectory/variantFiltration/SeqCap_CDS.vcf.gz .
 bcftools index -f Full_CDS.vcf.gz
 bcftools index -f SeqCap_CDS.vcf.gz
+#+ COMPLETED echo "RefSeq" >> SampleList.txt
 for sample in `bcftools query -l SeqCap_CDS.vcf`
 do
   cd $WorkingDirectory/SNP_analysis/vcf2fasta
@@ -209,7 +210,9 @@ do
     awk '$4<2' | \
     bedtools maskfasta -fi "$sample"/"$sample"_wholeGenome.fasta -bed - -fo "$sample"/"$sample"_maskedGenome_wrongHeaders.fasta
   python $pythonScripts/changeGenomeHeaders.py $WorkingDirectory/References/TelagGenome.fasta "$sample"/"$sample"_maskedGenome_wrongHeaders.fasta "$sample"/"$sample"_maskedGenome.fasta
-  echo "$sample" >> Log.txt
+  #+ COMPLETED This is complete- also I noticed that the SeqCap_CDS.vcf file I used for this command contains duplicate samples that I needed to delete manually
+  #+ COMPLETED Also, this list used to be called "Log.txt"
+  #+ COMPLETED echo "$sample" >> SampleList.txt
   gffread \
     -x "$sample"/"$sample"_maskedCDS.fasta \
     -g "$sample"/"$sample"_maskedGenome.fasta \
@@ -230,18 +233,32 @@ gffread \
 mkdir RefSeq/Sequences
 cd RefSeq/Sequences
 python $pythonScripts/parseAndTranslate.py ../RefSeq_maskedCDS.fasta RefSeq
-# echo RefSeq >> Log.txt
 }
 
-function createMSA {
-# I changed the directory from Sequences to UnmaskedSequences, make sure to change back if you need masking
-  cd $WorkingDirectory/SNP_analysis/vcf2fasta/RefSeq/"$3"
+function reference2faa {
+cd $WorkingDirectory/SNP_analysis/vcf2fasta
+echo "Outgroup" >> SampleList.txt
+mkdir -p "$1"
+gffread \
+  -x "$1"/"$1"_maskedCDS.fasta \
+  -g $WorkingDirectory/References/TelagGenome.fasta \
+  $WorkingDirectory/References/SeqCap_VariableCDS_gffread.gff 
+mkdir "$1"/Sequences
+cd "$1"/Sequences
+python $pythonScripts/parseAndTranslate.py ../"$1"_maskedCDS.fasta "$1"
+}
+
+function moveCapturedGenes {
+  cd $WorkingDirectory/SNP_analysis/vcf2fasta/RefSeq/Sequences
   mkdir -p CapturedGenes
   while read i
   do
     mv *"$i"* CapturedGenes/ 
   done<$WorkingDirectory/References/CapturedGenes.txt
-  cd CapturedGenes
+}
+
+function createMSA {
+  cd $WorkingDirectory/SNP_analysis/vcf2fasta/RefSeq/Sequences/CapturedGenes
   ls *."$1" | cut -d "_" -f 2,3,4 | sort > "$2"List.txt
   mkdir -p $WorkingDirectory/SNP_analysis/"$4"/Captured"$1"
   cd $WorkingDirectory/SNP_analysis/"$4"/Captured"$1"
@@ -254,7 +271,7 @@ function createMSA {
       sed -i "s/>rna/>"$sample"_/" $WorkingDirectory/SNP_analysis/vcf2fasta/"$sample"/"$3"/"$sample"_"$fasta"
       cat $WorkingDirectory/SNP_analysis/vcf2fasta/"$sample"/"$3"/"$sample"_"$fasta" >> Alignment_"$fasta"
       echo "" >> Alignment_"$fasta"
-    done<$WorkingDirectory/SNP_analysis/vcf2fasta/Log.txt
+    done<$WorkingDirectory/SNP_analysis/vcf2fasta/SampleList.txt
   done<$WorkingDirectory/SNP_analysis/vcf2fasta/RefSeq/"$3"/CapturedGenes/"$2"List.txt
 }
    
@@ -306,7 +323,9 @@ WorkingDirectory=/scratch/rlk0015/Telag/May2020/WorkingDirectory
 #+ 
 #+ COMPLETED vcf2faa
 #+ COMPLETED reference2faa
-createMSA faa protein Sequences maskedMSA
+#+ COMPLETED moveCapturedGenes
+#+ COMPLETED createMSA faa protein Sequences maskedMSA
+createMSA fna transcript Sequences maskedMSA
 #+ COMPLETED vcf2faa_unmasked
 #+ COMPLETED createMSA faa protein UnmaskedSequences unmaskedMSA
 #+ COMPLETED combineDatasets

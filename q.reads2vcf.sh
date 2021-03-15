@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# This is the bash script used to process raw reads for the garter snake 
+# sequence 
+
 #Give job a name
 #PBS -N FullScript_May2020
 
@@ -880,6 +883,35 @@ function probes2gff {
  tabix -f -p bed "$2"_CapturedCDS.bed.gz
 }
 
+# The following function will be for the T. sirtalis genome
+function probes2gffNew {
+ ## ANNOTATE FILTERED VARIANT FILES FOR SEQCAP DATA
+ cd $WorkingDirectory/References
+ # Make blast database from T. elegans genome
+ makeblastdb -in "$3".fasta -parse_seqids -dbtype nucl -out "$3"_Genome.db
+ # Use Blast with Exons_2021.fa (the exons used for probe design) to filter the genome
+ blastn -db "$3"_Genome.db -query "$1" -outfmt "7 qseqid sseqid evalue qstart qend sstart send" -out BlastResults_"$3"_"$2".txt
+ # Delete "^#" lines from blast output
+ cp BlastResults_"$3"_"$2".txt BlastResults_"$3"_"$2"_original.txt
+ sed -i.bak '/^#/d' BlastResults_"$3"_"$2".txt
+ sed -i.bak "s/ref|//" BlastResults_"$3"_"$2".txt
+ sed -i.bak "s/|//" BlastResults_"$3"_"$2".txt
+ # Use filtered genome results (blast output) to pull out targeted genes and create filtered gff
+ python $pythonScripts/shrinkGFF.py BlastResults_"$3"_"$2".txt "$3".gff "$3"_"$2"_CapturedGenes.gff "$3"_"$2"_CapturedExons.gff "$3"_"$2"_CapturedCDS.gff Pull"$3"_"$2"CapturedGenes_log.txt
+ # Use bedops to convert gff to bed
+ gff2bed < "$3"_"$2"_CapturedGenes.gff > "$3"_"$2"_CapturedGenes.bed
+ gff2bed < "$3"_"$2"_CapturedExons.gff > "$3"_"$2"_CapturedExons.bed
+ gff2bed < "$3"_"$2"_CapturedCDS.gff > "$3"_"$2"_CapturedCDS.bed
+ # bgzip bed file
+ bgzip -f "$3"_"$2"_CapturedGenes.bed "$3"_"$2"_CapturedGenes.bed.gz
+ bgzip -f "$3"_"$2"_CapturedExons.bed "$3"_"$2"_CapturedExons.bed.gz
+ bgzip -f "$3"_"$2"_CapturedCDS.bed "$3"_"$2"_CapturedCDS.bed.gz
+ # tabix index .bed.gz file
+ tabix -f -p bed "$3"_"$2"_CapturedGenes.bed.gz
+ tabix -f -p bed "$3"_"$2"_CapturedExons.bed.gz
+ tabix -f -p bed "$3"_"$2"_CapturedCDS.bed.gz
+}
+
 function annotateVariants {
   # Annotate SNP file make sure "$1".vcf is in this directory
   cd $WorkingDirectory/variantFiltration
@@ -980,22 +1012,27 @@ function initial-VariantFiltration {
 } 
 
 function hard-VariantFiltration {
-  #+ ++++++++++ Commented out: I think we only want to filter by depth for genotyping... +++++++++++
-  #+ # Step 1: I changed "VariantFiltration" to filter out SNPs with DP < 20:
-  #+   /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" VariantFiltration -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome.fasta -V "$1".vcf -O "$2"_HardFilterStep1Init.vcf --filter-name "DP" --filter-expression "DP < 20"
-  #+   awk '/^#/||$7=="PASS"' "$2"_HardFilterStep1Init.vcf > "$2"_HardFilterStep1.vcf
-  #+   echo "Depth filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep1.vcf | wc -l)" >> Log.txt
-  #+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # Step 4: Get rid of low-quality (mean) genotyping:
-    bcftools view  -i  'MIN(FMT/GQ>20)'   filtered_"$1".vcf > "$2"_HardFilterStep1.vcf
+  # Step 0: Get rid of unwanted individuals (T. sirtalis, duplicates, and siblings)
+    vcftools --remove Full_IndividualsToRemove --vcf filtered_"$1".vcf --recode --out "$2"_HardFilterStep0.vcf
+    mv "$2"_HardFilterStep0.vcf.recode.vcf "$2"_HardFilterStep0.vcf
+  # Step 1: Get rid of low-quality (mean) genotyping:
+    bcftools view  -i  'MIN(FMT/GQ>20)' "$2"_HardFilterStep0.vcf > "$2"_HardFilterStep1.vcf
     echo "Genotype Quality filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep1.vcf | wc -l)" >> Log.txt
   # Step 2: Get rid of multiallelic SNPs (more than 2 alleles):
     bcftools view -m2 -M2 -v snps "$2"_HardFilterStep1.vcf > "$2"_HardFilterStep2.vcf
     echo "Multiallelic filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep2.vcf | wc -l)" >> Log.txt
-  # Step 3: Get rid of low-frequency alleles- here just singletons:
-    vcftools --mac 2 --vcf "$2"_HardFilterStep2.vcf --recode --recode-INFO-all --out "$2"_HardFilterStep3.vcf
+  # Step 3: Filter individuals by quality
+    vcftools --minGQ 20 --vcf "$2"_HardFilterStep2.vcf --recode --recode-INFO-all --out "$2"_HardFilterStep3.vcf
     mv "$2"_HardFilterStep3.vcf.recode.vcf "$2"_HardFilterStep3.vcf
-    echo "Singleton filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep3.vcf | wc -l)" >> Log.txt
+    echo "Indiv GQ filtration $2 variants:  $(grep -v "^#" "$2"_HardFilterStep3.vcf | wc -l)" >> Log.txt
+  # Step 4: Get rid of low-depth individuals per site
+    bcftools view  -i  'MIN(FMT/DP>9)' "$2"_HardFilterStep3.vcf > "$2"_HardFilterStep4.vcf 
+    echo "Genotype Quality filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep4.vcf | wc -l)" >> Log.txt
+  # Step 5: Get rid of low-frequency alleles- here just singletons:
+    vcftools --mac 2 --vcf "$2"_HardFilterStep4.vcf --recode --recode-INFO-all --out "$2"_HardFilterStep5.vcf
+    mv "$2"_HardFilterStep5.vcf.recode.vcf "$2"_HardFilterStep5.vcf
+    echo "Singleton filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep5.vcf | wc -l)" >> Log.txt
+
 }
 
 ### -- If needed, here is code for removing individuals that would need to be adapted
@@ -1075,6 +1112,7 @@ cd $WorkingDirectory/variantFiltration
 #+ COMPLETED getNetworkFasta IILS
 #+ COMPLETED probes2gff Exons_2021.fa SeqCap
 #+ COMPLETED probes2gff IILSTargetGenes.fa IILS
+#+ NEEDED probes2gffNew Exons_2021.fa SeqCap Tsirtal
 #+ COMPLETED annotateVariants removedRNAedits SeqCap
 #+ COMPLETED ## -- Initial Filter Variants
 #+ COMPLETED initial-VariantFiltration SeqCap_Annotated.vcf SeqCap_InitialFiltered
@@ -1083,9 +1121,14 @@ cd $WorkingDirectory/variantFiltration
 #+ COMPLETED 
 #+ COMPLETED getSpecificVariants SeqCap CDS
 #+ COMPLETED getSpecificVariants SeqCap Exons
-cp SeqCap_HardFilterStep3.vcf SeqCap_Genes.vcf
-bgzip SeqCap_Genes.vcf
-bgzip SeqCap_Exons.vcf
-bgzip SeqCap_CDS.vcf
+#+ COMPLETED cp SeqCap_HardFilterStep3.vcf SeqCap_Genes.vcf
+#+ COMPLETED bgzip SeqCap_Genes.vcf
+#+ COMPLETED bgzip SeqCap_Exons.vcf
+#+ COMPLETED bgzip SeqCap_CDS.vcf
+gunzip Full_Exons.vcf.gz
+plotVariants Full_Exons.vcf
+bgzip Full_Exons.vcf
 
 #+ COMPLETED renameSortedBAMs
+
+#+ COMPLETED annotateVariants Full_CDS_synonymous SeqCap
