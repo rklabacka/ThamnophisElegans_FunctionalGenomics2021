@@ -69,27 +69,31 @@ cd $WorkingDirectory/variantFiltration
 cp "$1".vcf.gz "$1"_original.vcf.gz
 bcftools index -f "$1".vcf.gz
 bcftools norm -d snps "$1".vcf.gz -O v -o "$1"_dupsRemoved.vcf
-vcftools --remove "$2" --vcf "$1"_dupsRemoved.vcf --recode --out "$1"_indsRemoved.vcf
-mv "$1"_indsRemoved.vcf.recode.vcf "$1"_indsRemoved.vcf
-vcftools --mac 2 --vcf "$1"_indsRemoved.vcf --recode --recode-INFO-all --out "$1"_singletonsRemoved.vcf
-mv "$1"_singletonsRemoved.vcf.recode.vcf "$1"_singletonsRemoved.vcf
-bgzip "$1"_singletonsRemoved.vcf
-bcftools index -f "$1"_singletonsRemoved.vcf.gz
-bcftools sort "$1"_singletonsRemoved.vcf.gz -O z -o "$1"_sorted.vcf.gz
+bcftools sort "$1"_dupsRemoved.vcf -O z -o "$1"_sorted.vcf.gz
 gunzip "$1".vcf.gz
 echo "original:  $(grep -v "^#" "$1".vcf | wc -l)" >> Log.txt
 echo "with dups removed: $(grep -v "^#" "$1"_dupsRemoved.vcf | wc -l)" >> Log.txt
-echo "with singletons removed: $(grep -v "^#" "$1"_singletonsRemoved.vcf | wc -l)" >> Log.txt
-# rm "$1"_singletonsRemoved.vcf.gz
 # rm "$1"_dupsRemoved.vcf
 # rm "$1".vcf
 mv "$1"_sorted.vcf.gz "$1".vcf.gz
 bcftools index -f "$1".vcf.gz
 rm "$1".vcf
-# I also did this with the SeqCap_HardFilterStep3.vcf - which is the "Genes" vcf
-# The file named SeqCap_Genes.vcf.gz is sorted with dups removed from the HardFilterStep3.vcf file
 }
 
+function createPopFiles {
+  cd $WorkingDirectory/SNP_analysis
+  mkdir -p Populations
+  for sample in `bcftools query -l $WorkingDirectory/variantFiltration/Full_CDS.vcf.gz`
+  do
+    echo "$sample" >> Samples
+  done
+  python $pythonScripts/parsePopulations.py Samples.txt
+  rm *PIK*.txt
+  mkdir -p pairwisePops
+  mkdir -p allPops
+  mv *_*.txt pairwisePops
+  mv *.txt allPops
+} 
 function getVariantBED {
 cd $WorkingDirectory/variantFiltration
 gunzip "$1".vcf.gz
