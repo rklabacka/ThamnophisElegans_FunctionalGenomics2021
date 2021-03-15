@@ -94,6 +94,26 @@ function createPopFiles {
   mv *_*.txt pairwisePops
   mv *.txt allPops
 } 
+
+function createPairwiseVCFs {
+  cd $WorkingDirectory/variantFiltration
+  gunzip Full_CDS_missense.vcf.gz
+  gunzip Full_CDS_synonymous.vcf.gz
+  cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops
+  echo "PairwiseComparison  N   Missense    Synonymous" >> PairwisePopSNPs.txt.protected
+  for i in *.txt
+  do
+    bcftools view --samples-file "$i" --min-ac=1 --no-update \
+        $WorkingDirectory/variantFiltration/Full_CDS_missense.vcf > Full_CDS_missense_"$i".vcf
+    bcftools view --samples-file "$i" --min-ac=1 --no-update \
+        $WorkingDirectory/variantFiltration/Full_CDS_synonymous.vcf > Full_CDS_synonymous_"$i".vcf
+    n="$(wc -l < "$i")"
+    misSNPcount="$(grep -v "^#" Full_CDS_missense_"$i".vcf | wc -l)"
+    synSNPcount="$(grep -v "^#" Full_CDS_synonymous_"$i".vcf | wc -l)"
+    echo "$i    $n  $misSNPcount    $synSNPcount" >> PairwisePopSNPs.txt.protected
+  done
+}
+
 function getVariantBED {
 cd $WorkingDirectory/variantFiltration
 gunzip "$1".vcf.gz
@@ -329,7 +349,6 @@ WorkingDirectory=/scratch/rlk0015/Telag/May2020/WorkingDirectory
 #+ COMPLETED reference2faa
 #+ COMPLETED moveCapturedGenes
 #+ COMPLETED createMSA faa protein Sequences maskedMSA
-createMSA fna transcript Sequences maskedMSA
-#+ COMPLETED vcf2faa_unmasked
-#+ COMPLETED createMSA faa protein UnmaskedSequences unmaskedMSA
-#+ COMPLETED combineDatasets
+#+ COMPLETED createMSA fna transcript Sequences maskedMSA
+#+ COMPLETED createPopFiles
+createPairwiseVCFs
