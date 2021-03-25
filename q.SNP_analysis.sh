@@ -83,11 +83,12 @@ rm "$1".vcf
 function createPopFiles {
   cd $WorkingDirectory/SNP_analysis
   mkdir -p Populations
+  cd Populations
   for sample in `bcftools query -l $WorkingDirectory/variantFiltration/Full_CDS.vcf.gz`
   do
     echo "$sample" >> Samples
   done
-  python $pythonScripts/parsePopulations.py Samples.txt
+  python $pythonScripts/parsePopulations.py Samples
   rm *PIK*.txt
   mkdir -p pairwisePops
   mkdir -p allPops
@@ -99,19 +100,45 @@ function createPairwiseVCFs {
   cd $WorkingDirectory/variantFiltration
   gunzip Full_CDS_missense.vcf.gz
   gunzip Full_CDS_synonymous.vcf.gz
+  gunzip Full_Exons.vcf.gz
   cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops
-  echo "PairwiseComparison  N   Missense    Synonymous" >> PairwisePopSNPs.txt.protected
-  for i in *.txt
+  ls *.txt | cut -d "." -f "1" | sort > PairwisePopsList
+  echo -e "PairwiseComparison\tN\tMissense\tSynonymous" >> PairwisePopSegregatingSites.txt
+  while read i
   do
-    bcftools view --samples-file "$i" --min-ac=1 --no-update \
-        $WorkingDirectory/variantFiltration/Full_CDS_missense.vcf > Full_CDS_missense_"$i".vcf
-    bcftools view --samples-file "$i" --min-ac=1 --no-update \
-        $WorkingDirectory/variantFiltration/Full_CDS_synonymous.vcf > Full_CDS_synonymous_"$i".vcf
+    echo "Population $i"
+    cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops
+    mkdir -p "$i"/missense "$i"/synonymous "$i"/exons
+    mv "$i".txt "$i"/
+    bcftools view --samples-file "$i"/"$i".txt --min-ac=1 --no-update \
+        $WorkingDirectory/variantFiltration/Full_CDS_missense.vcf > "$i"/missense/Full_CDS_missense_"$i".vcf
+    bcftools view --samples-file "$i"/"$i".txt --min-ac=1 --no-update \
+        $WorkingDirectory/variantFiltration/Full_CDS_synonymous.vcf > "$i"/synonymous/Full_CDS_synonymous_"$i".vcf
+    bcftools view --samples-file "$i"/"$i".txt --min-ac=1 --no-update \
+        $WorkingDirectory/variantFiltration/Full_Exons.vcf > "$i"/exons/Full_Exons_"$i".vcf
     n="$(wc -l < "$i")"
-    misSNPcount="$(grep -v "^#" Full_CDS_missense_"$i".vcf | wc -l)"
-    synSNPcount="$(grep -v "^#" Full_CDS_synonymous_"$i".vcf | wc -l)"
-    echo "$i    $n  $misSNPcount    $synSNPcount" >> PairwisePopSNPs.txt.protected
-  done
+    misSNPcount="$(grep -v "^#" "$i"/missense/Full_CDS_missense_"$i".vcf | wc -l)"
+    synSNPcount="$(grep -v "^#" "$i"/synonymous/Full_CDS_synonymous_"$i".vcf | wc -l)"
+    echo -e "$i\t$n\t$misSNPcount\t$synSNPcount\t$tajD" >> PairwisePopSegregatingSites.txt
+    j="$i"
+    k="$i"
+    cd "$i"/missense/
+    bgzip Full_CDS_missense_"$i".vcf
+    bcftools index -f Full_CDS_missense_"$i".vcf.gz
+    getVCFbyGene CDS Full_CDS_missense_"$i".vcf.gz "$i"
+    cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/"$j"/synonymous
+    bgzip Full_CDS_synonymous_"$j".vcf
+    bcftools index -f Full_CDS_synonymous_"$j".vcf.gz
+    getVCFbyGene CDS Full_CDS_synonymous_"$j".vcf.gz "$j"
+    cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/"$k"/exons
+    bgzip Full_Exons_"$k".vcf
+    bcftools index -f Full_Exons_"$k".vcf.gz
+    getVCFbyGene Exons Full_Exons_"$k".vcf.gz "$k"
+  done<PairwisePopsList
+  cd $WorkingDirectory/variantFiltration
+  bgzip Full_CDS_missense.vcf
+  bgzip Full_CDS_synonymous.vcf
+  bgzip Full_Exons.vcf
 }
 
 function getVariantBED {
@@ -176,22 +203,68 @@ cd $WorkingDirectory/SNP_analysis/variantsByGene/"$1""$2"
 cp $WorkingDirectory/variantFiltration/Full_"$1""$2".vcf.gz .
 bcftools index -f Full_"$1""$2".vcf.gz
 # Create bed file for each gene
-cp $WorkingDirectory/References/SeqCap_CapturedGenes.bed.gz .
-gunzip SeqCap_CapturedGenes.bed.gz
-python $pythonScripts/parseBED.py SeqCap_CapturedGenes.bed Full_"$1""$2"_Captures.txt "$1"
+getBEDbyGene $1 $2
+# Extract SNPs by gene from vcf
+cd $WorkingDirectory/SNP_analysis/variantsByGene/"$1""$2"
+# WARNING: The following command has not been verified
+# within the getGeneVariants function.
+## -- Previously the code in the function getVCFbyGene
+## -- was included as hard code within the getGeneVariants
+## -- function. I created a separate function for
+## -- getVCFbyGene when I needed to use the same process
+## -- for the createPairwiseVCFs function
+getVCFbyGene $1 $WorkingDirectory/variantFiltration/Full_"$1""$2".vcf.gz $2 
+}
+
+function getBEDbyGene {
+# Create bed file for each gene
+cd $WorkingDirectory/References
+mkdir -p GeneBEDs
+cd GeneBEDs
+python $pythonScripts/parseBED.py ../SeqCap_CapturedGenes.bed Full_"$1""$2"_Captures.txt "$1"
 sort -u Full_"$1""$2"_Captures.txt > Full_"$1""$2"_CapturedGeneList.txt
+}
+
+function getVCFbyGene {
+# echo "    Entered getGeneVariants for $3"
 # Extract SNPs by gene from vcf
 locivar=0
 while read i
   do
+ #  echo "        Gene: $i"
   mkdir -p "$i"
-  mv "$i"_"$1".bed "$i"/
-  bcftools view -R "$i"/"$i"_"$1".bed Full_"$1""$2".vcf.gz > "$i"/"$i"_"$1""$2".vcf
-  locusvar="$(grep -v "^#" "$i"/"$i"_"$1""$2".vcf | wc -l)"
-  echo "$i	$locusvar" >> Full_"$1""$2"_Nvariants.txt
+  bcftools view -R $WorkingDirectory/References/GeneBEDs/"$i"_"$1".bed "$2" > "$i"/"$i"_"$1""$4"_"$3".vcf
+  locusvar="$(grep -v "^#" "$i"/"$i"_"$1""$4"_"$3".vcf| wc -l)"
+  echo "$i	$locusvar" >> Full_"$1""$4"_Nvariants.txt
   locivar=$((locusvar + locivar))
-done<Full_"$1""$2"_CapturedGeneList.txt
-  echo "total variants: $locivar" >> Full_"$1"_Nvariants.txt
+done<$WorkingDirectory/References/GeneBEDs/Full_CDS_CapturedGeneList.txt
+  echo "total variants: $locivar" >> Full_"$1""$2"_Nvariants.txt
+}
+
+function getPairwisePopGen {
+mkdir -p $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats
+cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops
+while read i
+do
+  cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats
+  echo -e "Population\tN\tMissenseSNPs\tSynonymousSNPs\tTranscriptSNPs\tTajD" >> "$i".txt
+  while read j
+  do
+    cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/"$j"
+    n="$(wc -l < "$j".txt)"
+    cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/"$j"/missense/"$i"
+    misSNPcount="$(grep -v "^#" "$i"_CDS_"$j".vcf | wc -l)"
+    cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/"$j"/synonymous/"$i"
+    synSNPcount="$(grep -v "^#" "$i"_CDS_"$j".vcf | wc -l)"
+    cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/"$j"/exons/"$i"
+    vcftools --vcf "$i"_Exons_"$j".vcf --TajimaD 1000000 --out "$j"_"$i"
+    transcriptSNPcount="$(awk 'NR == 2 {print $3}' $j'_'$i.Tajima.D)"
+    tajD="$(awk 'NR == 2 {print $4}' $j'_'$i.Tajima.D)"
+    echo -e "$j\t$n\t$misSNPcount\t$synSNPcount\t$transcriptSNPcount\t$tajD" >> $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats/"$i".txt
+  done<$WorkingDirectory/SNP_analysis/Populations/pairwisePops/PairwisePopsList
+  cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats
+  python $pythonScripts/addEcotypes.py "$i".txt "$i"_withEcotypes.txt
+done<$WorkingDirectory/References/GeneBEDs/Full_CDS_CapturedGeneList.txt
 }
 
 function getTranscriptLengths {
@@ -318,6 +391,7 @@ done
 # MAIN
 loadModules
 WorkingDirectory=/scratch/rlk0015/Telag/May2020/WorkingDirectory
+pythonScripts=/home/rlk0015/SeqCap/code/GenomicProcessingPipeline/pythonScripts
 #+ COMPLETED combineDatasets
 #+ COMPLETED sortVariants SeqCap_CDS   SeqCap_IndividualsToRemove 
 #+ COMPLETED sortVariants SeqCap_Exons  SeqCap_IndividualsToRemoves
@@ -350,5 +424,9 @@ WorkingDirectory=/scratch/rlk0015/Telag/May2020/WorkingDirectory
 #+ COMPLETED moveCapturedGenes
 #+ COMPLETED createMSA faa protein Sequences maskedMSA
 #+ COMPLETED createMSA fna transcript Sequences maskedMSA
-#+ COMPLETED createPopFiles
+
+createPopFiles
 createPairwiseVCFs
+getPairwisePopGen
+
+
