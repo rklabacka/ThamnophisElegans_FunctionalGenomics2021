@@ -644,7 +644,7 @@ unique(fst_gene_list2[!is.na(fst_gene_list2)])
 
 #top_fst=subset(all_merged,all_merged$between<0.05 & all_merged$l_v_m_mean>all_merged$l_v_l_mean & all_merged$l_v_m_mean>all_merged$m_v_m_mean)
 top_fst2=all_merged[,c(1:4,158:165)]
-write.csv(top_fst,file="per_site_R_outputs/fst_within_v_between_ALL_POPS.csv",quote=F,row.names = F)
+write.csv(top_fst2,file="per_site_R_outputs/fst_within_v_between_ALL_POPS.csv",quote=F,row.names = F)
 
 
 
@@ -724,7 +724,7 @@ unique(dxy_gene_list2[!is.na(dxy_gene_list2)])
 
 #top_dxy=subset(all_merged,all_merged$between<0.05 & all_merged$l_v_m_mean>all_merged$l_v_l_mean & all_merged$l_v_m_mean>all_merged$m_v_m_mean)
 top_dxy2=all_merged[,c(1:4,157,160:165)]
-write.csv(top_dxy,file="per_site_R_outputs/dxy_within_v_between_ALL_POPS.csv",quote=F,row.names = F)
+write.csv(top_dxy2,file="per_site_R_outputs/dxy_within_v_between_ALL_POPS.csv",quote=F,row.names = F)
 
 #intersect fst/dxy lists
 intersect(fst_gene_list2[!is.na(fst_gene_list2)],dxy_gene_list2[!is.na(dxy_gene_list2)])
