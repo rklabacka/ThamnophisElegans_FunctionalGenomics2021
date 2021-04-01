@@ -1,0 +1,397 @@
+﻿GarterSnakeGenome_GeneID,Category_I,Category_2
+ADRB2,behavior,
+AVPR2,behavior,
+CCKAR,behavior,
+DRD4,behavior,
+EDA,behavior,
+LOC116510561,behavior,
+LOC116510618,behavior,
+SLC6A12,behavior,
+KITLG,color,
+LOC116516483,color,
+MC1R,color,
+MITF,color,
+OCA2,color,
+PMEL,color,
+POMC,color,
+SOX10,color,
+TYRP1,color,
+GHR,growth,
+LOC116519949,growth,
+TSHB,growth,
+TSHR,growth,
+VIPR1,growth,
+AKT1,hypoxia,
+AKT2,hypoxia,
+AKT3,hypoxia,
+ARNT,hypoxia,
+CREBBP,hypoxia,
+EP300,hypoxia,
+HIF1A,hypoxia,
+HIF1AN,hypoxia,
+LOC116506478,hypoxia,
+LOC116506537,hypoxia,
+LOC116510063,hypoxia,
+LOC116512631,hypoxia,
+PIK3C2A,hypoxia,
+PIK3C2B,hypoxia,
+PIK3CA,hypoxia,
+PIK3CB,hypoxia,
+PIK3CD,hypoxia,
+PIK3R1,hypoxia,
+PIK3R2,hypoxia,
+RORC,hypoxia,
+TXN2,hypoxia,
+VHL,hypoxia,
+IGF1,IILS,IIS_Top
+IGF1R,IILS,IIS_Top
+IGF2,IILS,IIS_Top
+IGF2R,IILS,IIS_Top
+IGFBP1,IILS,IIS_Top
+IGFBP2,IILS,IIS_Top
+IGFBP3,IILS,IIS_Top
+IGFBP4,IILS,IIS_Top
+IGFBP7,IILS,IIS_Top
+INSR,IILS,IIS_Top
+MTOR,IILS,MTOR
+NRF1,IILS,MTOR
+RHEB,IILS,MTOR
+RPTOR,IILS,MTOR
+SIRT1,IILS,MTOR
+SIRT2,IILS,MTOR
+SIRT3,IILS,MTOR
+SIRT4,IILS,MTOR
+SIRT5,IILS,MTOR
+SIRT6,IILS,MTOR
+SIRT7,IILS,MTOR
+CCN2,IILS,
+FOS,IILS,
+FOXA1,IILS,
+FOXA3,IILS,
+FOXF1,IILS,
+FOXJ1,IILS,
+FOXJ2,IILS,
+FOXN2,IILS,
+FOXN3,IILS,
+FOXO1,IILS,
+FOXO3,IILS,
+FOXO4,IILS,
+FOXP4,IILS,
+GSK3A,IILS,
+GSK3B,IILS,
+IRS4,IILS,
+KL,IILS,
+MAP2K1,IILS,
+MAP2K3,IILS,
+MAP3K1,IILS,
+MDM4,IILS,
+PDK2,IILS,
+PDK3,IILS,
+PDK4,IILS,
+PDPK1,IILS,
+PIK3R5,IILS,
+PIK3R6,IILS,
+PTEN,IILS,
+RAF1,IILS,
+RASA1,IILS,
+RPS6KA1,IILS,
+RPS6KA3,IILS,
+RPS6KA4,IILS,
+RPS6KA5,IILS,
+RPS6KA6,IILS,
+RPS6KB1,IILS,
+RPS6KB2,IILS,
+TSC1,IILS,
+TSC2,IILS,
+LOC116503377,immune,MHC
+LOC116503386,immune,MHC
+LOC116503390,immune,MHC
+LOC116503394,immune,MHC
+LOC116503405,immune,MHC
+CD74,immune,
+AACS,metabolism,Lipid Metabolism
+DECR1,metabolism,Lipid Metabolism
+LEPR,metabolism,Lipid Metabolism
+LOC116502538,metabolism,Lipid Metabolism
+LOC116507994,metabolism,Lipid Metabolism
+LOC116509327,metabolism,Lipid Metabolism
+LOC116513013,metabolism,Lipid Metabolism
+LOC116515748,metabolism,Lipid Metabolism
+LOC116515749,metabolism,Lipid Metabolism
+LOC116517450,metabolism,Lipid Metabolism
+LOC116519097,metabolism,Lipid Metabolism
+GAPDH,metabolism,
+LOC116505343,metabolsim,
+LOC116509867,oxidative_phosporylation,ETC complex i
+LOC116511712,oxidative_phosporylation,ETC complex i
+NDUFA10,oxidative_phosporylation,ETC complex i
+NDUFA11,oxidative_phosporylation,ETC complex i
+NDUFA13,oxidative_phosporylation,ETC complex i
+NDUFA2,oxidative_phosporylation,ETC complex i
+NDUFA3,oxidative_phosporylation,ETC complex i
+NDUFA4,oxidative_phosporylation,ETC complex i
+NDUFA5,oxidative_phosporylation,ETC complex i
+NDUFA7,oxidative_phosporylation,ETC complex i
+NDUFAF1,oxidative_phosporylation,ETC complex i
+NDUFB1,oxidative_phosporylation,ETC complex i
+NDUFB10,oxidative_phosporylation,ETC complex i
+NDUFB11,oxidative_phosporylation,ETC complex i
+NDUFB2,oxidative_phosporylation,ETC complex i
+NDUFB3,oxidative_phosporylation,ETC complex i
+NDUFB4,oxidative_phosporylation,ETC complex i
+NDUFB5,oxidative_phosporylation,ETC complex i
+NDUFB6,oxidative_phosporylation,ETC complex i
+NDUFB7,oxidative_phosporylation,ETC complex i
+NDUFB9,oxidative_phosporylation,ETC complex i
+NDUFS1,oxidative_phosporylation,ETC complex i
+NDUFS2,oxidative_phosporylation,ETC complex i
+NDUFS3,oxidative_phosporylation,ETC complex i
+NDUFS4,oxidative_phosporylation,ETC complex i
+NDUFS5,oxidative_phosporylation,ETC complex i
+NDUFS6,oxidative_phosporylation,ETC complex i
+NDUFS8,oxidative_phosporylation,ETC complex i
+NDUFV1,oxidative_phosporylation,ETC complex i
+NDUFV2,oxidative_phosporylation,ETC complex i
+NDUFV3,oxidative_phosporylation,ETC complex i
+LOC116523446,oxidative_phosporylation,ETC complex ii
+SDHA,oxidative_phosporylation,ETC complex ii
+SDHB,oxidative_phosporylation,ETC complex ii
+SDHD,oxidative_phosporylation,ETC complex ii
+LOC116503820,oxidative_phosporylation,ETC complex iii
+LOC116509003,oxidative_phosporylation,ETC complex iii
+LOC116512557,oxidative_phosporylation,ETC complex iii
+LOC116512786,oxidative_phosporylation,ETC complex iii
+LOC116516714,oxidative_phosporylation,ETC complex iii
+LOC116517709,oxidative_phosporylation,ETC complex iii
+LOC116518020,oxidative_phosporylation,ETC complex iii
+LOC116520028,oxidative_phosporylation,ETC complex iii
+LOC116503018,oxidative_phosporylation,ETC complex iv
+LOC116506575,oxidative_phosporylation,ETC complex iv
+LOC116506766,oxidative_phosporylation,ETC complex iv
+LOC116506963,oxidative_phosporylation,ETC complex iv
+LOC116507992,oxidative_phosporylation,ETC complex iv
+LOC116512326,oxidative_phosporylation,ETC complex iv
+LOC116514227,oxidative_phosporylation,ETC complex iv
+LOC116516211,oxidative_phosporylation,ETC complex iv
+LOC116516217,oxidative_phosporylation,ETC complex iv
+LOC116517048,oxidative_phosporylation,ETC complex iv
+LOC116517973,oxidative_phosporylation,ETC complex iv
+LOC116519415,oxidative_phosporylation,ETC complex iv
+LOC116520881,oxidative_phosporylation,ETC complex iv
+ATP5F1A,oxidative_phosporylation,ETC complex v
+ATP5F1B,oxidative_phosporylation,ETC complex v
+ATP5F1C,oxidative_phosporylation,ETC complex v
+ATP5F1D,oxidative_phosporylation,ETC complex v
+ATP5F1E,oxidative_phosporylation,ETC complex v
+ATP5MC2,oxidative_phosporylation,ETC complex v
+ATP5ME,oxidative_phosporylation,ETC complex v
+ATP5MF,oxidative_phosporylation,ETC complex v
+ATP5PB,oxidative_phosporylation,ETC complex v
+ATP5PD,oxidative_phosporylation,ETC complex v
+ATP6AP1,oxidative_phosporylation,ETC complex v
+ATP6V1A,oxidative_phosporylation,ETC complex v
+ATP6V1B2,oxidative_phosporylation,ETC complex v
+ATP6V1C1,oxidative_phosporylation,ETC complex v
+ATP6V1E1,oxidative_phosporylation,ETC complex v
+ATP6V1H,oxidative_phosporylation,ETC complex v
+ISCA1,oxidative_phosporylation,
+ISCA2,oxidative_phosporylation,
+SLC25A28,oxidative_phosporylation,
+SLC25A37,oxidative_phosporylation,
+AIFM1,oxidative_stress,
+AIFM2,oxidative_stress,
+ALPK1,oxidative_stress,
+ATF2,oxidative_stress,
+GDAP1,oxidative_stress,
+HAGHL,oxidative_stress,
+JUN,oxidative_stress,
+LOC116505938,oxidative_stress,
+LOC116514334,oxidative_stress,
+LOC116516566,oxidative_stress,
+LOC116517285,oxidative_stress,
+LOC116522295,oxidative_stress,
+MAPK11,oxidative_stress,
+MAPK13,oxidative_stress,
+MAPK8,oxidative_stress,
+MAPK9,oxidative_stress,
+MAPKAPK5,oxidative_stress,
+MAX,oxidative_stress,
+MKNK1,oxidative_stress,
+MKNK2,oxidative_stress,
+MYC,oxidative_stress,
+PLA2G4A,oxidative_stress,
+PXMP2,oxidative_stress,
+PYROXD1,oxidative_stress,
+PYROXD2,oxidative_stress,
+SOD2,oxidative_stress,
+CASP3,p53,
+CASP9,p53,
+CDK1,p53,
+CDKN1A,p53,
+CHEK2,p53,
+DDB2,p53,
+E2F6,p53,
+GABARAPL1,p53,
+GADD45A,p53,
+HDAC3,p53,
+LOC116507565,p53,
+LOC116523000,p53,
+LOC116523426,p53,
+MDM2,p53,
+MTA2,p53,
+PPM1D,p53,
+RRM2B,p53,
+TPM1,p53,
+WIPI2,p53,
+WRN,p53,
+CCND1,PI3K,
+INPP5A,PI3K,
+JAK1,PI3K,
+JAK2,PI3K,
+KRAS,PI3K,
+MRAS,PI3K,
+NRAS,PI3K,
+RIT1,PI3K,
+YWHAB,PI3K,
+YWHAE,PI3K,
+YWHAG,PI3K,
+YWHAQ,PI3K,
+CFH,random,transcriptome_FastEvolving
+LOC116512145,random,transcriptome_FastEvolving
+LOC116516798,random,transcriptome_FastEvolving
+SV2A,random,transcriptome_FastEvolving
+ALCAM,random,
+AMDHD1,random,
+B3GAT3,random,
+CA5A,random,
+CC2D1A,random,
+CTSL,random,
+D2HGDH,random,
+DHX29,random,
+EIF4H,random,
+ELK3,random,
+FOXK1,random,
+GIGYF2,random,
+GPATCH1,random,
+GRB2,random,
+HDAC10,random,
+KLHL24,random,
+KMT2C,random,
+LIN7C,random,
+LOC116503212,random,
+LOC116503736,random,
+LOC116504544,random,
+LOC116505849,random,
+LOC116508584,random,
+LOC116514694,random,
+LOC116515224,random,
+LOC116521616,random,
+LTBP1,random,
+MAK,random,
+MAP2K6,random,
+MAP3K11,random,
+MAPK1,random,
+MPST,random,
+NR0B2,random,
+PODN,random,
+PRKDC,random,
+PRKG2,random,
+PSAT1,random,
+RAB3IP,random,
+RFX5,random,
+RNH1,random,
+RUVBL1,random,
+SLC20A1,random,
+SMG6,random,
+SNRPA1,random,
+SPATA20,random,
+TBX18,random,
+TMEM184A,random,
+TRPC6,random,
+WDR12,random,
+LOC116507754,reproduction,eggs
+DMRT1,reproduction,Sex_determination_linked
+RBMX,reproduction,Sex_determination_linked
+SOX4,reproduction,Sex_determination_linked
+SOX9,reproduction,Sex_determination_linked
+USP24,reproduction,Sex_determination_linked
+BTBD16,reproduction,sperm
+CATSPER1,reproduction,sperm
+CATSPER2,reproduction,sperm
+CATSPER3,reproduction,sperm
+CATSPER4,reproduction,sperm
+CATSPERG,reproduction,sperm
+SPATA18,reproduction,sperm
+SPATA22,reproduction,sperm
+SYCP2,reproduction,sperm
+TEX261,reproduction,sperm
+DDX4,reproduction,
+EIF4A3,reproduction,
+PGK1,reproduction,
+RBM15B,reproduction,
+CCS,stress,antioxidant
+GPX1,stress,antioxidant
+GPX3,stress,antioxidant
+GPX4,stress,antioxidant
+GPX7,stress,antioxidant
+GPX8,stress,antioxidant
+GSTA1,Stress,antioxidant
+GSTP1,Stress,antioxidant
+LOC116507099,Stress,antioxidant
+LOC116507918,stress,antioxidant
+LOC116508979,Stress,antioxidant
+LOC116514261,stress,antioxidant
+LOC116520753,stress,antioxidant
+MPO,stress,antioxidant
+PRDX1,stress,antioxidant
+PRDX2,stress,antioxidant
+PRDX3,stress,antioxidant
+PRDX4,stress,antioxidant
+PRDX5,stress,antioxidant
+PRDX6,stress,antioxidant
+PXDN,stress,antioxidant
+SOD1,stress,antioxidant
+DNAJA1,stress,DNA_repair
+DNAJA3,stress,DNA_repair
+DNAJC22,stress,DNA_repair
+RAD51,stress,DNA_repair
+RAD51B,stress,DNA_repair
+RAD51C,stress,DNA_repair
+RAD54B,stress,DNA_repair
+TERT,stress,DNA_repair
+XRCC2,stress,DNA_repair
+XRCC3,stress,DNA_repair
+HSF1,stress,Heat
+HSF2,stress,Heat
+HSP90AA1,stress,Heat
+HSP90B1,stress,Heat
+HSPA13,stress,Heat
+HSPA2,stress,Heat
+HSPA4,stress,Heat
+HSPA5,stress,Heat
+HSPA9,stress,Heat
+HSPB1,stress,Heat
+HSPH1,stress,Heat
+LOC116515182,stress,Heat
+CHEK1,stress,
+GADD45B,stress,
+GADD45G,stress,
+LOC116509241,stress,
+MAPKAPK2,stress,
+MOK,stress,
+MSRA,stress,
+MSRB3,stress,
+NFKB1,stress,
+NFKBIA,stress,
+NFKBIB,stress,
+NR4A1,stress,
+NR4A2,stress,
+NR4A3,stress,
+NUAK1,stress,
+NUAK2,stress,
+NUP88,stress,
+PPARA,stress,
+PPARD,stress,
+SMAD6,stress,
+SMAD7,stress,
+TRAP1,stress,
