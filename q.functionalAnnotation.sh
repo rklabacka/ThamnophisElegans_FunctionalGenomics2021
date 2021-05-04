@@ -47,6 +47,8 @@ WorkingDirectory=/scratch/rlk0015/Telag/May2020/WorkingDirectory/SNP_analysis/pr
 # gunzip uniref90.fasta.gz
 #+ COMPLETED AND WORKED cd /home/rlk0015/scripts_to_build_SIFT_db
 #+ COMPLETED AND WORKED /tools/perl-5.26.1/bin/perl make-SIFT-db-all.pl -config /scratch/rlk0015/Telag/May2020/WorkingDirectory/SNP_analysis/proteinStructure/Thamnophis_elegans/Thamnophis_elegans.txt
+cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/variantFiltration
+cp Full_Exons.vcf.gz $WorkingDirectory/dbSNP/
 cd $WorkingDirectory/dbSNP
 gunzip Full_Exons.vcf.gz
 cd ..

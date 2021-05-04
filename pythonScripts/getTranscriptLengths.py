@@ -12,7 +12,7 @@ Arguments:
 """
 
 import sys
-
+import re
 
 class Gene(object):
     def __init__(self, name_in, leng_in):
@@ -50,9 +50,13 @@ def get_gene_dict(gff_in):
         leng = leng + (int(line[4]) - int(line[3]))    
     return gene_dict
 
-def get_variant_lengths(gene_dict, variants_read):
+def get_variant_lengths(gene_dict, variants_read, transcript_lengths):
     for line in variants_read:
-        line = line.split(" ")
+        re_string = r'total variants.+$'
+        re_obj = re.compile(re_string)
+        if re_obj.search(line):
+            break
+        line = line.split("\t")
         haystack_gene = line[0]
         nvar = line[1]
         for needle in gene_dict:
