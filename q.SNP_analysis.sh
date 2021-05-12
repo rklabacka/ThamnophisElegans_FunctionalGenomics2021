@@ -278,16 +278,12 @@ function vcf2faa {
 python $pythonScripts/modifyGFF_gffread.py $WorkingDirectory/References/Full_VariableCDS.gff $WorkingDirectory/References/Full_VariableCDS_gffread.gff
 mkdir -p $WorkingDirectory/SNP_analysis/vcf2fasta
 cp $WorkingDirectory/variantFiltration/Full_CDS.vcf.gz $WorkingDirectory/SNP_analysis/vcf2fasta
-cp $WorkingDirectory/variantFiltration/SeqCap_CDS.vcf.gz $WorkingDirectory/SNP_analysis/vcf2fasta
 cd $WorkingDirectory/SNP_analysis/vcf2fasta
 gunzip Full_CDS.vcf.gz
-gunzip SeqCap_CDS.vcf.gz
 cp $WorkingDirectory/variantFiltration/Full_CDS.vcf.gz .
-cp $WorkingDirectory/variantFiltration/SeqCap_CDS.vcf.gz .
 bcftools index -f Full_CDS.vcf.gz
-bcftools index -f SeqCap_CDS.vcf.gz
 #+ COMPLETED echo "RefSeq" >> SampleList.txt
-for sample in `bcftools query -l SeqCap_CDS.vcf`
+while read sample
 do
   cd $WorkingDirectory/SNP_analysis/vcf2fasta
   mkdir -p "$sample"
@@ -307,9 +303,8 @@ do
     awk '$4<2' | \
     bedtools maskfasta -fi "$sample"/"$sample"_wholeGenome.fasta -bed - -fo "$sample"/"$sample"_maskedGenome_wrongHeaders.fasta
   python $pythonScripts/changeGenomeHeaders.py $WorkingDirectory/References/TelagGenome.fasta "$sample"/"$sample"_maskedGenome_wrongHeaders.fasta "$sample"/"$sample"_maskedGenome.fasta
-  #+ COMPLETED This is complete- also I noticed that the SeqCap_CDS.vcf file I used for this command contains duplicate samples that I needed to delete manually
-  #+ COMPLETED Also, this list used to be called "Log.txt"
-  #+ COMPLETED echo "$sample" >> SampleList.txt
+  #+ this list used to be called "Log.txt"
+  echo "$sample" >> vcf2faa_log.txt
   gffread \
     -x "$sample"/"$sample"_maskedCDS.fasta \
     -g "$sample"/"$sample"_maskedGenome.fasta \
@@ -317,7 +312,8 @@ do
   mkdir "$sample"/Sequences
   cd "$sample"/Sequences
   python $pythonScripts/parseAndTranslate.py ../"$sample"_maskedCDS.fasta "$sample"
-done
+done<sampleList.txt
+# ^^ I created this list of samples from Full_CDS.vcf, using only the samples from Seq Cap or RNA seq
 }
 
 function reference2faa {
@@ -330,19 +326,6 @@ gffread \
 mkdir RefSeq/Sequences
 cd RefSeq/Sequences
 python $pythonScripts/parseAndTranslate.py ../RefSeq_maskedCDS.fasta RefSeq
-}
-
-function reference2faa {
-cd $WorkingDirectory/SNP_analysis/vcf2fasta
-echo "Outgroup" >> SampleList.txt
-mkdir -p "$1"
-gffread \
-  -x "$1"/"$1"_maskedCDS.fasta \
-  -g $WorkingDirectory/References/TelagGenome.fasta \
-  $WorkingDirectory/References/SeqCap_VariableCDS_gffread.gff 
-mkdir "$1"/Sequences
-cd "$1"/Sequences
-python $pythonScripts/parseAndTranslate.py ../"$1"_maskedCDS.fasta "$1"
 }
 
 function moveCapturedGenes {
@@ -418,15 +401,15 @@ pythonScripts=/home/rlk0015/SeqCap/code/GenomicProcessingPipeline/pythonScripts
 #+ COMPLETED getTranscriptLengths Genes
 #+ COMPLETED getTranscriptLengths CDS _missense
 #+ COMPLETED getTranscriptLengths CDS _synonymous
-#+ 
-#+ COMPLETED vcf2faa
-#+ COMPLETED reference2faa
-#+ COMPLETED moveCapturedGenes
-#+ COMPLETED createMSA faa protein Sequences maskedMSA
-#+ COMPLETED createMSA fna transcript Sequences maskedMSA
 
-createPopFiles
-createPairwiseVCFs
-getPairwisePopGen
+vcf2faa
+reference2faa
+moveCapturedGenes
+createMSA faa protein Sequences maskedMSA
+createMSA fna transcript Sequences maskedMSA
+
+#+ COMPLETED createPopFiles
+#+ COMPLETED createPairwiseVCFs
+#+ COMPLETED getPairwisePopGen
 
 
