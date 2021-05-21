@@ -286,30 +286,30 @@ bcftools index -f Full_CDS.vcf.gz
 while read sample
 do
   cd $WorkingDirectory/SNP_analysis/vcf2fasta
-  mkdir -p "$sample"
-  /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" SelectVariants \
-    -R $WorkingDirectory/References/TelagGenome.fasta \
-    -V Full_CDS.vcf \
-    -O "$sample"/"$sample".vcf \
-    -sn "$sample"
-  /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" FastaAlternateReferenceMaker \
-    -R $WorkingDirectory/References/TelagGenome.fasta \
-    -V "$sample"/"$sample".vcf \
-    -O "$sample"/"$sample"_wholeGenome_wrongHeaders.fasta \
-    --use-iupac-sample "$sample"
-  python $pythonScripts/changeGenomeHeaders.py $WorkingDirectory/References/TelagGenome.fasta "$sample"/"$sample"_wholeGenome_wrongHeaders.fasta "$sample"/"$sample"_wholeGenome.fasta
-  bedtools genomecov \
-    -ibam $WorkingDirectory/mappedReadsAll/"$sample".bam -bga | \
-    awk '$4<2' | \
-    bedtools maskfasta -fi "$sample"/"$sample"_wholeGenome.fasta -bed - -fo "$sample"/"$sample"_maskedGenome_wrongHeaders.fasta
-  python $pythonScripts/changeGenomeHeaders.py $WorkingDirectory/References/TelagGenome.fasta "$sample"/"$sample"_maskedGenome_wrongHeaders.fasta "$sample"/"$sample"_maskedGenome.fasta
-  #+ this list used to be called "Log.txt"
-  echo "$sample" >> vcf2faa_log.txt
-  gffread \
-    -x "$sample"/"$sample"_maskedCDS.fasta \
-    -g "$sample"/"$sample"_maskedGenome.fasta \
-    $WorkingDirectory/References/SeqCap_VariableCDS_gffread.gff 
-  mkdir "$sample"/Sequences
+  # tmp # mkdir -p "$sample"
+  # tmp # /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" SelectVariants \
+  # tmp #   -R $WorkingDirectory/References/TelagGenome.fasta \
+  # tmp #   -V Full_CDS.vcf \
+  # tmp #   -O "$sample"/"$sample".vcf \
+  # tmp #   -sn "$sample"
+  # tmp # /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" FastaAlternateReferenceMaker \
+  # tmp #   -R $WorkingDirectory/References/TelagGenome.fasta \
+  # tmp #   -V "$sample"/"$sample".vcf \
+  # tmp #   -O "$sample"/"$sample"_wholeGenome_wrongHeaders.fasta \
+  # tmp #   --use-iupac-sample "$sample"
+  # tmp # python $pythonScripts/changeGenomeHeaders.py $WorkingDirectory/References/TelagGenome.fasta "$sample"/"$sample"_wholeGenome_wrongHeaders.fasta "$sample"/"$sample"_wholeGenome.fasta
+  # tmp # bedtools genomecov \
+  # tmp #   -ibam $WorkingDirectory/mappedReadsAll/"$sample".bam -bga | \
+  # tmp #   awk '$4<2' | \
+  # tmp #   bedtools maskfasta -fi "$sample"/"$sample"_wholeGenome.fasta -bed - -fo "$sample"/"$sample"_maskedGenome_wrongHeaders.fasta
+  # tmp # python $pythonScripts/changeGenomeHeaders.py $WorkingDirectory/References/TelagGenome.fasta "$sample"/"$sample"_maskedGenome_wrongHeaders.fasta "$sample"/"$sample"_maskedGenome.fasta
+  # tmp # #+ this list used to be called "Log.txt"
+  # tmp # echo "$sample" >> vcf2faa_log.txt
+  # tmp # gffread \
+  # tmp #   -x "$sample"/"$sample"_maskedCDS.fasta \
+  # tmp #   -g "$sample"/"$sample"_maskedGenome.fasta \
+  # tmp #   $WorkingDirectory/References/SeqCap_VariableCDS_gffread.gff 
+  # tmp # mkdir "$sample"/Sequences
   cd "$sample"/Sequences
   python $pythonScripts/parseAndTranslate.py ../"$sample"_maskedCDS.fasta "$sample"
 done<sampleList.txt
@@ -351,7 +351,7 @@ function createMSA {
       sed -i "s/>rna/>"$sample"_/" $WorkingDirectory/SNP_analysis/vcf2fasta/"$sample"/"$3"/"$sample"_"$fasta"
       cat $WorkingDirectory/SNP_analysis/vcf2fasta/"$sample"/"$3"/"$sample"_"$fasta" >> Alignment_"$fasta"
       echo "" >> Alignment_"$fasta"
-    done<$WorkingDirectory/SNP_analysis/vcf2fasta/SampleList.txt
+    done<$WorkingDirectory/SNP_analysis/vcf2fasta/sampleList.txt
   done<$WorkingDirectory/SNP_analysis/vcf2fasta/RefSeq/"$3"/CapturedGenes/"$2"List.txt
 }
    
@@ -402,10 +402,10 @@ pythonScripts=/home/rlk0015/SeqCap/code/GenomicProcessingPipeline/pythonScripts
 #+ COMPLETED getTranscriptLengths CDS _missense
 #+ COMPLETED getTranscriptLengths CDS _synonymous
 
-vcf2faa
-reference2faa
-moveCapturedGenes
-createMSA faa protein Sequences maskedMSA
+#+ COMPLETED vcf2faa
+#+ COMPLETED reference2faa
+#+ COMPLETED moveCapturedGenes
+#+ COMPLETED createMSA faa protein Sequences maskedMSA
 createMSA fna transcript Sequences maskedMSA
 
 #+ COMPLETED createPopFiles
