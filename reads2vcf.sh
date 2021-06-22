@@ -1,8 +1,11 @@
 #!/bin/sh
 
 # This is the bash script used to process raw reads for the garter snake 
-# sequence 
+# targeted gene network study (for gene expression and populationi genetics)
 
+# Prepared by Randy Klabacka
+
+# -- Job Details for Hopper cluster at Auburn University-- #
 #Give job a name
 #PBS -N FullScript_May2020
 
@@ -35,6 +38,8 @@ echo PBS: current home directory is $PBS_O_HOME
 echo PBS: PATH = $PBS_O_PATH
 echo ------------------------------------------------------
 
+# -- Functions -- #
+## --- To see implementation of functions see q.main.sh--- ###
 function loadModules {
   module load fastqc/11.5
   module load gnu-parallel/20160322 
@@ -54,6 +59,9 @@ function loadModules {
   module load vcftools/v0.1.17
   module load hisat/2.1.0
   module load stringtie/1.3.3b
+  module load xz/5.2.2
+  module load htslib/1.3.3
+  module load gffread/2
 }
 
 function createWorkingEnvironment {
@@ -619,7 +627,6 @@ cd $WorkingDirectory/mappedReadsRNA
 # •••••••••••• Functions for obtaining SNP convergence in bqsr ••••••••••••• #
 # •••••••••• The input parameter is the current replicate number ••••••••••• #
 # ••••••• This approach is called "bootstrapping" by GATK developers ••••••• #
-# •••••••••• Even though there is no sampling with replacement... •••••••••• #
 function indexReference {
   # INDEX REF TO USE FOR SNP CALLING
     samtools faidx $WorkingDirectory/References/TelagGenome.fasta
@@ -883,35 +890,6 @@ function probes2gff {
  tabix -f -p bed "$2"_CapturedCDS.bed.gz
 }
 
-# The following function will be for the T. sirtalis genome
-function probes2gffNew {
- ## ANNOTATE FILTERED VARIANT FILES FOR SEQCAP DATA
- cd $WorkingDirectory/References
- # Make blast database from T. elegans genome
- makeblastdb -in "$3".fasta -parse_seqids -dbtype nucl -out "$3"_Genome.db
- # Use Blast with Exons_2021.fa (the exons used for probe design) to filter the genome
- blastn -db "$3"_Genome.db -query "$1" -outfmt "7 qseqid sseqid evalue qstart qend sstart send" -out BlastResults_"$3"_"$2".txt
- # Delete "^#" lines from blast output
- cp BlastResults_"$3"_"$2".txt BlastResults_"$3"_"$2"_original.txt
- sed -i.bak '/^#/d' BlastResults_"$3"_"$2".txt
- sed -i.bak "s/ref|//" BlastResults_"$3"_"$2".txt
- sed -i.bak "s/|//" BlastResults_"$3"_"$2".txt
- # Use filtered genome results (blast output) to pull out targeted genes and create filtered gff
- python $pythonScripts/shrinkGFF.py BlastResults_"$3"_"$2".txt "$3".gff "$3"_"$2"_CapturedGenes.gff "$3"_"$2"_CapturedExons.gff "$3"_"$2"_CapturedCDS.gff Pull"$3"_"$2"CapturedGenes_log.txt
- # Use bedops to convert gff to bed
- gff2bed < "$3"_"$2"_CapturedGenes.gff > "$3"_"$2"_CapturedGenes.bed
- gff2bed < "$3"_"$2"_CapturedExons.gff > "$3"_"$2"_CapturedExons.bed
- gff2bed < "$3"_"$2"_CapturedCDS.gff > "$3"_"$2"_CapturedCDS.bed
- # bgzip bed file
- bgzip -f "$3"_"$2"_CapturedGenes.bed "$3"_"$2"_CapturedGenes.bed.gz
- bgzip -f "$3"_"$2"_CapturedExons.bed "$3"_"$2"_CapturedExons.bed.gz
- bgzip -f "$3"_"$2"_CapturedCDS.bed "$3"_"$2"_CapturedCDS.bed.gz
- # tabix index .bed.gz file
- tabix -f -p bed "$3"_"$2"_CapturedGenes.bed.gz
- tabix -f -p bed "$3"_"$2"_CapturedExons.bed.gz
- tabix -f -p bed "$3"_"$2"_CapturedCDS.bed.gz
-}
-
 function annotateVariants {
   # Annotate SNP file make sure "$1".vcf is in this directory
   cd $WorkingDirectory/variantFiltration
@@ -1041,94 +1019,3 @@ function hard-VariantFiltration {
 ## vcftools --vcf yourvcf.vcf --remove removetheseind.txt --recode --recode-INFO-all --out gooddepth
 ## -- Examine Unfiltered Variants
 
-
-### *** MAIN *** ###
-loadModules
-WorkingDirectory=/scratch/rlk0015/Telag/May2020/WorkingDirectory
-pythonScripts=/home/rlk0015/SeqCap/code/GenomicProcessingPipeline/pythonScripts
-createWorkingEnvironment
-#+ COMPLETED copyRawReadsDNA
-#+ COMPLETED performFASTQC rawReadsDNA
-#+ COMPLETED performTrimmingPE DNA
-#+ COMPLETED performTrimmingPE RNA
-#+ COMPLETED performTrimmingSE RNA
-#+ COMPLETED performFASTQC cleanReadsDNA
-#+ COMPLETED performFASTQC cleanReadsRNA
-#+ COMPLETED copyRef
-#+ COMPLETED mapReadsDNA
-#+ COMPLETED mapPEReadsRNA
-#+ COMPLETED mapSEReadsRNA
-#+ COMPLETED changeSeqCapNames
-#+ COMPLETED readGroupsRNA 
-#+ COMPLETED readGroupsDNA
-#+ COMPLETED # Prep for SNP calling and calculate mapping stats
-#+ COMPLETED indexReference
-#+ COMPLETED prepForVariantCalling DNA
-#+ COMPLETED prepForVariantCalling RNA
-#+ COMPLETED ### --------------------- Variant Calling ----------------------- ###
-#+ COMPLETED # Perform bqsr-'bootstraping', SNP calling, and hard filtration on Seq Cap data
-#+ COMPLETED cd $WorkingDirectory/GATKDNA
-#+ COMPLETED ## Replicate 1
-#+ COMPLETED use-HaplotypeCaller 0 DNA
-#+ COMPLETED get-just-SNPs 0 
-#+ COMPLETED initial-VariantFiltration JustSNPs_0.vcf 0
-#+ COMPLETED use-BaseRecalibrator 0 DNA
-#+ COMPLETED use-BQSR 0 1 DNA
-#+ COMPLETED use-HaplotypeCaller 1 DNA
-#+ COMPLETED get-just-SNPs 1
-#+ COMPLETED use-BaseRecalibrator 1 DNA
-#+ COMPLETED use-AnalyzeCovariates 0 1 DNA
-#+ COMPLETED ## -- Replicate 2
-#+ COMPLETED use-BQSR 1 2 DNA
-#+ COMPLETED use-HaplotypeCaller 2 DNA
-#+ COMPLETED get-just-SNPs 2
-#+ COMPLETED use-BaseRecalibrator 2 DNA
-#+ COMPLETED use-AnalyzeCovariates 1 2 DNA
-#+ COMPLETED 
-#+ COMPLETED # Perform bqsr-'bootstraping', SNP calling, and hard filtration on RNA-seq data
-#+ COMPLETED cd $WorkingDirectory/GATKRNA
-#+ COMPLETED ## Replicate 1
-#+ COMPLETED use-HaplotypeCaller 0 RNA
-#+ COMPLETED get-just-SNPs 0
-#+ COMPLETED initial-VariantFiltration JustSNPs_0.vcf 0
-#+ COMPLETED use-BaseRecalibrator 0 RNA
-#+ COMPLETED use-BQSR 0 1 RNA
-#+ COMPLETED use-HaplotypeCaller 1 RNA
-#+ COMPLETED get-just-SNPs 1
-#+ COMPLETED use-BaseRecalibrator 1 RNA
-#+ COMPLETED use-AnalyzeCovariates 0 1 RNA
-#+ COMPLETED ## -- Replicate 2
-#+ COMPLETED use-BQSR 1 2 RNA
-#+ COMPLETED use-HaplotypeCaller 2 RNA
-#+ COMPLETED get-just-SNPs 2
-#+ COMPLETED use-BaseRecalibrator 2 RNA
-#+ COMPLETED use-AnalyzeCovariates 1 2 RNA
-## -- Merge RNA and DNA data
-#+ COMPLETED combine-VCF
-cd $WorkingDirectory/variantFiltration 
-## -- Eliminate potential RNA editing sites
-#+ COMPLETED removeRNAedits Merged
-## -- Annotate variants
-#+ COMPLETED getNetworkFasta IILS
-#+ COMPLETED probes2gff Exons_2021.fa SeqCap
-#+ COMPLETED probes2gff IILSTargetGenes.fa IILS
-#+ NEEDED probes2gffNew Exons_2021.fa SeqCap Tsirtal
-#+ COMPLETED annotateVariants removedRNAedits SeqCap
-#+ COMPLETED ## -- Initial Filter Variants
-#+ COMPLETED initial-VariantFiltration SeqCap_Annotated.vcf SeqCap_InitialFiltered
-#+ COMPLETED ## -- Perform Hard Filtering
-#+ COMPLETED hard-VariantFiltration SeqCap_InitialFiltered SeqCap
-#+ COMPLETED 
-#+ COMPLETED getSpecificVariants SeqCap CDS
-#+ COMPLETED getSpecificVariants SeqCap Exons
-#+ COMPLETED cp SeqCap_HardFilterStep3.vcf SeqCap_Genes.vcf
-#+ COMPLETED bgzip SeqCap_Genes.vcf
-#+ COMPLETED bgzip SeqCap_Exons.vcf
-#+ COMPLETED bgzip SeqCap_CDS.vcf
-gunzip Full_Exons.vcf.gz
-plotVariants Full_Exons.vcf
-bgzip Full_Exons.vcf
-
-#+ COMPLETED renameSortedBAMs
-
-#+ COMPLETED annotateVariants Full_CDS_synonymous SeqCap
