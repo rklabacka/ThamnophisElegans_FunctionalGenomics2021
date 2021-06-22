@@ -36,17 +36,28 @@ module load perl/5.26.1
 module load bedtools/2.29.0
 WorkingDirectory=/scratch/rlk0015/Telag/May2020/WorkingDirectory/SNP_analysis/proteinStructure/Thamnophis_elegans
 
-# See if sift4g is working
-# cd /home/rlk0015/scripts_to_build_SIFT_db
-# perl make-SIFT-db-all.pl -config test_files/candidatus_carsonella_ruddii_pv_config.txt --ensembl_download
-# perl make-SIFT-db-all.pl -config test_files/candidatus_carsonella_ruddii_pv_config.txt --ensembl_download
+# -- Optional pre-check: see if sift4g is working
+cd /home/rlk0015/scripts_to_build_SIFT_db
+perl make-SIFT-db-all.pl -config test_files/candidatus_carsonella_ruddii_pv_config.txt --ensembl_download
 # -- Step 1: Set up working environment based on https://github.com/pauline-ng/SIFT4G_Create_Genomic_DB
-# cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/SNP_analysis/proteinStructure/Thamnophis_elegans/proteinDB
-#+ wget ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz
-#+ gunzip uniref90.fasta.gz
-# gunzip uniref90.fasta.gz
-#+ COMPLETED AND WORKED cd /home/rlk0015/scripts_to_build_SIFT_db
-#+ COMPLETED AND WORKED /tools/perl-5.26.1/bin/perl make-SIFT-db-all.pl -config /scratch/rlk0015/Telag/May2020/WorkingDirectory/SNP_analysis/proteinStructure/Thamnophis_elegans/Thamnophis_elegans.txt
+mkdir -p $WorkingDirectory
+  cd $WorkingDirectory
+    mkdir -p gene-annotation-src
+    mkdir -p chr-src
+    mkdir -p dbSNP
+# -- Step 2: Copy reference genome and annotation into working environment
+cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/References
+cp TelegGenome.fasta Thamnophis_elegans.fa
+cp TelagGenome.gtf Thamnophis_elegans.gtf
+bgzip Thamnophis_elegans.fa
+bgzip Thamnophis_elegans.gtf
+mv Thamnophis_elegans.fa.gz $WorkingDirectory/chr-src
+mv Thamnophis_elegans.gtf.gz $WorkingDirectory/gene-annotation-src
+cd $WorkingDirectory
+wget ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz
+gunzip uniref90.fasta.gz
+cd /home/rlk0015/scripts_to_build_SIFT_db
+/tools/perl-5.26.1/bin/perl make-SIFT-db-all.pl -config $WorkingDirectory/Thamnophis_elegans.txt
 cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/variantFiltration
 cp Full_Exons.vcf.gz $WorkingDirectory/dbSNP/
 cd $WorkingDirectory/dbSNP
