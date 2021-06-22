@@ -40,29 +40,6 @@ echo ------------------------------------------------------
 
 # -- Functions -- #
 ## --- To see implementation of functions see q.main.sh--- ###
-function loadModules {
-  module load fastqc/11.5
-  module load gnu-parallel/20160322 
-  module load trimmomatic/0.36
-  module load bwa/0.7.15
-  module load samtools/1.3.1
-  module load picard/2.4.1
-  module load hybpiper/1
-  module load xz/5.2.2
-  module load htslib/1.3.3
-  module load python/3.6.4
-  module load gatk/4.1.7.0
-  module load R/3.6.0
-  module load bedtools/2.29.0
-  module load ncbi-blast/2.9.0+
-  module load bcftools/1.3.2
-  module load vcftools/v0.1.17
-  module load hisat/2.1.0
-  module load stringtie/1.3.3b
-  module load xz/5.2.2
-  module load htslib/1.3.3
-  module load gffread/2
-}
 
 function createWorkingEnvironment {
   #create working directory ###

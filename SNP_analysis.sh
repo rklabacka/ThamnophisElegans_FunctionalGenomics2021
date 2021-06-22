@@ -38,22 +38,7 @@ echo PBS: current home directory is $PBS_O_HOME
 echo PBS: PATH = $PBS_O_PATH
 echo ------------------------------------------------------
 
-function loadModules {
-  module load gnu-parallel/20160322 
-  module load samtools/1.3.1
-  module load xz/5.2.2
-  module load htslib/1.3.3
-  module load python/3.6.4
-  module load gatk/4.1.7.0
-  module load R/3.6.0
-  module load bedtools/2.29.0
-  module load bcftools/1.3.2
-  module load vcftools/v0.1.17
-  module load gffread/2
-}
-
 function combineDatasets {
-
 cd $WorkingDirectory/variantFiltration
 # Jessica's WGS variants at variable sites discovered from q.FullScript_May2020.sh WGS_Genes.recode.vcf.gz WGS_Exons.recode.vcf.gz and WGS_CDS.recode.vcf.gz were copied here frome box already
 bcftools index -f SeqCap_CDS.vcf.gz
@@ -156,49 +141,47 @@ bgzip "$1".vcf
 }
 
 function functionalAnnotation {
-#+ COMPLETED # Step 1: Download and install
+# Step 1: Download and install
   cd ~
-#+ COMPLETED   wget wget https://snpeff.blob.core.windows.net/versions/snpEff_latest_core.zip
-#+ COMPLETED   gunzip snpEff_latest_core.zip
-#+ COMPLETED # Step 2: Create genome annotation database
-#+ COMPLETED   cd snpEff
-#+ COMPLETED   mkdir -p data
-#+ COMPLETED   cd data
-#+ COMPLETED   mkdir -p rThaEle1 genomes
-#+ COMPLETED   cp $WorkingDirectory/References/"$1"_CapturedCDS.gff rThaEle1/genes.gff
-#+ COMPLETED #+ COMPLETED cp $WorkingDirectory/References/TelagGenome.fasta genomes/rThaEle1.fa
-#+ COMPLETED   cd ~/snpEff
-#+ COMPLETED   java -jar /tools/snpeff-4.3p/snpEff.jar build -gff3 -v rThaEle1
+  wget wget https://snpeff.blob.core.windows.net/versions/snpEff_latest_core.zip
+  gunzip snpEff_latest_core.zip
+# Step 2: Create genome annotation database
+  cd snpEff
+  mkdir -p data
+  cd data
+  mkdir -p rThaEle1 genomes
+  cp $WorkingDirectory/References/"$1"_CapturedCDS.gff rThaEle1/genes.gff
+  cp $WorkingDirectory/References/TelagGenome.fasta genomes/rThaEle1.fa
+  cd ~/snpEff
+  java -jar /tools/snpeff-4.3p/snpEff.jar build -gff3 -v rThaEle1
 # Step 3: Run snpEff
-cd $WorkingDirectory/variantFiltration
+  cd $WorkingDirectory/variantFiltration
 # remove singletons
-#+ COMPLETED  vcftools --mac 2 --vcf "$1"_CDS.vcf --recode --recode-INFO-all --out "$1"_CDS_noSingletons.vcf
-#+ COMPLETED  mv "$1"_CDS_noSingletons.vcf.recode.vcf "$1"_CDS_noSingletons.vcf
-gunzip "$1"_CDS.vcf.gz
-java -jar /tools/snpeff-4.3p/snpEff.jar -c ~/snpEff/snpEff.config -v rThaEle1 "$1"_CDS.vcf > "$1"_CDS_ann.vcf
-# This didn't work with the raw gff downloaded from genbank (TelagGenome.gff). 
-# Instead, I had to use the "$1"_CapturedCDS.gff file I modified to only include CDS in genes of interest.
+  vcftools --mac 2 --vcf "$1"_CDS.vcf --recode --recode-INFO-all --out "$1"_CDS_noSingletons.vcf
+  mv "$1"_CDS_noSingletons.vcf.recode.vcf "$1"_CDS_noSingletons.vcf
+  gunzip "$1"_CDS.vcf.gz
+  java -jar /tools/snpeff-4.3p/snpEff.jar -c ~/snpEff/snpEff.config -v rThaEle1 "$1"_CDS.vcf > "$1"_CDS_ann.vcf
+  # This didn't work with the raw gff downloaded from genbank (TelagGenome.gff). 
+  # Instead, I had to use the "$1"_CapturedCDS.gff file I modified to only include CDS in genes of interest.
 # Step 4: Pull out missense and synonymous mutations
-awk '/^#|missense_variant/' "$1"_CDS_ann.vcf > "$1"_CDS_missense.vcf
-awk '/^#|synonymous_variant/' "$1"_CDS_ann.vcf > "$1"_CDS_synonymous.vcf
-echo "total CDS SNP count: $(grep -v "^#" "$1"_CDS_ann.vcf | wc -l)" >> Log.txt
-echo "missense SNP count: $(grep -v "^#" "$1"_CDS_missense.vcf | wc -l)" >> Log.txt
-echo "synonymous SNP count: $(grep -v "^#" "$1"_CDS_synonymous.vcf | wc -l)" >> Log.txt
-bgzip "$1"_CDS.vcf.gz
-bgzip "$1"_CDS_missense.vcf
-bgzip "$1"_CDS_synonymous.vcf
-bcftools index -f "$1"_CDS_missense.vcf.gz
-bcftools index -f "$1"_CDS_synonymous.vcf.gz
-#   bgzip "$1"_CDS_ann.vcf
-#   bcftools index -f "$1"_CDS_ann.vcf.gz
-#   bcftools view -R $WorkingDirectory/References/IILS_CapturedCDS.bed.gz "$1"_CDS_ann.vcf.gz -O v -o "$1"_IILS_CDS_ann.vcf
-#
-#
-#  awk '/^#|missense_variant/' "$1"_IILS_CDS_ann.vcf > "$1"_IILS_CDS_missense.vcf
-#  awk '/^#|synonymous_variant/' "$1"_IILS_CDS_ann.vcf > "$1"_IILS_CDS_synonymous.vcf
-#  echo "IILS total CDS SNP count: $(grep -v "^#" "$1"_IILS_CDS_ann.vcf | wc -l)" >> Log.txt
-#  echo "IILS missense SNP count: $(grep -v "^#" "$1"_IILS_CDS_missense.vcf | wc -l)" >> Log.txt
-#  echo "IILS synonymous SNP count: $(grep -v "^#" "$1"_IILS_CDS_synonymous.vcf | wc -l)" >> Log.txt
+  awk '/^#|missense_variant/' "$1"_CDS_ann.vcf > "$1"_CDS_missense.vcf
+  awk '/^#|synonymous_variant/' "$1"_CDS_ann.vcf > "$1"_CDS_synonymous.vcf
+  echo "total CDS SNP count: $(grep -v "^#" "$1"_CDS_ann.vcf | wc -l)" >> Log.txt
+  echo "missense SNP count: $(grep -v "^#" "$1"_CDS_missense.vcf | wc -l)" >> Log.txt
+  echo "synonymous SNP count: $(grep -v "^#" "$1"_CDS_synonymous.vcf | wc -l)" >> Log.txt
+  bgzip "$1"_CDS.vcf.gz
+  bgzip "$1"_CDS_missense.vcf
+  bgzip "$1"_CDS_synonymous.vcf
+  bcftools index -f "$1"_CDS_missense.vcf.gz
+  bcftools index -f "$1"_CDS_synonymous.vcf.gz
+  bgzip "$1"_CDS_ann.vcf
+  bcftools index -f "$1"_CDS_ann.vcf.gz
+  bcftools view -R $WorkingDirectory/References/IILS_CapturedCDS.bed.gz "$1"_CDS_ann.vcf.gz -O v -o "$1"_IILS_CDS_ann.vcf
+  awk '/^#|missense_variant/' "$1"_IILS_CDS_ann.vcf > "$1"_IILS_CDS_missense.vcf
+  awk '/^#|synonymous_variant/' "$1"_IILS_CDS_ann.vcf > "$1"_IILS_CDS_synonymous.vcf
+  echo "IILS total CDS SNP count: $(grep -v "^#" "$1"_IILS_CDS_ann.vcf | wc -l)" >> Log.txt
+  echo "IILS missense SNP count: $(grep -v "^#" "$1"_IILS_CDS_missense.vcf | wc -l)" >> Log.txt
+  echo "IILS synonymous SNP count: $(grep -v "^#" "$1"_IILS_CDS_synonymous.vcf | wc -l)" >> Log.txt
 
 }
 
@@ -218,7 +201,8 @@ cd $WorkingDirectory/SNP_analysis/variantsByGene/"$1""$2"
 ## -- was included as hard code within the getGeneVariants
 ## -- function. I created a separate function for
 ## -- getVCFbyGene when I needed to use the same process
-## -- for the createPairwiseVCFs function
+## -- for the createPairwiseVCFs function. That being said,
+## -- it should work fine.
 getVCFbyGene $1 $WorkingDirectory/variantFiltration/Full_"$1""$2".vcf.gz $2 
 }
 

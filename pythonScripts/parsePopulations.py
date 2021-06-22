@@ -7,9 +7,14 @@ import sys
 import re
 ############
 
-pop_set = set()
-re_string = r'(?:MAR)|(?:ELF)|(?:PIK)|(?:MAH)|(?:PAP)|(?:NAM)|(?:MER)|(?:STO)|(?:SUM)|(?:PVM)|(?:RON)|(?:CHR)|(?:ROC)'
-re_obj = re.compile(re_string)
+
+def all_populations(in_stream, re_obj):
+    "create text file for each population"
+    for line in in_stream:
+        re_search = re_obj.search(line)
+        pop_set.add(re_search.group())
+        with open(re_search.group() + ".txt", 'a') as out_stream:
+            out_stream.write(line)
 
 def pairwise_populations(populationSet):
     for counter_a, pop_a in enumerate(populationSet):
@@ -22,22 +27,22 @@ def pairwise_populations(populationSet):
                         with open(pop_a + "_" + pop_b + ".txt", 'w') as pairwise_pops:
                             pairwise_pops.write(pop_a_file.read())
                             pairwise_pops.write(pop_b_file.read())
-
                 
-def all_populations():
-    with open(sys.argv[1], 'r') as in_stream:
-        for line in in_stream:
-            re_search = re_obj.search(line)
-            pop_set.add(re_search.group())
-            with open(re_search.group() + ".txt", 'a') as out_stream:
-                out_stream.write(line)
-
 def combine_two_pops(pop1, pop2):
     with open(pop1 + ".txt", 'r') as pop1_file:
         with open(pop2 + ".txt", 'a') as pop2_file:
             pop2_file.write(pop1_file.read())
 
 if __name__ == '__main__':
-    all_populations()
+    pop_set = set()
+    # Establish regular expression pattern for populations
+    re_string = r'(?:MAR)|(?:ELF)|(?:PIK)|(?:MAH)|(?:PAP)|(?:NAM)|(?:MER)|(?:STO)|(?:SUM)|(?:PVM)|(?:RON)|(?:CHR)|(?:ROC)'
+    # Compile regular expression pattern into regex object
+    re_obj = re.compile(re_string)
+    # Create text file for each population
+    with open(sys.argv[1], 'r') as in_stream:
+        all_populations(in_stream, re_obj)
+    # Combine pik and mar files
     combine_two_pops("PIK", "MAR")
+    # Create text file for each pairwise population comparison
     pairwise_populations(pop_set)
