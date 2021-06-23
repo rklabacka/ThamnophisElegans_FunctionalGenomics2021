@@ -186,9 +186,9 @@ source ./reads2vcf.sh
   renameSortedBAMs
  
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-# The following functions are called from the SNP_analysis.sh script
+# The following functions are called from the SNP_curation.sh script
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-source ./SNP_analysis.sh
+source ./SNP_curation.sh
 
   ## -- create full dataset (combining Jessica's WGS data with Seq-Cap+RNA-Seq)
     ### --- this function will create three files: Full_CDS.vcf, Full_Exons.vcf, 
