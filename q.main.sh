@@ -63,6 +63,7 @@ function loadModules {
   module load xz/5.2.2
   module load htslib/1.3.3
   module load gffread/2
+  module load perl/5.26.1
 }
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -72,7 +73,7 @@ source ./reads2vcf.sh
 
   # prepare environment
   loadModules
-  createWorkingEnvironment
+  createWorkingEnvironment-reads2vcf
   
   ## ------------------------
   # begin raw read processing
@@ -96,7 +97,7 @@ source ./reads2vcf.sh
   performFASTQC cleanReadsRNA
   
   # Copy reference genome into working environment
-  copyRef
+  copyRef-reads2vcf
   
   # Map clean reads to reference genome
   mapReadsDNA
@@ -232,3 +233,30 @@ source ./SNP_analysis.sh
   # -- calculate Tajima's D for each pairwise pop comparison for each gene
   getPairwisePopGen
   
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+# The following functions are called from the annotateVCF.sh script
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+source ./sift2vcf.sh
+
+  WorkingDirectory=/scratch/rlk0015/Telag/May2020/WorkingDirectory/SNP_analysis/proteinStructure/Thamnophis_elegans
+  # -- Test SIFT4G (optional- uncomment if you want to do it)
+  # checkSIFT4G
+  
+  # -- create working environment
+  createWorkingEnvironment-sift2vcf
+
+  # -- copy reference genome and annotation
+  copyRef-sift2vcf
+
+  # -- download protein database
+  downloadUniRef
+
+  # ***** MAKE SURE THE CONFIGURATION FILE IS READY BEFORE CONTINUING TO NEXT STEP ***** #
+  ## **********         see $WorkingDirectory/Thamnophis_elegans.txt        *********** ##
+
+  # -- create genomic SIFT database using SIFT4G
+  createSIFTdatabase
+  
+  # -- annotate vcf using SIFT database
+  annotateVCF-sift2vcf
+  # -- Annotate vcf with SIFT scores

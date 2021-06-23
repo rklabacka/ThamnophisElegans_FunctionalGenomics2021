@@ -41,7 +41,7 @@ echo ------------------------------------------------------
 # -- Functions -- #
 ## --- To see implementation of functions see q.main.sh--- ###
 
-function createWorkingEnvironment {
+function createWorkingEnvironment-reads2vcf {
   #create working directory ###
     mkdir -p /scratch/rlk0015/Telag/May2020/WorkingDirectory 
   # DNA
@@ -113,7 +113,7 @@ function performTrimmingSE {
     java -jar /tools/trimmomatic-0.37/bin/trimmomatic.jar SE -phred33 "$i"_1.fastq.gz  /scratch/GarterSnake/RNAseq_2008Data/CleanedData/"$i"_cleaned.fastq.gz  LEADING:20 TRAILING:20 SLIDINGWINDOW:6:20 MINLEN:36
 }
 
-function copyRef {
+function copyRef-reads2vcf {
    cp /home/rlk0015/SeqCap/code/References/T_elegans_genome/latest_assembly_versions/GCF_009769535.1_rThaEle1.pri/GCF_009769535.1_rThaEle1.pri_genomic.fna.gz $WorkingDirectory/References/TelagGenome.fasta.gz
    cp /home/rlk0015/SeqCap/code/References/T_elegans_genome/latest_assembly_versions/GCF_009769535.1_rThaEle1.pri/GCF_009769535.1_rThaEle1.pri_genomic.gff.gz $WorkingDirectory/References/TelagGenome.gff.gz
    cd $WorkingDirectory/References
