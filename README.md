@@ -55,5 +55,5 @@ Bioinformatic pipelines can be complex and complicated. Here I will describe the
 
 1.  Raw reads to mapped alignment
 We begin with raw '.fastq' files which we received from the genomic sequencing company. We need to clean these reads to (A) remove the adapter sequence and (B) remove low-quality information that may be incorrect due to sequencing error. To do this, we first check the quality using the program [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/). This program provides information about our reads, including position-specific quality scores, read-wide quality scores, and adapter content. Here is an example of the average position quality scores for our reads: 
-![Raw Read FastQC Quality](./images/Examining-Sequence-Variation/RawReadsFastQC.png)
+![Raw Read FastQC Quality](./Examining-Sequence-Variation/images/RawReadsFastQC.png)
 
