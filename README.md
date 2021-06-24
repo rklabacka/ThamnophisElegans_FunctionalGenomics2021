@@ -3,13 +3,19 @@
 Pipeline for processing "raw" genomic data (whole-genome sequencing, RNA sequencing, and target-capture sequencing)
 _This code was used for data processing and analyses in Klabacka et al. (in prep)_
 
+***
+
 ## Contents
 
 -   [Project Background](#project-background)
 
+***
+
 ## Project Backround
 
 Studying factors driving natural variation in life-history strategies can help us understand how senescence evolves. Divergent ecotypes (slow-aging and fast-aging) of western terrestrial garter snake (Thamnophis elegans) provide a useful model system for examination of these factors. Here we examine gene expression and population genetics within and between these divergent ecotypes, and find support for hypothesized life-history divergence at the molecular level. We store our code for data processing and analyses, along with documentation for reproduction, within this repository.
+
+***
 
 ## Study Design
 
@@ -21,6 +27,8 @@ Data for 94 of these individuals were sequenced using a target capture approach 
 Data for 31 of these individuals were sequenced using a transcriptomic approach (RNA-Seq)
 Data for 118 of these individuals were sequenced using a whole-genome approach (WGS)
 We called SNPs using the Seq-Cap and RNA-Seq individuals, and then used this database to call SNPs from the same sites for the WGS individuals.
+
+***
 
 ## Bioinformatics
 
