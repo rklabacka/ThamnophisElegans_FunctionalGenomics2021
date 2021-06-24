@@ -42,10 +42,18 @@ Describe gene expression data processing and analyses here
 
 ### Sequence Variation
 
-Scripts used for examination of targeted sequence variation are within the 'Examining-Sequence-Variation' directory. Here is a brief overview:
+#### Scripts & Files
+Scripts and coding files used for examination of targeted sequence variation are within the 'Examining-Sequence-Variation' directory. Here is a brief overview:
 
 -   'q.main.sh' : This script executes functions from all other bash scripts for complete data processing.
 -   'reads2vcf.sh' : This file contains functions for processing raw reads from RNA-Seq and Seq-Cap (cleaning, mapping, etc.) and calling SNPs 
 -   'SNP_curation.sh' : This file contains functions for joining WGS data with Seq-Cap and RNA-Seq data, parsing SNPs into pairwise population files, inserting SNPs into multiple sequence alignments, calculating Tajima's D for each gene, and obtaining SNP proportions for their respective genes, transcripts, and coding regions.
 -   'sift2vcf.sh' : This file contains functions for quantifying the functional implications of nonsynonymous SNPs and inserting these into a vcf.
+
+#### Workflow
+Bioinformatic pipelines can be complex and complicated. Here I will describe the general workflow, providing descriptions where some detail is necessary. For a more-detailed description, reading through the scripts/files themselves (and potentially documentation for the tools/packages used) may be necessary.
+
+1.  Raw reads to mapped alignment
+We begin with raw '.fastq' files which we received from the genomic sequencing company. We need to clean these reads to (A) remove the adapter sequence and (B) remove low-quality information that may be incorrect due to sequencing error. To do this, we first check the quality using the program [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/). This program provides information about our reads, including position-specific quality scores, read-wide quality scores, and adapter content. Here is an example of the average position quality scores for our reads: 
+![Raw Read FastQC Quality](./images/RawReadsFastQC.png)
 
