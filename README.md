@@ -9,6 +9,7 @@ _This code was used for data processing and analyses in Klabacka et al. (in prep
 
 -   [Project Background](#project-background)
 -   [Study Design](#study-design)
+-   [Bioinformatics](#bioinformatics)
 
 ---
 
@@ -33,16 +34,22 @@ We called SNPs using the Seq-Cap and RNA-Seq individuals, and then used this dat
 
 ---
 
+# <a name="bioinformatics"></a>
 ## Bioinformatics
 
 ### Bioinformatics Summary
 
 Summarize bioinformatics here
 
+-   [Gene Expression](#gene-expression)
+-   [Sequence Variation](#sequence-variation)
+
+# <a name="gene-expression"></a>
 ### Gene Expression
 
 Describe gene expression data processing and analyses here
 
+# <a name="sequence-variation"></a>
 ### Sequence Variation
 
 #### Scripts & Files
@@ -56,7 +63,12 @@ Scripts and coding files used for examination of targeted sequence variation are
 #### Workflow
 Bioinformatic pipelines can be complex and complicated. Here I will describe the general workflow, providing descriptions where some detail is necessary. For a more-detailed description, reading through the scripts/files themselves (and potentially documentation for the tools/packages used) may be necessary.
 
-1.  Raw reads to mapped alignment
+-   [Raw Reads to Mapped Alignment](#raw-reads-2-mapped-alignment)
+-   [Mapped Alignment to Variant Calls](#raw-reads-2-variant-calls)
+-   [Variant Call Processing & Filtration](#variant-call-processing)
+
+# <a name="raw-reads-2-mapped-alignment"></a>
+1.  Raw Reads to Mapped Alignment
 
     We begin with raw '.fastq' files which we received from the genomic sequencing company. We need to clean these reads to (A) remove the adapter sequence and (B) remove low-quality information that may be incorrect due to sequencing error. To do this, we first check the quality using the program [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/). This program provides information about our reads, including position-specific quality scores, read-wide quality scores, and adapter content. Here is an example of the position quality scores for our Seq-Cap reads: 
 ![Raw Read FastQC Quality](./Examining-Sequence-Variation/images/RawReadsFastQC.png)
@@ -68,6 +80,7 @@ Bioinformatic pipelines can be complex and complicated. Here I will describe the
 
     After cleaning our reads, we are ready to map them to a reference. This can be challenging from a study design perspective; the decision for how to map can be a tricky one. If you have a reference genome for your focal taxon (which we luckily did), you can simply map to this. Alternatively, you can map to a transcriptome or the genome of a closely-related species. We map our cleaned reads using two approaches: (1) for our reads from Seq-Cap, we mapped using the program [BWA](https://hpc.nih.gov/apps/bwa.html), (2) for our reads from RNA-Seq, we used [HiSat2](http://daehwankimlab.github.io/hisat2/). The approach you take depends on your nucleotide type and sequencing approach (e.g., reads from single-end sequencing should be treated differently than those from paired-end sequencing). Mapping will use the clean .fastq files to create a [.sam (sequence alignment map)](https://en.wikipedia.org/wiki/SAM_(file_format)) file. These can be converted to the compressed version, .bam, using [Samtools](https://www.htslib.org/) to increase downstream processing efficiency.
 
+# <a name="raw-reads-2-variant-calls"></a>
 2.  Mapped Alignment to Variant Calls
 
     Once reads have been mapped and stored in an alignment file, variation at specific positions can be identified. To prepare for variant calling, it is important to identify reads that might be duplicates (e.g., from PCR). We mark these duplicates using the MarkDuplicates tool from [Picard](https://gatk.broadinstitute.org/hc/en-us/articles/360037052812-MarkDuplicates-Picard-).
@@ -82,4 +95,5 @@ Bioinformatic pipelines can be complex and complicated. Here I will describe the
     We repeat the above until it appears that that the scores converge. This process uses machine learning to model systematic (non-random) errors in Phred score assignment. Each iteration uses the high-confidence SNPs to update the scores within the .bam files. Ideally this would be done using a database of high-confidence SNPs previously collected. However, this is not an option for many non-model organisms (thus the "bootstrapping" suggestion by GATK). We performed this process for both Seq-Cap and RNA-Seq datasets independently, resulting in a vcf file for each. Here is what the plots will look like once convergence is reached:
 ![Analyze Covariates Plot 1](./Examining-Sequence-Variation/images/AnalyzeCovariates_1.png)
 
-    
+# <a name="variant-call-processing"></a>
+3.  Variant Call Processing & Filtration 
