@@ -97,3 +97,5 @@ Bioinformatic pipelines can be complex and complicated. Here I will describe the
 
 # <a name="variant-call-processing"></a>
 3.  Variant Call Processing & Filtration 
+
+    With .vcf files for both Seq-Cap and RNA-Seq datasets, we are now ready to merge these files. We do this using the 'merge' utility within the software package (bcftools)[https://samtools.github.io/bcftools/bcftools.html]. Within the merged .vcf, it is possible that some variants are due to RNA editing. To remove these, we used the software package [vcftools](http://vcftools.sourceforge.net/) 
