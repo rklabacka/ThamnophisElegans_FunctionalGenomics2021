@@ -69,7 +69,7 @@ function createWorkingEnvironment-reads2vcf {
    
 function copyRawReadsDNA {
   ### copy over raw reads ### 
-    cd /home/shared/tss0019_lab/SeqCap_GarterSnake2012/
+    nd /home/shared/tss0019_lab/SeqCap_GarterSnake2012/
     for i in {1..96}
     do
       cp Sample_HTAdapter"$i"/*.fastq.gz $WorkingDirectory/rawReadsDNA
@@ -821,19 +821,20 @@ function combine-VCF {
     bcftools merge JustSNPs_RNA.vcf.gz JustSNPs_DNA.vcf.gz -O v -o Merged.vcf
 }
 
-function removeRNAedits {
-  vcftools --vcf JustSNPs_RNA.vcf --non-ref-af 1 \
-  --recode --recode-INFO-all --out RNA-Substitutions
-  mv RNA-Substitutions.recode.vcf RNA-Substitutions.vcf
-  grep -v "#" RNA-Substitutions.vcf | cut -f 1,2 > RNA-Substitutions.txt
+function removeRefSingletons {
+  vcftools --vcf Merged.vcf --non-ref-af 1 \
+  --recode --recode-INFO-all --out RefSingletons
+  mv RefSingletons.recode.vcf RefSingletons.vcf
+  grep -v "#" RefSingletons.vcf | cut -f 1,2 > RefSingletons.txt
   vcftools --vcf Merged.vcf --exclude-positions RNA-Substitutions.txt \
-  --recode --recode-INFO-all --out removedRNAedits
-  mv removedRNAedits.recode.vcf removedRNAedits.vcf
-  echo "RNA edits removed variants: $(grep -v "^#" removedRNAedits.vcf | wc -l)" >> Log.txt
+  --recode --recode-INFO-all --out removedRefSingletons 
+  mv removedRefSingletons.recode.vcf removedRefSingletons.vcf
+  echo "Ref singletons removed: $(grep -v "^#" removedRefSingletons.vcf | wc -l)" >> Log.txt
 }
 
 function getNetworkFasta {
  # Extract genes from exons used for probe design
+ # I didn't use this function for the project; genes and networks were extracted downstream.
  cd $WorkingDirectory/References
  python $pythonScripts/filterExons.py Exons_2021.fa "$1".txt "$1"TargetGenes.fa Extract"$1"GenesFromExons_log.txt
 }
@@ -897,6 +898,7 @@ function getSpecificVariants {
 }
 
 function filterByPopulation {
+  # I didn't use this function for the analysis
   cd $WorkingDirectory/variantFiltration
   #Create list for each population
   echo "ELF" >> Pops; echo "MAH" >> Pops; echo "MAR" >> Pops; echo "NAM" >> Pops; echo "PAP" >> Pops; echo "STO" >> Pops; echo "SUM" >> Pops
@@ -932,7 +934,7 @@ function initial-VariantFiltration {
 	  # QD = quality of depth *NOT COMMON IN GATK4.1.7.0
 	    # Variant confidence divided by raw depth 
 	  # DP = depth of coverage *NOT COMMON IN GATK4.1.7.0
-	    # Raw depth. I don't use here, because QD accounts for this 
+	    # Raw depth. I don't use here, because QD accounts for	  # MQ = RMS mapping quality *NOT COMMON IN GATK4.1.7.0
 	  # MQ = RMS mapping quality *NOT COMMON IN GATK4.1.7.0
 	    # Root mean square mq over all the reads at the site 
 	  # MQRankSum = Mapping quality rank sum test *NOT COMMON IN GATK4.1.7.0

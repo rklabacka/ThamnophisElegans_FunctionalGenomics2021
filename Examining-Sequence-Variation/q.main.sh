@@ -159,11 +159,11 @@ source ./reads2vcf.sh
   combine-VCF
   cd $WorkingDirectory/variantFiltration 
   ## -- Eliminate potential RNA editing sites
-  removeRNAedits 
+  removeRefSingletons
   ## -- Annotate variants
   getNetworkFasta IILS
   probes2gff Exons_2021.fa SeqCap
-  annotateVariants removedRNAedits SeqCap
+  annotateVariants removedRefSingletons SeqCap
   ## -- Initial Filter Variants
   initial-VariantFiltration SeqCap_Annotated.vcf SeqCap_InitialFiltered
   ## -- Perform Hard Filtering
