@@ -264,7 +264,8 @@ python $pythonScripts/getVariableRegionsGFF.py Full_"$1""$2"_TranscriptLengths.t
 }
 
 function vcf2faa {
-# Prepare GFF for gffread
+# This function takes a gene-specific vcf with multiple samples and turns it into fasta files (both fna and faa) for each sample
+# Prepare GFF for gffread (the gff must be in a particular format in order to work in gffread)
 python $pythonScripts/modifyGFF_gffread.py $WorkingDirectory/References/Full_VariableCDS.gff $WorkingDirectory/References/Full_VariableCDS_gffread.gff
 mkdir -p $WorkingDirectory/SNP_analysis/vcf2fasta
 cp $WorkingDirectory/variantFiltration/Full_CDS.vcf.gz $WorkingDirectory/SNP_analysis/vcf2fasta
@@ -272,35 +273,44 @@ cd $WorkingDirectory/SNP_analysis/vcf2fasta
 gunzip Full_CDS.vcf.gz
 cp $WorkingDirectory/variantFiltration/Full_CDS.vcf.gz .
 bcftools index -f Full_CDS.vcf.gz
+# Add the reference to the sample list
 echo "RefSeq" >> sampleList.txt
+# Loop through the sample list
 while read sample
 do
   cd $WorkingDirectory/SNP_analysis/vcf2fasta
   mkdir -p "$sample"
+  # Create a .vcf for the sample
   /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" SelectVariants \
     -R $WorkingDirectory/References/TelagGenome.fasta \
     -V Full_CDS.vcf \
     -O "$sample"/"$sample".vcf \
     -sn "$sample"
+  # Insert SNPs into the reference genome (this outputs your initial fasta file, which is the size of the genome and includes sites with low mapping depth)
   /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" FastaAlternateReferenceMaker \
     -R $WorkingDirectory/References/TelagGenome.fasta \
     -V "$sample"/"$sample".vcf \
     -O "$sample"/"$sample"_wholeGenome_wrongHeaders.fasta \
     --use-iupac-sample "$sample"
+  # Change the fasta headers (to work in downstream programs)
   python $pythonScripts/changeGenomeHeaders.py $WorkingDirectory/References/TelagGenome.fasta "$sample"/"$sample"_wholeGenome_wrongHeaders.fasta "$sample"/"$sample"_wholeGenome.fasta
+  # Use bedtools to mask regions with low mapping coverage
   bedtools genomecov \
     -ibam $WorkingDirectory/mappedReadsAll/"$sample".bam -bga | \
     awk '$4<2' | \
     bedtools maskfasta -fi "$sample"/"$sample"_wholeGenome.fasta -bed - -fo "$sample"/"$sample"_maskedGenome_wrongHeaders.fasta
+  # Change the fasta headers again (they were modified by bedtools)
   python $pythonScripts/changeGenomeHeaders.py $WorkingDirectory/References/TelagGenome.fasta "$sample"/"$sample"_maskedGenome_wrongHeaders.fasta "$sample"/"$sample"_maskedGenome.fasta
   #+ this list used to be called "Log.txt"
   echo "$sample" >> vcf2faa_log.txt
+  # Reduce the fasta to include only the targeted regions (-x is the outfile, -g is the infile, the last line is the reference)
   gffread \
     -x "$sample"/"$sample"_maskedCDS.fasta \
     -g "$sample"/"$sample"_maskedGenome.fasta \
     $WorkingDirectory/References/SeqCap_VariableCDS_gffread.gff 
   mkdir "$sample"/Sequences
   cd "$sample"/Sequences
+  # Translate the fasta file to get the peptide sequence
   python $pythonScripts/parseAndTranslate.py ../"$sample"_maskedCDS.fasta "$sample"
 done<sampleList.txt
 # ^^ I created this list of samples from Full_CDS.vcf, using only the samples from Seq Cap or RNA seq
