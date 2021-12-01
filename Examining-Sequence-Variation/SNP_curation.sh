@@ -47,6 +47,7 @@ bcftools index -f SeqCap_Genes.vcf.gz
 bcftools index -f CDS_WGS.recode.vcf.gz
 bcftools index -f Exons_WGS.recode.vcf.gz
 bcftools index -f Genes_WGS.recode.vcf.gz
+echo "merging WGS data to RNA-Seq+Seq-Cap" >> Log.txt
 bcftools merge SeqCap_CDS.vcf.gz CDS_WGS.recode.vcf.gz -O v -o Full_CDS.vcf
 bcftools merge SeqCap_Exons.vcf.gz Exons_WGS.recode.vcf.gz -O v -o Full_Exons.vcf
 bcftools merge SeqCap_Genes.vcf.gz Genes_WGS.recode.vcf.gz -O v -o Full_Genes.vcf
@@ -191,9 +192,10 @@ mkdir -p $WorkingDirectory/SNP_analysis/variantsByGene/"$1""$2"
 cd $WorkingDirectory/SNP_analysis/variantsByGene/"$1""$2"
 cp $WorkingDirectory/variantFiltration/Full_"$1""$2".vcf.gz .
 bcftools index -f Full_"$1""$2".vcf.gz
-# Create bed file for each gene
-getBEDbyGene $1 $2
+#+ COMPLETED # Create bed file for each gene
+#+ COMPLETED getBEDbyGene $1 $2
 # Extract SNPs by gene from vcf
+echo "begin SNP extraction by gene from vcf" >> Log.txt
 cd $WorkingDirectory/SNP_analysis/variantsByGene/"$1""$2"
 # WARNING: The following command has not been verified
 # within the getGeneVariants function.
@@ -234,6 +236,7 @@ done<$WorkingDirectory/References/GeneBEDs/Full_CDS_CapturedGeneList.txt
 function getPairwisePopGen {
 mkdir -p $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats
 cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops
+echo "begin pairwise file creation" >> Log.txt
 while read i
 do
   cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats

@@ -349,7 +349,13 @@ function readGroupsRNA {
   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP07_sorted.bam" O="PAP07_IDed.bam" RGPU="PAP" RGSM="PAP_505-01" RGPL="illumina" RGLB="SeqCap2012"
   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP08_sorted.bam" O="PAP08_IDed.bam" RGPU="PAP" RGSM="PAP_516-02" RGPL="illumina" RGLB="SeqCap2012"
   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP09_sorted.bam" O="PAP09_IDed.bam" RGPU="PAP" RGSM="PAP_5241-01" RGPL="illumina" RGLB="SeqCap2012"
-  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP10_sorted.bam" O="PAP10_IDed.bam" RGPU="PAP" RGSM="PAP_28-1" RGPL="illumina" RGLB="SeqCap2012"
+    # I'm changing PAP281 to NAM281 for downstream simplicity
+    ## -- Although this individual is labeled PAP, it is actually
+    ## -- from NAM. In database it will be listed as PAP281, but
+    ## -- in our SNP dataset it will be NAM281.
+    ## -- However, I will leave it as PAP10 when referring to the
+    ## -- SeqCap ID's.
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP10_sorted.bam" O="PAP10_IDed.bam" RGPU="NAM" RGSM="NAM_28-1" RGPL="illumina" RGLB="SeqCap2012"
   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP11_sorted.bam" O="PAP11_IDed.bam" RGPU="PAP" RGSM="PAP_RA434" RGPL="illumina" RGLB="SeqCap2012"
   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP12_sorted.bam" O="PAP12_IDed.bam" RGPU="PAP" RGSM="PAP_RA647" RGPL="illumina" RGLB="SeqCap2012"
   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="PAP13_sorted.bam" O="PAP13_IDed.bam" RGPU="PAP" RGSM="PAP_RA648" RGPL="illumina" RGLB="SeqCap2012"
@@ -516,7 +522,11 @@ cd $WorkingDirectory/mappedReadsDNA
     mv $WorkingDirectory/mappedReadsDNA/PAP07_sorted.bam $WorkingDirectory/mappedReadsAll/PAP50501.bam
     mv $WorkingDirectory/mappedReadsDNA/PAP08_sorted.bam $WorkingDirectory/mappedReadsAll/PAP51602.bam
     mv $WorkingDirectory/mappedReadsDNA/PAP09_sorted.bam $WorkingDirectory/mappedReadsAll/PAP524101.bam
-    mv $WorkingDirectory/mappedReadsDNA/PAP10_sorted.bam $WorkingDirectory/mappedReadsAll/PAP281.bam
+    # I'm changing PAP281 to NAM281 for downstream simplicity
+    ## -- Although this individual is labeled PAP, it is actually
+    ## -- from NAM. In database it will be listed as PAP281, but
+    ## -- in our SNP dataset it will be NAM281
+    mv $WorkingDirectory/mappedReadsDNA/PAP10_sorted.bam $WorkingDirectory/mappedReadsAll/NAM281.bam
     mv $WorkingDirectory/mappedReadsDNA/PAP11_sorted.bam $WorkingDirectory/mappedReadsAll/PAPRA434.bam
     mv $WorkingDirectory/mappedReadsDNA/PAP12_sorted.bam $WorkingDirectory/mappedReadsAll/PAPRA647.bam
     mv $WorkingDirectory/mappedReadsDNA/PAP13_sorted.bam $WorkingDirectory/mappedReadsAll/PAPRA648.bam
@@ -683,6 +693,7 @@ function combine-VCF {
     cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/variantFiltration
     # Change names:
     # DNA
+    echo "changing sample names within JustSNPs_RNA" >> Log.txt
     sed -i.bak "s/SRR497737/ELF52309/" JustSNPs_RNA.vcf
     sed -i.bak "s/SRR497738/ELF52319/" JustSNPs_RNA.vcf
     sed -i.bak "s/SRR497739/ELF517112/" JustSNPs_RNA.vcf
@@ -698,19 +709,19 @@ function combine-VCF {
     sed -i.bak "s/SRR497749/PAP50403/" JustSNPs_RNA.vcf
     sed -i.bak "s/SRR629599/MAH6372/" JustSNPs_RNA.vcf
     sed -i.bak "s/SRR629651/MAR6271/" JustSNPs_RNA.vcf
-    sed -i.bak "s/SRR629652/MAR6287/" JustSNPs_RNA.vcf
-    sed -i.bak "s/SRR629653/MAR276/" JustSNPs_RNA.vcf
-    sed -i.bak "s/SRR629654/MAR6299/" JustSNPs_RNA.vcf
-    sed -i.bak "s/SRR629655/NAM2064/" JustSNPs_RNA.vcf
-    sed -i.bak "s/SRR629656/MAR6326/" JustSNPs_RNA.vcf
-    sed -i.bak "s/SRR629657/MAR6326dup/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629652/MAH6381/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629653/MAR6287/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629654/MAR276/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629655/MAR6299/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629656/NAM2064/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629657/MAR6326/" JustSNPs_RNA.vcf
     sed -i.bak "s/SRR629658/NAM60603/" JustSNPs_RNA.vcf
     sed -i.bak "s/SRR629659/MAR6463/" JustSNPs_RNA.vcf
-    sed -i.bak "s/SRR629660/NAM6193/" JustSNPs_RNA.vcf
-    sed -i.bak "s/SRR629661/NAM6153/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629660/NAM6153/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629661/NAM6193/" JustSNPs_RNA.vcf
     sed -i.bak "s/SRR629662/MAR6099/" JustSNPs_RNA.vcf
-    sed -i.bak "s/SRR629663/NAM6161/" JustSNPs_RNA.vcf
-    sed -i.bak "s/SRR629664/MAR6311/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629663/MAR6311/" JustSNPs_RNA.vcf
+    sed -i.bak "s/SRR629664/NAM6161/" JustSNPs_RNA.vcf
     sed -i.bak "s/SRR629665/MAR6341/" JustSNPs_RNA.vcf
     sed -i.bak "s/SRR629666/MAH252/" JustSNPs_RNA.vcf
     sed -i.bak "s/SRR629667/MAR6503/" JustSNPs_RNA.vcf
@@ -718,6 +729,7 @@ function combine-VCF {
     sed -i.bak "s/SRR629669/MAH6084/" JustSNPs_RNA.vcf
 
     # RNA
+    echo "changing sample names within JustSNPs_DNA" >> Log.txt
     sed -i.bak "s/ELF01/ELFRA567/" JustSNPs_DNA.vcf
     sed -i.bak "s/ELF02/ELFRA607/" JustSNPs_DNA.vcf
     sed -i.bak "s/ELF03/ELFRP540/" JustSNPs_DNA.vcf
@@ -768,7 +780,11 @@ function combine-VCF {
     sed -i.bak "s/PAP07/PAP50501/" JustSNPs_DNA.vcf
     sed -i.bak "s/PAP08/PAP51602/" JustSNPs_DNA.vcf
     sed -i.bak "s/PAP09/PAP524101/" JustSNPs_DNA.vcf
-    sed -i.bak "s/PAP10/PAP281/" JustSNPs_DNA.vcf
+    # I'm changing PAP281 to NAM281 for downstream simplicity
+    ## -- Although this individual is labeled PAP, it is actually
+    ## -- from NAM. In database it will be listed as PAP281, but
+    ## -- in our SNP dataset it will be NAM281
+    sed -i.bak "s/PAP10/NAM281/" JustSNPs_DNA.vcf
     sed -i.bak "s/PAP11/PAPRA434/" JustSNPs_DNA.vcf
     sed -i.bak "s/PAP12/PAPRA647/" JustSNPs_DNA.vcf
     sed -i.bak "s/PAP13/PAPRA648/" JustSNPs_DNA.vcf
@@ -818,18 +834,45 @@ function combine-VCF {
     bgzip JustSNPs_RNA.vcf
     bcftools index JustSNPs_DNA.vcf.gz
     bcftools index JustSNPs_RNA.vcf.gz
+    echo "merging DNA and RNA vcf files" >> Log.txt
     bcftools merge JustSNPs_RNA.vcf.gz JustSNPs_DNA.vcf.gz -O v -o Merged.vcf
+    echo "Merged.vcf variants: $(grep -v "^#" Merged.vcf | wc -l)" >> Log.txt
 }
 
-function removeRefSingletons {
-  vcftools --vcf Merged.vcf --non-ref-af 1 \
-  --recode --recode-INFO-all --out RefSingletons
-  mv RefSingletons.recode.vcf RefSingletons.vcf
-  grep -v "#" RefSingletons.vcf | cut -f 1,2 > RefSingletons.txt
-  vcftools --vcf Merged.vcf --exclude-positions RNA-Substitutions.txt \
-  --recode --recode-INFO-all --out removedRefSingletons 
-  mv removedRefSingletons.recode.vcf removedRefSingletons.vcf
-  echo "Ref singletons removed: $(grep -v "^#" removedRefSingletons.vcf | wc -l)" >> Log.txt
+function removeRNAedits_old {
+  vcftools --gzvcf JustSNPs_RNA.vcf.gz --non-ref-af 1 \
+  --recode --recode-INFO-all --out potential-RNA-Substitutions
+  mv potential-RNA-Substitutions.recode.vcf potential-RNA-Substitutions.vcf
+  grep -v "#" potential-RNA-Substitutions.vcf | cut -f 1,2 > potential-RNA-Substitutions.txt
+  vcftools --vcf Merged.vcf --exclude-positions potential-RNA-Substitutions.txt \
+  --recode --recode-INFO-all --out removedRNAedits
+  mv removedRNAedits.recode.vcf removedRNAedits.vcf
+  echo "removedRNAedits.vcf variants: $(grep -v "^#" removedRNAedits.vcf | wc -l)" >> Log.txt
+}
+
+function removeRNAedits {
+  vcftools --vcf JustSNPs_RNA.vcf --non-ref-af 1\
+  --recode --recode-INFO-all --out potential-RNA-Substitutions
+  mv potential-RNA-Substitutions.recode.vcf potential-RNA-Substitutions.vcf
+  bgzip potential-RNA-Substitutions.vcf
+  bcftools index potential-RNA-Substitutions.vcf.gz
+  # Get vcf with sites in potential-RNA-Substitutions.vcf that aren't in the Seq Cap data
+  bcftools isec -p isec1_results -n-1 -c all potential-RNA-Substitutions.vcf.gz JustSNPs_DNA.vcf.gz
+    # -p specify where results will go
+    # -n-1 output positions present in one file
+    # -c specify which variant types
+  # Move into results directory
+  cd isec1_results
+  # Copy results with variants unique to RNA (i.e., variants not in Seq Cap data)
+  ## -- These will be removed from the RNA variant file used for analyses
+  mv 0000.vcf ../remove_from_RNA.vcf
+  cd ..
+  bgzip remove_from_RNA.vcf
+  bcftools index remove_from_RNA.vcf.gz
+  # Get RNA vcf with fixed variants unique to RNA removed
+  bcftools isec -p isec2_results -n-1 -c all remove_from_RNA.vcf.gz practice-RNA.vcf.gz
+  cd isec2_results
+  mv 0001.vcf ../removedRNAedits.vcf
 }
 
 function getNetworkFasta {
@@ -877,15 +920,15 @@ function annotateVariants {
         -o "$2"_Annotated_Init.vcf \
   	-O v \
   	-h <(echo '##INFO=<ID=GENE,Number=1,Type=String,Description="Gene name">') \
-  	"$1".vcf
+  	"$1"
   awk '/^#|GENE=/' "$2"_Annotated_Init.vcf > "$2"_Annotated.vcf
-  echo "Annotated "$2" variants: $(grep -v "^#" "$2"_Annotated.vcf | wc -l)" >> AnnotationLog.txt
+  echo "Annotated "$2" variants: $(grep -v "^#" "$2"_Annotated.vcf | wc -l)" >> Log.txt 
 }  
 
 function getSpecificVariants {
   # Annotate SNP file make sure "$1".vcf is in this directory
   cd $WorkingDirectory/variantFiltration
-  bcftools annotate -x INFO/GENE "$1"_HardFilterStep3.vcf > "$1"_Deannotated.vcf
+  bcftools annotate -x INFO/GENE "$1"_HardFilterStep4.vcf > "$1"_Deannotated.vcf
   bcftools annotate \
   	-a $WorkingDirectory/References/"$1"_Captured"$2".bed.gz \
   	-c CHROM,FROM,TO,GENE \
@@ -964,31 +1007,27 @@ function initial-VariantFiltration {
 	--filter-name "ReadPosRankSum" \
 	--filter-expression "ReadPosRankSum < -5.0"
   # don't do the following for filtered_0.vcf, just get rid of the Init suffix
-  awk '/^#/||$7=="PASS"' filtered_"$2"Init.vcf > filtered_"$2".vcf
-  echo "Initial filtration "$2" variants: $(grep -v "^#" filtered_"$2".vcf | wc -l)" >> Log.txt
+  awk '/^#/||$7=="PASS"' "$2"_Init.vcf > "$2".vcf
+  echo ""$2".vcf variants: $(grep -v "^#" "$2".vcf | wc -l)" >> Log.txt
 } 
 
 function hard-VariantFiltration {
   # Step 0: Get rid of unwanted individuals (T. sirtalis, duplicates, and siblings)
-    vcftools --remove Full_IndividualsToRemove --vcf filtered_"$1".vcf --recode --out "$2"_HardFilterStep0.vcf
+    vcftools --remove $WorkingDirectory/References/Full_IndividualsToRemove.txt --vcf "$1".vcf --recode --out "$2"_HardFilterStep0.vcf
     mv "$2"_HardFilterStep0.vcf.recode.vcf "$2"_HardFilterStep0.vcf
   # Step 1: Get rid of low-quality (mean) genotyping:
-    bcftools view  -i  'MIN(FMT/GQ>20)' "$2"_HardFilterStep0.vcf > "$2"_HardFilterStep1.vcf
-    echo "Genotype Quality filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep1.vcf | wc -l)" >> Log.txt
+  bcftools view  -i  'MIN(FMT/GQ)>20' "$2"_HardFilterStep0.vcf > "$2"_HardFilterStep1.vcf
+    echo "Post genotype Quality filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep1.vcf | wc -l)" >> Log.txt
   # Step 2: Get rid of multiallelic SNPs (more than 2 alleles):
     bcftools view -m2 -M2 -v snps "$2"_HardFilterStep1.vcf > "$2"_HardFilterStep2.vcf
-    echo "Multiallelic filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep2.vcf | wc -l)" >> Log.txt
-  # Step 3: Filter individuals by quality
-    vcftools --minGQ 20 --vcf "$2"_HardFilterStep2.vcf --recode --recode-INFO-all --out "$2"_HardFilterStep3.vcf
-    mv "$2"_HardFilterStep3.vcf.recode.vcf "$2"_HardFilterStep3.vcf
-    echo "Indiv GQ filtration $2 variants:  $(grep -v "^#" "$2"_HardFilterStep3.vcf | wc -l)" >> Log.txt
-  # Step 4: Get rid of low-depth individuals per site
-    bcftools view  -i  'MIN(FMT/DP>9)' "$2"_HardFilterStep3.vcf > "$2"_HardFilterStep4.vcf 
-    echo "Genotype Quality filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep4.vcf | wc -l)" >> Log.txt
-  # Step 5: Get rid of low-frequency alleles- here just singletons:
-    vcftools --mac 2 --vcf "$2"_HardFilterStep4.vcf --recode --recode-INFO-all --out "$2"_HardFilterStep5.vcf
-    mv "$2"_HardFilterStep5.vcf.recode.vcf "$2"_HardFilterStep5.vcf
-    echo "Singleton filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep5.vcf | wc -l)" >> Log.txt
+    echo "Post multiallelic filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep2.vcf | wc -l)" >> Log.txt
+  # Step 3: Get rid of low-depth individuals per site
+    bcftools view  -i  'MIN(FMT/DP>9)' "$2"_HardFilterStep2.vcf > "$2"_HardFilterStep3.vcf 
+    echo "Post depth filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep3.vcf | wc -l)" >> Log.txt
+  # Step 4: Get rid of low-frequency alleles- here just singletons:
+    vcftools --mac 2 --vcf "$2"_HardFilterStep3.vcf --recode --recode-INFO-all --out "$2"_HardFilterStep4.vcf
+    mv "$2"_HardFilterStep4.vcf.recode.vcf "$2"_HardFilterStep4.vcf
+    echo "Post singleton filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep4.vcf | wc -l)" >> Log.txt
 
 }
 
