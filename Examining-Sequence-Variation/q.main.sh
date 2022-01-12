@@ -39,7 +39,7 @@ echo PBS: PATH = $PBS_O_PATH
 echo ------------------------------------------------------
 
 WorkingDirectory=/scratch/rlk0015/Telag/May2020/WorkingDirectory
-pythonScripts=/home/rlk0015/SeqCap/code/GenomicProcessingPipeline/pythonScripts
+pythonScripts=/home/rlk0015/SeqCap/code/GenomicProcessingPipeline/Examining-Sequence-Variation/pythonScripts
 
 function loadModules {
   module load fastqc/11.5
@@ -72,117 +72,115 @@ function loadModules {
 cd /home/rlk0015/SeqCap/code/GenomicProcessingPipeline/Examining-Sequence-Variation
 source reads2vcf.sh
 
-  # prepare environment
-  loadModules
-#+ COMPLETED   createWorkingEnvironment-reads2vcf
-#+ COMPLETED   
-#+ COMPLETED   ## ------------------------
-#+ COMPLETED   # begin raw read processing
-#+ COMPLETED   ## ------------------------
-#+ COMPLETED   # Copy Sequence Capture raw reads into working environment
-#+ COMPLETED   copyRawReadsDNA
-#+ COMPLETED   # Quality check RNA reads
-#+ COMPLETED   performFASTQC rawReadsDNA
-#+ COMPLETED   ## Note: RNA Seq reads were already copied
-#+ COMPLETED   ## and quality checked. If this needs to be
-#+ COMPLETED   ## done again, refer to the copyRawReadsDNA
-#+ COMPLETED   ## and performFastQC commands in reads2vcf.sh
-#+ COMPLETED   
-#+ COMPLETED   # quality clean reads
-#+ COMPLETED   performTrimmingPE DNA
-#+ COMPLETED   performTrimmingPE RNA
-#+ COMPLETED   performTrimmingSE RNA
-#+ COMPLETED   
-#+ COMPLETED   # Quality check clean reads
-#+ COMPLETED   performFASTQC cleanReadsDNA
-#+ COMPLETED   performFASTQC cleanReadsRNA
-#+ COMPLETED   
-#+ COMPLETED   # Copy reference genome into working environment
-#+ COMPLETED   copyRef-reads2vcf
-#+ COMPLETED   
-#+ COMPLETED   # Map clean reads to reference genome
-#+ COMPLETED   mapReadsDNA
-#+ COMPLETED   mapPEReadsRNA
-#+ COMPLETED   mapSEReadsRNA
-#+ COMPLETED   
-#+ COMPLETED   # Change the sequence capture names to match sample ID
-#+ COMPLETED   changeSeqCapNames
-#+ COMPLETED   
-#+ COMPLETED   # Add sequencing read group information to each sample
-#+ COMPLETED   readGroupsRNA 
-#+ COMPLETED   readGroupsDNA
-#+ COMPLETED   
-#+ COMPLETED   # Prep for SNP calling and calculate mapping stats
-#+ COMPLETED   indexReference
-#+ COMPLETED   prepForVariantCalling DNA
-#+ COMPLETED   prepForVariantCalling RNA
-#+ COMPLETED   
-#+ COMPLETED   ### --------------------- Variant Calling ----------------------- ###
-#+ COMPLETED   # Perform bqsr-'bootstraping', SNP calling, and hard filtration on Seq Cap data
-#+ COMPLETED   cd $WorkingDirectory/GATKDNA
-#+ COMPLETED   ## Replicate 1
-#+ COMPLETED     use-HaplotypeCaller 0 DNA
-#+ COMPLETED     get-just-SNPs 0 
-#+ COMPLETED     initial-VariantFiltration JustSNPs_0.vcf 0
-#+ COMPLETED     use-BaseRecalibrator 0 DNA
-#+ COMPLETED     use-BQSR 0 1 DNA
-#+ COMPLETED     use-HaplotypeCaller 1 DNA
-#+ COMPLETED     get-just-SNPs 1
-#+ COMPLETED     use-BaseRecalibrator 1 DNA
-#+ COMPLETED     use-AnalyzeCovariates 0 1 DNA
-#+ COMPLETED   ## -- Replicate 2
-#+ COMPLETED     use-BQSR 1 2 DNA
-#+ COMPLETED     use-HaplotypeCaller 2 DNA
-#+ COMPLETED     get-just-SNPs 2
-#+ COMPLETED     use-BaseRecalibrator 2 DNA
-#+ COMPLETED     use-AnalyzeCovariates 1 2 DNA
-#+ COMPLETED   
-#+ COMPLETED   # Perform bqsr-'bootstraping', SNP calling, and hard filtration on RNA-seq data
-#+ COMPLETED   cd $WorkingDirectory/GATKRNA
-#+ COMPLETED   ## Replicate 1
-#+ COMPLETED     use-HaplotypeCaller 0 RNA
-#+ COMPLETED     get-just-SNPs 0
-#+ COMPLETED     initial-VariantFiltration JustSNPs_0.vcf 0
-#+ COMPLETED     use-BaseRecalibrator 0 RNA
-#+ COMPLETED     use-BQSR 0 1 RNA
-#+ COMPLETED     use-HaplotypeCaller 1 RNA
-#+ COMPLETED     get-just-SNPs 1
-#+ COMPLETED     use-BaseRecalibrator 1 RNA
-#+ COMPLETED     use-AnalyzeCovariates 0 1 RNA
-#+ COMPLETED   ## -- Replicate 2
-#+ COMPLETED     use-BQSR 1 2 RNA
-#+ COMPLETED     use-HaplotypeCaller 2 RNA
-#+ COMPLETED     get-just-SNPs 2
-#+ COMPLETED     use-BaseRecalibrator 2 RNA
-#+ COMPLETED     use-AnalyzeCovariates 1 2 RNA
-#+ COMPLETED   
-#+ COMPLETED   ## -- Merge RNA and DNA data
-#+ COMPLETED   combine-VCF
-#+ COMPLETED   cd $WorkingDirectory/variantFiltration 
-#+ COMPLETED   ## -- Eliminate potential RNA editing sites
-  cd $WorkingDirectory/variantFiltration
-  removeRNAedits
+ # prepare environment
+ loadModules
+ createWorkingEnvironment-reads2vcf
+ 
+ ## ------------------------
+ # begin raw read processing
+ ## ------------------------
+ # Copy Sequence Capture raw reads into working environment
+ copyRawReadsDNA
+ # Quality check RNA reads
+ performFASTQC rawReadsDNA
+ ## Note: RNA Seq reads were already copied
+ ## and quality checked. If this needs to be
+ ## done again, refer to the copyRawReadsDNA
+ ## and performFastQC commands in reads2vcf.sh
+ 
+ # quality clean reads
+ performTrimmingPE DNA
+ performTrimmingPE RNA
+ performTrimmingSE RNA
+ 
+ # Quality check clean reads
+ performFASTQC cleanReadsDNA
+ performFASTQC cleanReadsRNA
+ 
+ # Copy reference genome into working environment
+ copyRef-reads2vcf
+ 
+ # Map clean reads to reference genome
+ mapReadsDNA
+ mapPEReadsRNA
+ mapSEReadsRNA
+ 
+ # Change the sequence capture names to match sample ID
+ changeSeqCapNames
+ 
+ # Add sequencing read group information to each sample
+ readGroupsRNA 
+ readGroupsDNA
+ 
+ # Prep for SNP calling and calculate mapping stats
+ indexReference
+ prepForVariantCalling DNA
+ prepForVariantCalling RNA
+ 
+ ### --------------------- Variant Calling ----------------------- ###
+ # Perform bqsr-'bootstraping', SNP calling, and hard filtration on Seq Cap data
+ cd $WorkingDirectory/GATKDNA
+ ## Replicate 1
+   use-HaplotypeCaller 0 DNA
+   get-just-SNPs 0 
+   initial-VariantFiltration JustSNPs_0.vcf 0
+   use-BaseRecalibrator 0 DNA
+   use-BQSR 0 1 DNA
+   use-HaplotypeCaller 1 DNA
+   get-just-SNPs 1
+   use-BaseRecalibrator 1 DNA
+   use-AnalyzeCovariates 0 1 DNA
+ ## -- Replicate 2
+   use-BQSR 1 2 DNA
+   use-HaplotypeCaller 2 DNA
+   get-just-SNPs 2
+   use-BaseRecalibrator 2 DNA
+   use-AnalyzeCovariates 1 2 DNA
+ 
+ # Perform bqsr-'bootstraping', SNP calling, and hard filtration on RNA-seq data
+ cd $WorkingDirectory/GATKRNA
+ ## Replicate 1
+   use-HaplotypeCaller 0 RNA
+   get-just-SNPs 0
+   initial-VariantFiltration JustSNPs_0.vcf 0
+   use-BaseRecalibrator 0 RNA
+   use-BQSR 0 1 RNA
+   use-HaplotypeCaller 1 RNA
+   get-just-SNPs 1
+   use-BaseRecalibrator 1 RNA
+   use-AnalyzeCovariates 0 1 RNA
+ ## -- Replicate 2
+   use-BQSR 1 2 RNA
+   use-HaplotypeCaller 2 RNA
+   get-just-SNPs 2
+   use-BaseRecalibrator 2 RNA
+   use-AnalyzeCovariates 1 2 RNA
+ 
+ ## -- Merge RNA and DNA data
+ combine-VCF
+ cd $WorkingDirectory/variantFiltration 
   ## -- Annotate variants
-  #+ COMPLETED getNetworkFasta IILS
-  #+ COMPLETED probes2gff Exons_2021.fa SeqCap
-  mergeData
-  annotateVariants merged.vcf.gz SeqCap
+  getNetworkFasta IILS
+  probes2gff Exons_2021.fa SeqCap
+  annotateVariants Merged.vcf.gz SeqCap
   ## -- Initial Filter Variants
   initial-VariantFiltration SeqCap_Annotated.vcf SeqCap_InitialFiltered
   ## -- Perform Hard Filtering
   hard-VariantFiltration SeqCap_InitialFiltered SeqCap
+  ## -- Eliminate potential RNA editing sites
+  removeRNAedits
   ## -- Get coding regions and exonic regions
   getSpecificVariants SeqCap CDS
   getSpecificVariants SeqCap Exons
   ## -- Copy final step of hard filtering (for nomenclature purposes)
-  cp SeqCap_HardFilterStep4.vcf SeqCap_Genes.vcf
+  cp SeqCap_HardFilterStep5.vcf SeqCap_Genes.vcf
+  ## -- plot the variants (you can do this with all of the files as desired)
+  plotVariants SeqCap_Exons.vcf
+  plotVariants SeqCap_Annotated.vcf
   ## -- zip up everything
   bgzip SeqCap_Genes.vcf
   bgzip SeqCap_Exons.vcf
   bgzip SeqCap_CDS.vcf
-  ## -- plot the variants (you can do this with all of the files as desired)
-  plotVariants SeqCap_Exons.vcf
-  plotVariants SeqCap_Annotated.vcf
   
   #+ COMPLETED ## -- rename files; see reads2vcf.sh for details
   #+ COMPLETED renameSortedBAMs

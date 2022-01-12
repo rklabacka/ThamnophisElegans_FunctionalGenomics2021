@@ -837,6 +837,8 @@ function combine-VCF {
     echo "merging DNA and RNA vcf files" >> Log.txt
     bcftools merge JustSNPs_RNA.vcf.gz JustSNPs_DNA.vcf.gz -O v -o Merged.vcf
     echo "Merged.vcf variants: $(grep -v "^#" Merged.vcf | wc -l)" >> Log.txt
+    bgzip Merged.vcf
+    bcftools index Merged.vcf
 }
 
 function removeRNAedits_old {
@@ -851,11 +853,11 @@ function removeRNAedits_old {
 }
 
 function removeRNAedits {
-  vcftools --vcf JustSNPs_RNA.vcf --non-ref-af 1\
+  vcftools --gzvcf JustSNPs_RNA.vcf.gz --non-ref-af 1\
   --recode --recode-INFO-all --out potential-RNA-Substitutions
   mv potential-RNA-Substitutions.recode.vcf potential-RNA-Substitutions.vcf
-  bgzip potential-RNA-Substitutions.vcf
-  bcftools index potential-RNA-Substitutions.vcf.gz
+  bgzip -f potential-RNA-Substitutions.vcf
+  bcftools index -f potential-RNA-Substitutions.vcf.gz
   # Get vcf with sites in potential-RNA-Substitutions.vcf that aren't in the Seq Cap data
   bcftools isec -p isec1_results -n-1 -c all potential-RNA-Substitutions.vcf.gz JustSNPs_DNA.vcf.gz
     # -p specify where results will go
@@ -867,12 +869,19 @@ function removeRNAedits {
   ## -- These will be removed from the RNA variant file used for analyses
   mv 0000.vcf ../remove_from_RNA.vcf
   cd ..
-  bgzip remove_from_RNA.vcf
-  bcftools index remove_from_RNA.vcf.gz
+  bgzip -f remove_from_RNA.vcf
+  bcftools index -f remove_from_RNA.vcf.gz
   # Get RNA vcf with fixed variants unique to RNA removed
-  bcftools isec -p isec2_results -n-1 -c all remove_from_RNA.vcf.gz practice-RNA.vcf.gz
+  bcftools isec -p isec2_results -n-1 -c all remove_from_RNA.vcf.gz JustSNPs_RNA.vcf.gz
   cd isec2_results
-  mv 0001.vcf ../removedRNAedits.vcf
+  mv 0001.vcf ../JustSNPs_removedRNAedits.vcf
+  bgzip JustSNPs_removedRNAedits.vcf
+  bcftools index -f JustSNPs_removedRNAedits.vcf.gz
+}
+
+function mergeData {
+  # currently not being used, probably not needed (given function of combine-vcf)
+  bcftools merge -m all -O z -o merged.vcf.gz JustSNPs_DNA.vcf.gz JustSNPs_removedRNAedits.vcf.gz
 }
 
 function getNetworkFasta {
@@ -917,7 +926,7 @@ function annotateVariants {
   bcftools annotate \
   	-a $WorkingDirectory/References/"$2"_CapturedGenes.bed.gz \
   	-c CHROM,FROM,TO,GENE \
-        -o "$2"_Annotated_Init.vcf \
+    -o "$2"_Annotated_Init.vcf \
   	-O v \
   	-h <(echo '##INFO=<ID=GENE,Number=1,Type=String,Description="Gene name">') \
   	"$1"
@@ -928,7 +937,7 @@ function annotateVariants {
 function getSpecificVariants {
   # Annotate SNP file make sure "$1".vcf is in this directory
   cd $WorkingDirectory/variantFiltration
-  bcftools annotate -x INFO/GENE "$1"_HardFilterStep4.vcf > "$1"_Deannotated.vcf
+  bcftools annotate -x INFO/GENE "$1"_HardFilter.vcf > "$1"_Deannotated.vcf
   bcftools annotate \
   	-a $WorkingDirectory/References/"$1"_Captured"$2".bed.gz \
   	-c CHROM,FROM,TO,GENE \
@@ -993,7 +1002,7 @@ function initial-VariantFiltration {
   /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" VariantFiltration \
 	-R $WorkingDirectory/References/TelagGenome.fasta \
 	-V "$1" \
-        -O filtered_"$2"Init.vcf \
+        -O "$2"_Init.vcf \
 	--filter-name "SOR" \
 	--filter-expression "SOR > 3.0" \
 	--filter-name "QD" \
@@ -1012,22 +1021,22 @@ function initial-VariantFiltration {
 } 
 
 function hard-VariantFiltration {
-  # Step 0: Get rid of unwanted individuals (T. sirtalis, duplicates, and siblings)
-    vcftools --remove $WorkingDirectory/References/Full_IndividualsToRemove.txt --vcf "$1".vcf --recode --out "$2"_HardFilterStep0.vcf
-    mv "$2"_HardFilterStep0.vcf.recode.vcf "$2"_HardFilterStep0.vcf
   # Step 1: Get rid of low-quality (mean) genotyping:
-  bcftools view  -i  'MIN(FMT/GQ)>20' "$2"_HardFilterStep0.vcf > "$2"_HardFilterStep1.vcf
+  bcftools view  -i  'MIN(FMT/GQ)>20' "$1".vcf > "$2"_HardFilterStep1.vcf
     echo "Post genotype Quality filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep1.vcf | wc -l)" >> Log.txt
-  # Step 2: Get rid of multiallelic SNPs (more than 2 alleles):
-    bcftools view -m2 -M2 -v snps "$2"_HardFilterStep1.vcf > "$2"_HardFilterStep2.vcf
-    echo "Post multiallelic filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep2.vcf | wc -l)" >> Log.txt
-  # Step 3: Get rid of low-depth individuals per site
-    bcftools view  -i  'MIN(FMT/DP>9)' "$2"_HardFilterStep2.vcf > "$2"_HardFilterStep3.vcf 
-    echo "Post depth filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep3.vcf | wc -l)" >> Log.txt
-  # Step 4: Get rid of low-frequency alleles- here just singletons:
-    vcftools --mac 2 --vcf "$2"_HardFilterStep3.vcf --recode --recode-INFO-all --out "$2"_HardFilterStep4.vcf
-    mv "$2"_HardFilterStep4.vcf.recode.vcf "$2"_HardFilterStep4.vcf
-    echo "Post singleton filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep4.vcf | wc -l)" >> Log.txt
+  # Step 2: Get rid of low-depth individuals per site
+    bcftools view  -i  'MIN(FMT/DP>9)' "$2"_HardFilterStep1.vcf > "$2"_HardFilterStep2.vcf 
+    echo "Post depth filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep2.vcf | wc -l)" >> Log.txt
+  # Step 3: Get rid of unwanted individuals (T. sirtalis, duplicates, and siblings)
+    vcftools --remove $WorkingDirectory/References/Full_IndividualsToRemove.txt --vcf "$2"_HardFilterStep2.vcf --recode --out "$2"_HardFilterStep3.vcf
+    mv "$2"_HardFilterStep3.vcf.recode.vcf "$2"_HardFilterStep3.vcf
+  # Step 4: Get rid of multiallelic SNPs (more than 2 alleles):
+    bcftools view -m2 -M2 -v snps "$2"_HardFilterStep3.vcf > "$2"_HardFilterStep4.vcf
+    echo "Post multiallelic filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep4.vcf | wc -l)" >> Log.txt
+  # Step 5: Get rid of low-frequency alleles- here just singletons:
+    vcftools --mac 2 --vcf "$2"_HardFilterStep4.vcf --recode --recode-INFO-all --out "$2"_HardFilterStep5.vcf
+    mv "$2"_HardFilterStep5.vcf.recode.vcf "$2"_HardFilterStep5.vcf
+    echo "Post singleton filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep5.vcf | wc -l)" >> Log.txt
 
 }
 
