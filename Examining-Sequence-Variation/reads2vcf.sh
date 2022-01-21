@@ -841,43 +841,6 @@ function combine-VCF {
     bcftools index Merged.vcf
 }
 
-function removeRNAedits_old {
-  vcftools --gzvcf JustSNPs_RNA.vcf.gz --non-ref-af 1 \
-  --recode --recode-INFO-all --out potential-RNA-Substitutions
-  mv potential-RNA-Substitutions.recode.vcf potential-RNA-Substitutions.vcf
-  grep -v "#" potential-RNA-Substitutions.vcf | cut -f 1,2 > potential-RNA-Substitutions.txt
-  vcftools --vcf Merged.vcf --exclude-positions potential-RNA-Substitutions.txt \
-  --recode --recode-INFO-all --out removedRNAedits
-  mv removedRNAedits.recode.vcf removedRNAedits.vcf
-  echo "removedRNAedits.vcf variants: $(grep -v "^#" removedRNAedits.vcf | wc -l)" >> Log.txt
-}
-
-function removeRNAedits {
-  vcftools --gzvcf JustSNPs_RNA.vcf.gz --non-ref-af 1\
-  --recode --recode-INFO-all --out potential-RNA-Substitutions
-  mv potential-RNA-Substitutions.recode.vcf potential-RNA-Substitutions.vcf
-  bgzip -f potential-RNA-Substitutions.vcf
-  bcftools index -f potential-RNA-Substitutions.vcf.gz
-  # Get vcf with sites in potential-RNA-Substitutions.vcf that aren't in the Seq Cap data
-  bcftools isec -p isec1_results -n-1 -c all potential-RNA-Substitutions.vcf.gz JustSNPs_DNA.vcf.gz
-    # -p specify where results will go
-    # -n-1 output positions present in one file
-    # -c specify which variant types
-  # Move into results directory
-  cd isec1_results
-  # Copy results with variants unique to RNA (i.e., variants not in Seq Cap data)
-  ## -- These will be removed from the RNA variant file used for analyses
-  mv 0000.vcf ../remove_from_RNA.vcf
-  cd ..
-  bgzip -f remove_from_RNA.vcf
-  bcftools index -f remove_from_RNA.vcf.gz
-  # Get RNA vcf with fixed variants unique to RNA removed
-  bcftools isec -p isec2_results -n-1 -c all remove_from_RNA.vcf.gz JustSNPs_RNA.vcf.gz
-  cd isec2_results
-  mv 0001.vcf ../JustSNPs_removedRNAedits.vcf
-  bgzip JustSNPs_removedRNAedits.vcf
-  bcftools index -f JustSNPs_removedRNAedits.vcf.gz
-}
 
 function mergeData {
   # currently not being used, probably not needed (given function of combine-vcf)
@@ -937,7 +900,7 @@ function annotateVariants {
 function getSpecificVariants {
   # Annotate SNP file make sure "$1".vcf is in this directory
   cd $WorkingDirectory/variantFiltration
-  bcftools annotate -x INFO/GENE "$1"_HardFilter.vcf > "$1"_Deannotated.vcf
+  bcftools annotate -x INFO/GENE JustSNPs_removedRNAedits.vcf.gz > "$1"_Deannotated.vcf
   bcftools annotate \
   	-a $WorkingDirectory/References/"$1"_Captured"$2".bed.gz \
   	-c CHROM,FROM,TO,GENE \
@@ -1037,7 +1000,48 @@ function hard-VariantFiltration {
     vcftools --mac 2 --vcf "$2"_HardFilterStep4.vcf --recode --recode-INFO-all --out "$2"_HardFilterStep5.vcf
     mv "$2"_HardFilterStep5.vcf.recode.vcf "$2"_HardFilterStep5.vcf
     echo "Post singleton filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep5.vcf | wc -l)" >> Log.txt
+    bgzip "$2"_HardFilterStep5.vcf
+    bcftools index -f "$2"_HardFilterStep5.vcf
 
+}
+
+function removeRNAedits_old {
+  vcftools --gzvcf JustSNPs_RNA.vcf.gz --non-ref-af 1 \
+  --recode --recode-INFO-all --out potential-RNA-Substitutions
+  mv potential-RNA-Substitutions.recode.vcf potential-RNA-Substitutions.vcf
+  grep -v "#" potential-RNA-Substitutions.vcf | cut -f 1,2 > potential-RNA-Substitutions.txt
+  vcftools --vcf Merged.vcf --exclude-positions potential-RNA-Substitutions.txt \
+  --recode --recode-INFO-all --out removedRNAedits
+  mv removedRNAedits.recode.vcf removedRNAedits.vcf
+  echo "removedRNAedits.vcf variants: $(grep -v "^#" removedRNAedits.vcf | wc -l)" >> Log.txt
+}
+
+function removeRNAedits {
+  vcftools --gzvcf JustSNPs_RNA.vcf.gz --non-ref-af 1\
+  --recode --recode-INFO-all --out potential-RNA-Substitutions
+  mv potential-RNA-Substitutions.recode.vcf potential-RNA-Substitutions.vcf
+  bgzip -f potential-RNA-Substitutions.vcf
+  bcftools index -f potential-RNA-Substitutions.vcf.gz
+  # Get vcf with sites in potential-RNA-Substitutions.vcf that aren't in the Seq Cap data
+  bcftools isec -p isec1_results -n-1 -c all potential-RNA-Substitutions.vcf.gz JustSNPs_DNA.vcf.gz
+    # -p specify where results will go
+    # -n-1 output positions present in one file
+    # -c specify which variant types
+  # Move into results directory
+  cd isec1_results
+  # Copy results with variants unique to RNA (i.e., variants not in Seq Cap data)
+  ## -- These will be removed from the RNA variant file used for analyses
+  mv 0000.vcf ../remove_from_RNA.vcf
+  cd ..
+  bgzip -f remove_from_RNA.vcf
+  bcftools index -f remove_from_RNA.vcf.gz
+  # Get RNA vcf with fixed variants unique to RNA removed
+  bcftools isec -p isec2_results -n-1 -c all remove_from_RNA.vcf.gz SeqCap_HardFilterStep5.vcf.gz
+  cd isec2_results
+  mv 0001.vcf ../JustSNPs_removedRNAedits.vcf
+  cd ..
+  bgzip JustSNPs_removedRNAedits.vcf
+  bcftools index -f JustSNPs_removedRNAedits.vcf.gz
 }
 
 ### -- If needed, here is code for removing individuals that would need to be adapted

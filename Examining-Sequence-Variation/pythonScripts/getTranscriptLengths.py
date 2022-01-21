@@ -56,9 +56,9 @@ def get_variant_lengths(gene_dict, variants_read, transcript_lengths):
         re_obj = re.compile(re_string)
         if re_obj.search(line):
             break
-        line = line.split("\t")
+        line = line.split("  ")
         haystack_gene = line[0]
-        nvar = line[1]
+        nvar = line[1].strip()
         for needle in gene_dict:
             if gene_dict[needle].getName().strip() == haystack_gene.strip():
                 gene_dict[needle].setNvar(nvar)

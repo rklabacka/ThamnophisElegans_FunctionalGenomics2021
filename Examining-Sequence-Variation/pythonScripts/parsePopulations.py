@@ -27,6 +27,9 @@ def pairwise_populations(populationSet):
                         with open(pop_a + "_" + pop_b + ".txt", 'w') as pairwise_pops:
                             pairwise_pops.write(pop_a_file.read())
                             pairwise_pops.write(pop_b_file.read())
+                        with open(pop_a + "_" + pop_b + ".pix", 'a') as pairwise_pix:
+                            pairwise_pix.write(pop_a_file.read() + pop_a)
+                            pairwise_pix.write(pop_b_file.read() + pop_b)
                 
 def combine_two_pops(pop1, pop2):
     with open(pop1 + ".txt", 'r') as pop1_file:

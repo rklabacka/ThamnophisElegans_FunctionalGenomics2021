@@ -198,42 +198,42 @@ source SNP_curation.sh
   combineDatasets
   
   # -- sort variants and remove duplicates
-  sortVariants Full_CDS $WorkingDirectory/Full_IndividualsToRemove.txt
-  sortVariants Full_Exons $WorkingDirectory/Full_IndividualsToRemove.txt
-  sortVariants Full_Genes $WorkingDirectory/Full_IndividualsToRemove.txt
+  sortVariants Full_CDS $WorkingDirectory/References/Full_IndividualsToRemove.txt
+  sortVariants Full_Exons $WorkingDirectory/References/Full_IndividualsToRemove.txt
+  sortVariants Full_Genes $WorkingDirectory/References/Full_IndividualsToRemove.txt
   
-#+ WAITING  # -- annotate variants using snpeff
-#+ WAITING  functionalAnnotation Full
-#+ WAITING  
-#+ WAITING  # -- extract SNPs by gene
-#+ WAITING  getGeneVariants CDS
-#+ WAITING  getGeneVariants Exons
-#+ WAITING  getGeneVariants Genes
-#+ WAITING  getGeneVariants CDS _missense
-#+ WAITING  getGeneVariants CDS _synonymous
-#+ WAITING  
-#+ WAITING  # -- get transcript lengths and number of SNPs for each gene
-#+ WAITING  getTranscriptLengths CDS
-#+ WAITING  getTranscriptLengths Exons
-#+ WAITING  getTranscriptLengths Genes
-#+ WAITING  getTranscriptLengths CDS _missense
-#+ WAITING  getTranscriptLengths CDS _synonymous
-#+ WAITING  
-#+ WAITING  # -- convert vcf to fasta for targeted genes
-#+ WAITING  vcf2faa
-#+ WAITING  reference2faa
-#+ WAITING  # -- move captured target genes to new directory
-#+ WAITING  moveCapturedGenes
-#+ WAITING  # -- create alignments for peptide and nucleotide sequences
-#+ WAITING  createMSA faa protein Sequences maskedMSA
-#+ WAITING  createMSA fna transcript Sequences maskedMSA
-#+ WAITING  
-#+ WAITING  # -- create population text files for pops and pairwise comparisons
-#+ WAITING  createPopFiles
-#+ WAITING  # -- create vcf files containing samples for each pairwise pop comparison
-#+ WAITING  createPairwiseVCFs
-#+ WAITING  # -- calculate Tajima's D for each pairwise pop comparison for each gene
-#+ WAITING  getPairwisePopGen
+# -- annotate variants using snpeff
+functionalAnnotation Full
+
+# -- extract SNPs by gene
+getGeneVariants CDS
+getGeneVariants Exons
+getGeneVariants Genes
+getGeneVariants CDS _missense
+getGeneVariants CDS _synonymous
+
+# -- get transcript lengths and number of SNPs for each gene
+getTranscriptLengths CDS
+getTranscriptLengths Exons
+getTranscriptLengths Genes
+getTranscriptLengths CDS _missense
+getTranscriptLengths CDS _synonymous
+
+# -- convert vcf to fasta for targeted genes
+vcf2faa
+reference2faa
+# -- move captured target genes to new directory
+moveCapturedGenes
+# -- create alignments for peptide and nucleotide sequences
+createMSA faa protein Sequences maskedMSA
+createMSA fna transcript Sequences maskedMSA
+
+# -- create population text files for pops and pairwise comparisons
+createPopFiles
+# -- create vcf files containing samples for each pairwise pop comparison
+createPairwiseVCFs
+# -- calculate Tajima's D for each pairwise pop comparison for each gene
+getPairwisePopGen
 #+ WAITING  
 #+ WAITING# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 #+ WAITING# The following functions are called from the annotateVCF.sh script

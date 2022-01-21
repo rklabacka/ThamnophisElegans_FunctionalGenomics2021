@@ -41,19 +41,40 @@ echo ------------------------------------------------------
 function combineDatasets {
 cd $WorkingDirectory/variantFiltration
 # Jessica's WGS variants at variable sites discovered from q.FullScript_May2020.sh WGS_Genes.recode.vcf.gz WGS_Exons.recode.vcf.gz and WGS_CDS.recode.vcf.gz were copied here frome box already
-bcftools index -f SeqCap_CDS.vcf.gz
-bcftools index -f SeqCap_Exons.vcf.gz
+gunzip SeqCap_Genes.vcf.gz
+gunzip SeqCap_Exons.vcf.gz
+gunzip SeqCap_CDS.vcf.gz
+grep -v "#" SeqCap_Genes.vcf | cut -f 1,2 > SeqCap_Genes.pos 
+grep -v "#" SeqCap_Exons.vcf | cut -f 1,2 > SeqCap_Exons.pos 
+grep -v "#" SeqCap_CDS.vcf | cut -f 1,2 > SeqCap_CDS.pos 
+vcftools --vcf Genes_WGS.recode.vcf --positions SeqCap_Genes.pos --recode --recode-INFO-all --out WGS_Genes
+mv WGS_Genes.recode.vcf WGS_Genes.vcf
+vcftools --vcf Genes_WGS.recode.vcf --positions SeqCap_Exons.pos --recode --recode-INFO-all --out WGS_Exons 
+mv WGS_Exons.recode.vcf WGS_Exons.vcf
+vcftools --vcf Genes_WGS.recode.vcf --positions SeqCap_CDS.pos --recode --recode-INFO-all --out WGS_CDS
+mv WGS_CDS.recode.vcf WGS_CDS.vcf
+bgzip SeqCap_Genes.vcf
+bgzip SeqCap_Exons.vcf
+bgzip SeqCap_CDS.vcf
 bcftools index -f SeqCap_Genes.vcf.gz
-bcftools index -f CDS_WGS.recode.vcf.gz
-bcftools index -f Exons_WGS.recode.vcf.gz
-bcftools index -f Genes_WGS.recode.vcf.gz
+bcftools index -f SeqCap_Exons.vcf.gz
+bcftools index -f SeqCap_CDS.vcf.gz
+bgzip WGS_Genes.vcf
+bgzip WGS_Exons.vcf
+bgzip WGS_CDS.vcf
+bcftools index -f WGS_Genes.vcf.gz
+bcftools index -f WGS_Exons.vcf.gz
+bcftools index -f WGS_CDS.vcf.gz
 echo "merging WGS data to RNA-Seq+Seq-Cap" >> Log.txt
-bcftools merge SeqCap_CDS.vcf.gz CDS_WGS.recode.vcf.gz -O v -o Full_CDS.vcf
-bcftools merge SeqCap_Exons.vcf.gz Exons_WGS.recode.vcf.gz -O v -o Full_Exons.vcf
-bcftools merge SeqCap_Genes.vcf.gz Genes_WGS.recode.vcf.gz -O v -o Full_Genes.vcf
+bcftools merge SeqCap_CDS.vcf.gz WGS_CDS.vcf.gz -O v -o Full_CDS.vcf
+bcftools merge SeqCap_Exons.vcf.gz WGS_Exons.vcf.gz -O v -o Full_Exons.vcf
+bcftools merge SeqCap_Genes.vcf.gz WGS_Genes.vcf.gz -O v -o Full_Genes.vcf
 bgzip Full_CDS.vcf
 bgzip Full_Exons.vcf
 bgzip Full_Genes.vcf
+bcftools index -f Full_CDS.vcf
+bcftools index -f Full_Exons.vcf
+bcftools index -f Full_Genes.vcf
 }
 
 function sortVariants {
@@ -86,6 +107,9 @@ function createPopFiles {
   mkdir -p allPops
   mv *_*.txt pairwisePops
   mv *.txt allPops
+  cd allPops
+  ls *.txt > PopList
+  python $pythonScripts/joinPopulations.py PopList ../samples-by-population.txt
 } 
 
 function createPairwiseVCFs {
@@ -157,9 +181,6 @@ function functionalAnnotation {
   java -jar /tools/snpeff-4.3p/snpEff.jar build -gff3 -v rThaEle1
 # Step 3: Run snpEff
   cd $WorkingDirectory/variantFiltration
-# remove singletons
-  vcftools --mac 2 --vcf "$1"_CDS.vcf --recode --recode-INFO-all --out "$1"_CDS_noSingletons.vcf
-  mv "$1"_CDS_noSingletons.vcf.recode.vcf "$1"_CDS_noSingletons.vcf
   gunzip "$1"_CDS.vcf.gz
   java -jar /tools/snpeff-4.3p/snpEff.jar -c ~/snpEff/snpEff.config -v rThaEle1 "$1"_CDS.vcf > "$1"_CDS_ann.vcf
   # This didn't work with the raw gff downloaded from genbank (TelagGenome.gff). 
@@ -177,12 +198,6 @@ function functionalAnnotation {
   bcftools index -f "$1"_CDS_synonymous.vcf.gz
   bgzip "$1"_CDS_ann.vcf
   bcftools index -f "$1"_CDS_ann.vcf.gz
-  bcftools view -R $WorkingDirectory/References/IILS_CapturedCDS.bed.gz "$1"_CDS_ann.vcf.gz -O v -o "$1"_IILS_CDS_ann.vcf
-  awk '/^#|missense_variant/' "$1"_IILS_CDS_ann.vcf > "$1"_IILS_CDS_missense.vcf
-  awk '/^#|synonymous_variant/' "$1"_IILS_CDS_ann.vcf > "$1"_IILS_CDS_synonymous.vcf
-  echo "IILS total CDS SNP count: $(grep -v "^#" "$1"_IILS_CDS_ann.vcf | wc -l)" >> Log.txt
-  echo "IILS missense SNP count: $(grep -v "^#" "$1"_IILS_CDS_missense.vcf | wc -l)" >> Log.txt
-  echo "IILS synonymous SNP count: $(grep -v "^#" "$1"_IILS_CDS_synonymous.vcf | wc -l)" >> Log.txt
 
 }
 
@@ -240,9 +255,11 @@ echo "begin pairwise file creation" >> Log.txt
 while read i
 do
   cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats
-  echo -e "Population\tN\tMissenseSNPs\tSynonymousSNPs\tTranscriptSNPs\tTajD" >> "$i".txt
+  echo -e "Population\tN\tMissenseSNPs\tSynonymousSNPs\tTranscriptSNPs\tTajD\tFst" >> "$i".txt
   while read j
   do
+    pop1= `echo $j | AWK -F"_" '{print $1}'`
+    pop2= `echo $j | AWK -F"_" '{print $2}'`
     cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/"$j"
     n="$(wc -l < "$j".txt)"
     cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/"$j"/missense/"$i"
@@ -251,9 +268,22 @@ do
     synSNPcount="$(grep -v "^#" "$i"_CDS_"$j".vcf | wc -l)"
     cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/"$j"/exons/"$i"
     vcftools --vcf "$i"_Exons_"$j".vcf --TajimaD 1000000 --out "$j"_"$i"
+    vcftools --vcf "$i"_Exons_"$j".vcf --weir-fst-pop $WorkingDirectory/SNP_analysis/Populations/allPops/"$pop1".txt --weir-fst-pop $WorkingDirectory/SNP_analysis/Populations/allPops/"$pop2".txt --out "$j"_"$i"
     transcriptSNPcount="$(awk 'NR == 2 {print $3}' $j'_'$i.Tajima.D)"
     tajD="$(awk 'NR == 2 {print $4}' $j'_'$i.Tajima.D)"
-    echo -e "$j\t$n\t$misSNPcount\t$synSNPcount\t$transcriptSNPcount\t$tajD" >> $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats/"$i".txt
+    fst="$(awk 'NR == 2 {print $3}' $j'_'$i.Tajima.D)"
+    # pixy
+    bgzip "$i"_Exons_"$j".vcf
+    tabix "$i"_Exons_"$j".vcf.gz
+    conda activate pixy
+    pixy --stats pi fst dxy \
+        --vcf "$i"_Exons_"$j".vcf.gz \
+        --populations $WorkingDirectory/SNP_analysis/Populations/samples-by-population.txt \
+        --window_size 1000000 \
+        --n_core 1 \
+        --bypass_invariant_check 'yes'
+    conda deactivate
+    echo -e "$j\t$n\t$misSNPcount\t$synSNPcount\t$transcriptSNPcount\t$tajD\t$fst" >> $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats/"$i".txt
   done<$WorkingDirectory/SNP_analysis/Populations/pairwisePops/PairwisePopsList
   cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats
   python $pythonScripts/addEcotypes.py "$i".txt "$i"_withEcotypes.txt
@@ -269,13 +299,14 @@ python $pythonScripts/getVariableRegionsGFF.py Full_"$1""$2"_TranscriptLengths.t
 function vcf2faa {
 # This function takes a gene-specific vcf with multiple samples and turns it into fasta files (both fna and faa) for each sample
 # Prepare GFF for gffread (the gff must be in a particular format in order to work in gffread)
-python $pythonScripts/modifyGFF_gffread.py $WorkingDirectory/References/Full_VariableCDS.gff $WorkingDirectory/References/Full_VariableCDS_gffread.gff
+# DONE python $pythonScripts/modifyGFF_gffread.py $WorkingDirectory/References/Full_VariableCDS.gff $WorkingDirectory/References/Full_VariableCDS_gffread.gff
 mkdir -p $WorkingDirectory/SNP_analysis/vcf2fasta
 cp $WorkingDirectory/variantFiltration/Full_CDS.vcf.gz $WorkingDirectory/SNP_analysis/vcf2fasta
 cd $WorkingDirectory/SNP_analysis/vcf2fasta
 gunzip Full_CDS.vcf.gz
 cp $WorkingDirectory/variantFiltration/Full_CDS.vcf.gz .
 bcftools index -f Full_CDS.vcf.gz
+bcftools query -l Full_CDS.vcf.gz > sampleList.txt
 # Add the reference to the sample list
 echo "RefSeq" >> sampleList.txt
 # Loop through the sample list
