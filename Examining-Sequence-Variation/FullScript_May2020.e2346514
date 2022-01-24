@@ -1,0 +1,69 @@
+gzip: Full_CDS.vcf already exists;	not overwritten
+Using GATK jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -Xmx16g -jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar SelectVariants -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome.fasta -V Full_CDS.vcf -O ELF52309/ELF52309.vcf -sn ELF52309
+20:35:46.681 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar!/com/intel/gkl/native/libgkl_compression.so
+Jan 22, 2022 8:35:47 PM shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials runningOnComputeEngine
+INFO: Failed to detect whether we are running on Google Compute Engine.
+20:35:47.542 INFO  SelectVariants - ------------------------------------------------------------
+20:35:47.542 INFO  SelectVariants - The Genome Analysis Toolkit (GATK) v4.1.7.0
+20:35:47.542 INFO  SelectVariants - For support and documentation go to https://software.broadinstitute.org/gatk/
+20:35:47.543 INFO  SelectVariants - Executing as rlk0015@node178 on Linux v2.6.32-754.22.1.el6.x86_64 amd64
+20:35:47.543 INFO  SelectVariants - Java runtime: Java HotSpot(TM) 64-Bit Server VM v1.8.0_91-b14
+20:35:47.543 INFO  SelectVariants - Start Date/Time: January 22, 2022 8:35:46 PM CST
+20:35:47.543 INFO  SelectVariants - ------------------------------------------------------------
+20:35:47.543 INFO  SelectVariants - ------------------------------------------------------------
+20:35:47.544 INFO  SelectVariants - HTSJDK Version: 2.21.2
+20:35:47.544 INFO  SelectVariants - Picard Version: 2.21.9
+20:35:47.544 INFO  SelectVariants - HTSJDK Defaults.COMPRESSION_LEVEL : 2
+20:35:47.544 INFO  SelectVariants - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+20:35:47.544 INFO  SelectVariants - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+20:35:47.544 INFO  SelectVariants - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+20:35:47.544 INFO  SelectVariants - Deflater: IntelDeflater
+20:35:47.544 INFO  SelectVariants - Inflater: IntelInflater
+20:35:47.545 INFO  SelectVariants - GCS max retries/reopens: 20
+20:35:47.545 INFO  SelectVariants - Requester pays: disabled
+20:35:47.545 INFO  SelectVariants - Initializing engine
+20:35:48.613 INFO  FeatureManager - Using codec VCFCodec to read file file:///gpfs01/scratch/rlk0015/Telag/May2020/WorkingDirectory/SNP_analysis/vcf2fasta/Full_CDS.vcf
+20:35:48.838 INFO  SelectVariants - Done initializing engine
+20:35:48.984 INFO  SelectVariants - Including sample 'ELF52309'
+20:35:49.055 INFO  ProgressMeter - Starting traversal
+20:35:49.056 INFO  ProgressMeter -        Current Locus  Elapsed Minutes    Variants Processed  Variants/Minute
+20:35:50.371 INFO  ProgressMeter -             unmapped              0.0                   575          26255.7
+20:35:50.371 INFO  ProgressMeter - Traversal complete. Processed 575 total variants in 0.0 minutes.
+20:35:50.474 INFO  SelectVariants - Shutting down engine
+[January 22, 2022 8:35:50 PM CST] org.broadinstitute.hellbender.tools.walkers.variantutils.SelectVariants done. Elapsed time: 0.07 minutes.
+Runtime.totalMemory()=2272264192
+Using GATK jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -Xmx16g -jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar FastaAlternateReferenceMaker -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome.fasta -V ELF52309/ELF52309.vcf -O ELF52309/ELF52309_wholeGenome_wrongHeaders.fasta --use-iupac-sample ELF52309
+20:35:55.106 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar!/com/intel/gkl/native/libgkl_compression.so
+Jan 22, 2022 8:35:55 PM shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials runningOnComputeEngine
+INFO: Failed to detect whether we are running on Google Compute Engine.
+20:35:55.846 INFO  FastaAlternateReferenceMaker - ------------------------------------------------------------
+20:35:55.846 INFO  FastaAlternateReferenceMaker - The Genome Analysis Toolkit (GATK) v4.1.7.0
+20:35:55.852 INFO  FastaAlternateReferenceMaker - For support and documentation go to https://software.broadinstitute.org/gatk/
+20:35:55.852 INFO  FastaAlternateReferenceMaker - Executing as rlk0015@node178 on Linux v2.6.32-754.22.1.el6.x86_64 amd64
+20:35:55.852 INFO  FastaAlternateReferenceMaker - Java runtime: Java HotSpot(TM) 64-Bit Server VM v1.8.0_91-b14
+20:35:55.852 INFO  FastaAlternateReferenceMaker - Start Date/Time: January 22, 2022 8:35:55 PM CST
+20:35:55.852 INFO  FastaAlternateReferenceMaker - ------------------------------------------------------------
+20:35:55.852 INFO  FastaAlternateReferenceMaker - ------------------------------------------------------------
+20:35:55.853 INFO  FastaAlternateReferenceMaker - HTSJDK Version: 2.21.2
+20:35:55.853 INFO  FastaAlternateReferenceMaker - Picard Version: 2.21.9
+20:35:55.853 INFO  FastaAlternateReferenceMaker - HTSJDK Defaults.COMPRESSION_LEVEL : 2
+20:35:55.853 INFO  FastaAlternateReferenceMaker - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+20:35:55.853 INFO  FastaAlternateReferenceMaker - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+20:35:55.853 INFO  FastaAlternateReferenceMaker - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+20:35:55.853 INFO  FastaAlternateReferenceMaker - Deflater: IntelDeflater
+20:35:55.853 INFO  FastaAlternateReferenceMaker - Inflater: IntelInflater
+20:35:55.853 INFO  FastaAlternateReferenceMaker - GCS max retries/reopens: 20
+20:35:55.853 INFO  FastaAlternateReferenceMaker - Requester pays: disabled
+20:35:55.853 INFO  FastaAlternateReferenceMaker - Initializing engine
+20:35:57.520 INFO  FeatureManager - Using codec VCFCodec to read file file:///gpfs01/scratch/rlk0015/Telag/May2020/WorkingDirectory/SNP_analysis/vcf2fasta/ELF52309/ELF52309.vcf
+20:35:57.698 INFO  FastaAlternateReferenceMaker - Done initializing engine
+20:35:57.824 INFO  ProgressMeter - Starting traversal
+20:35:57.824 INFO  ProgressMeter -        Current Locus  Elapsed Minutes       Bases Processed     Bases/Minute
+20:36:07.826 INFO  ProgressMeter - NC_045541.1:26584000              0.2              26584000      159504000.0
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).

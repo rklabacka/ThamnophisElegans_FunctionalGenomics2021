@@ -1,0 +1,216 @@
+[Sat Jan 22 21:51:05 CST 2022] net.sf.picard.sam.CreateSequenceDictionary REFERENCE=/scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome_CapturedGenes.fasta OUTPUT=/scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome_CapturedGenes.dict    TRUNCATE_NAMES_AT_WHITESPACE=true NUM_SEQUENCES=2147483647 VERBOSITY=INFO QUIET=false VALIDATION_STRINGENCY=STRICT COMPRESSION_LEVEL=5 MAX_RECORDS_IN_RAM=500000 CREATE_INDEX=false CREATE_MD5_FILE=false
+[Sat Jan 22 21:51:05 CST 2022] Executing as rlk0015@node178 on Linux 2.6.32-754.22.1.el6.x86_64 amd64; Java HotSpot(TM) 64-Bit Server VM 1.8.0_91-b14; Picard version: 1.79(1282)
+[Sat Jan 22 21:51:05 CST 2022] net.sf.picard.sam.CreateSequenceDictionary done. Elapsed time: 0.00 minutes.
+Runtime.totalMemory()=2017984512
+FAQ:  http://sourceforge.net/apps/mediawiki/picard/index.php?title=Main_Page
+Exception in thread "main" net.sf.picard.PicardException: /scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome_CapturedGenes.dict already exists.  Delete this file and try again, or specify a different output file.
+	at net.sf.picard.sam.CreateSequenceDictionary.doWork(CreateSequenceDictionary.java:114)
+	at net.sf.picard.cmdline.CommandLineProgram.instanceMain(CommandLineProgram.java:177)
+	at net.sf.picard.sam.CreateSequenceDictionary.main(CreateSequenceDictionary.java:93)
+Using GATK jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -Xmx16g -jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar GenomicsDBImport --sample-name-map cohort.sample_map_2 --genomicsdb-workspace-path SNP_database_reduced --reader-threads 5 --intervals /scratch/rlk0015/Telag/May2020/WorkingDirectory/SeqCap_CapturedGenes_Intervals.bed
+21:51:09.943 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar!/com/intel/gkl/native/libgkl_compression.so
+Jan 22, 2022 9:51:10 PM shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials runningOnComputeEngine
+INFO: Failed to detect whether we are running on Google Compute Engine.
+21:51:10.673 INFO  GenomicsDBImport - ------------------------------------------------------------
+21:51:10.674 INFO  GenomicsDBImport - The Genome Analysis Toolkit (GATK) v4.1.7.0
+21:51:10.674 INFO  GenomicsDBImport - For support and documentation go to https://software.broadinstitute.org/gatk/
+21:51:10.674 INFO  GenomicsDBImport - Executing as rlk0015@node178 on Linux v2.6.32-754.22.1.el6.x86_64 amd64
+21:51:10.674 INFO  GenomicsDBImport - Java runtime: Java HotSpot(TM) 64-Bit Server VM v1.8.0_91-b14
+21:51:10.674 INFO  GenomicsDBImport - Start Date/Time: January 22, 2022 9:51:09 PM CST
+21:51:10.674 INFO  GenomicsDBImport - ------------------------------------------------------------
+21:51:10.674 INFO  GenomicsDBImport - ------------------------------------------------------------
+21:51:10.674 INFO  GenomicsDBImport - HTSJDK Version: 2.21.2
+21:51:10.674 INFO  GenomicsDBImport - Picard Version: 2.21.9
+21:51:10.674 INFO  GenomicsDBImport - HTSJDK Defaults.COMPRESSION_LEVEL : 2
+21:51:10.674 INFO  GenomicsDBImport - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+21:51:10.674 INFO  GenomicsDBImport - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+21:51:10.675 INFO  GenomicsDBImport - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+21:51:10.675 INFO  GenomicsDBImport - Deflater: IntelDeflater
+21:51:10.675 INFO  GenomicsDBImport - Inflater: IntelInflater
+21:51:10.675 INFO  GenomicsDBImport - GCS max retries/reopens: 20
+21:51:10.675 INFO  GenomicsDBImport - Requester pays: disabled
+21:51:10.675 INFO  GenomicsDBImport - Initializing engine
+21:51:12.586 INFO  GenomicsDBImport - Shutting down engine
+[January 22, 2022 9:51:12 PM CST] org.broadinstitute.hellbender.tools.genomicsdb.GenomicsDBImport done. Elapsed time: 0.04 minutes.
+Runtime.totalMemory()=2057830400
+***********************************************************************
+
+A USER ERROR has occurred: Badly formed genome unclippedLoc: Query interval "/scratch/rlk0015/Telag/May2020/WorkingDirectory/SeqCap_CapturedGenes_Intervals.bed" is not valid for this input.
+
+***********************************************************************
+Set the system property GATK_STACKTRACE_ON_USER_EXCEPTION (--java-options '-DGATK_STACKTRACE_ON_USER_EXCEPTION=true') to print the stack trace.
+Using GATK jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -Xmx16g -jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar GenotypeGVCFs -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome_CapturedGenes.fasta -V gendb://SNP_database_reduced -all-sites -O allsites.vcf
+21:51:17.342 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar!/com/intel/gkl/native/libgkl_compression.so
+Jan 22, 2022 9:51:18 PM shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials runningOnComputeEngine
+INFO: Failed to detect whether we are running on Google Compute Engine.
+21:51:18.209 INFO  GenotypeGVCFs - ------------------------------------------------------------
+21:51:18.210 INFO  GenotypeGVCFs - The Genome Analysis Toolkit (GATK) v4.1.7.0
+21:51:18.229 INFO  GenotypeGVCFs - For support and documentation go to https://software.broadinstitute.org/gatk/
+21:51:18.229 INFO  GenotypeGVCFs - Executing as rlk0015@node178 on Linux v2.6.32-754.22.1.el6.x86_64 amd64
+21:51:18.229 INFO  GenotypeGVCFs - Java runtime: Java HotSpot(TM) 64-Bit Server VM v1.8.0_91-b14
+21:51:18.229 INFO  GenotypeGVCFs - Start Date/Time: January 22, 2022 9:51:17 PM CST
+21:51:18.229 INFO  GenotypeGVCFs - ------------------------------------------------------------
+21:51:18.229 INFO  GenotypeGVCFs - ------------------------------------------------------------
+21:51:18.229 INFO  GenotypeGVCFs - HTSJDK Version: 2.21.2
+21:51:18.229 INFO  GenotypeGVCFs - Picard Version: 2.21.9
+21:51:18.229 INFO  GenotypeGVCFs - HTSJDK Defaults.COMPRESSION_LEVEL : 2
+21:51:18.230 INFO  GenotypeGVCFs - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+21:51:18.230 INFO  GenotypeGVCFs - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+21:51:18.230 INFO  GenotypeGVCFs - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+21:51:18.230 INFO  GenotypeGVCFs - Deflater: IntelDeflater
+21:51:18.230 INFO  GenotypeGVCFs - Inflater: IntelInflater
+21:51:18.230 INFO  GenotypeGVCFs - GCS max retries/reopens: 20
+21:51:18.230 INFO  GenotypeGVCFs - Requester pays: disabled
+21:51:18.230 INFO  GenotypeGVCFs - Initializing engine
+21:51:19.801 INFO  GenotypeGVCFs - Shutting down engine
+[January 22, 2022 9:51:19 PM CST] org.broadinstitute.hellbender.tools.walkers.GenotypeGVCFs done. Elapsed time: 0.04 minutes.
+Runtime.totalMemory()=2239758336
+***********************************************************************
+
+A USER ERROR has occurred: GenomicsDB workspace drivingVariantFile:gendb:///gpfs01/scratch/rlk0015/Telag/May2020/WorkingDirectory/GATKDNA/SNP_database_reduced does not exist
+
+***********************************************************************
+Set the system property GATK_STACKTRACE_ON_USER_EXCEPTION (--java-options '-DGATK_STACKTRACE_ON_USER_EXCEPTION=true') to print the stack trace.
+Using GATK jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -Xmx16g -jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar SelectVariants -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome_CapturedGenes.fasta -V allsites.vcf --select-type-to-include SNP -O JustSNPs_allsites.vcf
+21:51:24.516 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar!/com/intel/gkl/native/libgkl_compression.so
+Jan 22, 2022 9:51:25 PM shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials runningOnComputeEngine
+INFO: Failed to detect whether we are running on Google Compute Engine.
+21:51:25.216 INFO  SelectVariants - ------------------------------------------------------------
+21:51:25.216 INFO  SelectVariants - The Genome Analysis Toolkit (GATK) v4.1.7.0
+21:51:25.229 INFO  SelectVariants - For support and documentation go to https://software.broadinstitute.org/gatk/
+21:51:25.229 INFO  SelectVariants - Executing as rlk0015@node178 on Linux v2.6.32-754.22.1.el6.x86_64 amd64
+21:51:25.229 INFO  SelectVariants - Java runtime: Java HotSpot(TM) 64-Bit Server VM v1.8.0_91-b14
+21:51:25.229 INFO  SelectVariants - Start Date/Time: January 22, 2022 9:51:24 PM CST
+21:51:25.229 INFO  SelectVariants - ------------------------------------------------------------
+21:51:25.229 INFO  SelectVariants - ------------------------------------------------------------
+21:51:25.229 INFO  SelectVariants - HTSJDK Version: 2.21.2
+21:51:25.229 INFO  SelectVariants - Picard Version: 2.21.9
+21:51:25.229 INFO  SelectVariants - HTSJDK Defaults.COMPRESSION_LEVEL : 2
+21:51:25.229 INFO  SelectVariants - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+21:51:25.229 INFO  SelectVariants - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+21:51:25.230 INFO  SelectVariants - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+21:51:25.230 INFO  SelectVariants - Deflater: IntelDeflater
+21:51:25.230 INFO  SelectVariants - Inflater: IntelInflater
+21:51:25.230 INFO  SelectVariants - GCS max retries/reopens: 20
+21:51:25.230 INFO  SelectVariants - Requester pays: disabled
+21:51:25.230 INFO  SelectVariants - Initializing engine
+21:51:26.823 INFO  SelectVariants - Shutting down engine
+[January 22, 2022 9:51:26 PM CST] org.broadinstitute.hellbender.tools.walkers.variantutils.SelectVariants done. Elapsed time: 0.04 minutes.
+Runtime.totalMemory()=2176319488
+***********************************************************************
+
+A USER ERROR has occurred: Couldn't read file file:///gpfs01/scratch/rlk0015/Telag/May2020/WorkingDirectory/GATKDNA/allsites.vcf. Error was: It doesn't exist.
+
+***********************************************************************
+Set the system property GATK_STACKTRACE_ON_USER_EXCEPTION (--java-options '-DGATK_STACKTRACE_ON_USER_EXCEPTION=true') to print the stack trace.
+Using GATK jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -Xmx16g -jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar GenomicsDBImport --sample-name-map cohort.sample_map_2 --genomicsdb-workspace-path SNP_database_reduced --reader-threads 5 --intervals /scratch/rlk0015/Telag/May2020/WorkingDirectory/SeqCap_CapturedGenes_Intervals.bed
+21:51:31.425 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar!/com/intel/gkl/native/libgkl_compression.so
+Jan 22, 2022 9:51:32 PM shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials runningOnComputeEngine
+INFO: Failed to detect whether we are running on Google Compute Engine.
+21:51:32.094 INFO  GenomicsDBImport - ------------------------------------------------------------
+21:51:32.094 INFO  GenomicsDBImport - The Genome Analysis Toolkit (GATK) v4.1.7.0
+21:51:32.100 INFO  GenomicsDBImport - For support and documentation go to https://software.broadinstitute.org/gatk/
+21:51:32.112 INFO  GenomicsDBImport - Executing as rlk0015@node178 on Linux v2.6.32-754.22.1.el6.x86_64 amd64
+21:51:32.112 INFO  GenomicsDBImport - Java runtime: Java HotSpot(TM) 64-Bit Server VM v1.8.0_91-b14
+21:51:32.112 INFO  GenomicsDBImport - Start Date/Time: January 22, 2022 9:51:31 PM CST
+21:51:32.112 INFO  GenomicsDBImport - ------------------------------------------------------------
+21:51:32.112 INFO  GenomicsDBImport - ------------------------------------------------------------
+21:51:32.112 INFO  GenomicsDBImport - HTSJDK Version: 2.21.2
+21:51:32.112 INFO  GenomicsDBImport - Picard Version: 2.21.9
+21:51:32.112 INFO  GenomicsDBImport - HTSJDK Defaults.COMPRESSION_LEVEL : 2
+21:51:32.112 INFO  GenomicsDBImport - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+21:51:32.113 INFO  GenomicsDBImport - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+21:51:32.113 INFO  GenomicsDBImport - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+21:51:32.113 INFO  GenomicsDBImport - Deflater: IntelDeflater
+21:51:32.113 INFO  GenomicsDBImport - Inflater: IntelInflater
+21:51:32.113 INFO  GenomicsDBImport - GCS max retries/reopens: 20
+21:51:32.113 INFO  GenomicsDBImport - Requester pays: disabled
+21:51:32.113 INFO  GenomicsDBImport - Initializing engine
+21:51:33.868 INFO  GenomicsDBImport - Shutting down engine
+[January 22, 2022 9:51:33 PM CST] org.broadinstitute.hellbender.tools.genomicsdb.GenomicsDBImport done. Elapsed time: 0.04 minutes.
+Runtime.totalMemory()=2214068224
+***********************************************************************
+
+A USER ERROR has occurred: Badly formed genome unclippedLoc: Query interval "/scratch/rlk0015/Telag/May2020/WorkingDirectory/SeqCap_CapturedGenes_Intervals.bed" is not valid for this input.
+
+***********************************************************************
+Set the system property GATK_STACKTRACE_ON_USER_EXCEPTION (--java-options '-DGATK_STACKTRACE_ON_USER_EXCEPTION=true') to print the stack trace.
+Using GATK jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -Xmx16g -jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar GenotypeGVCFs -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome_CapturedGenes.fasta -V gendb://SNP_database_reduced -all-sites -O allsites.vcf
+21:51:38.674 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar!/com/intel/gkl/native/libgkl_compression.so
+Jan 22, 2022 9:51:39 PM shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials runningOnComputeEngine
+INFO: Failed to detect whether we are running on Google Compute Engine.
+21:51:39.369 INFO  GenotypeGVCFs - ------------------------------------------------------------
+21:51:39.369 INFO  GenotypeGVCFs - The Genome Analysis Toolkit (GATK) v4.1.7.0
+21:51:39.369 INFO  GenotypeGVCFs - For support and documentation go to https://software.broadinstitute.org/gatk/
+21:51:39.369 INFO  GenotypeGVCFs - Executing as rlk0015@node178 on Linux v2.6.32-754.22.1.el6.x86_64 amd64
+21:51:39.369 INFO  GenotypeGVCFs - Java runtime: Java HotSpot(TM) 64-Bit Server VM v1.8.0_91-b14
+21:51:39.370 INFO  GenotypeGVCFs - Start Date/Time: January 22, 2022 9:51:38 PM CST
+21:51:39.370 INFO  GenotypeGVCFs - ------------------------------------------------------------
+21:51:39.370 INFO  GenotypeGVCFs - ------------------------------------------------------------
+21:51:39.370 INFO  GenotypeGVCFs - HTSJDK Version: 2.21.2
+21:51:39.370 INFO  GenotypeGVCFs - Picard Version: 2.21.9
+21:51:39.370 INFO  GenotypeGVCFs - HTSJDK Defaults.COMPRESSION_LEVEL : 2
+21:51:39.370 INFO  GenotypeGVCFs - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+21:51:39.370 INFO  GenotypeGVCFs - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+21:51:39.370 INFO  GenotypeGVCFs - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+21:51:39.370 INFO  GenotypeGVCFs - Deflater: IntelDeflater
+21:51:39.370 INFO  GenotypeGVCFs - Inflater: IntelInflater
+21:51:39.370 INFO  GenotypeGVCFs - GCS max retries/reopens: 20
+21:51:39.371 INFO  GenotypeGVCFs - Requester pays: disabled
+21:51:39.371 INFO  GenotypeGVCFs - Initializing engine
+21:51:41.020 INFO  GenotypeGVCFs - Shutting down engine
+[January 22, 2022 9:51:41 PM CST] org.broadinstitute.hellbender.tools.walkers.GenotypeGVCFs done. Elapsed time: 0.04 minutes.
+Runtime.totalMemory()=2235039744
+***********************************************************************
+
+A USER ERROR has occurred: GenomicsDB workspace drivingVariantFile:gendb:///gpfs01/scratch/rlk0015/Telag/May2020/WorkingDirectory/GATKRNA/SNP_database_reduced does not exist
+
+***********************************************************************
+Set the system property GATK_STACKTRACE_ON_USER_EXCEPTION (--java-options '-DGATK_STACKTRACE_ON_USER_EXCEPTION=true') to print the stack trace.
+Using GATK jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -Xmx16g -jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar SelectVariants -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome_CapturedGenes.fasta -V allsites.vcf --select-type-to-include SNP -O JustSNPs_allsites.vcf
+21:51:45.680 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar!/com/intel/gkl/native/libgkl_compression.so
+Jan 22, 2022 9:51:46 PM shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials runningOnComputeEngine
+INFO: Failed to detect whether we are running on Google Compute Engine.
+21:51:46.393 INFO  SelectVariants - ------------------------------------------------------------
+21:51:46.393 INFO  SelectVariants - The Genome Analysis Toolkit (GATK) v4.1.7.0
+21:51:46.393 INFO  SelectVariants - For support and documentation go to https://software.broadinstitute.org/gatk/
+21:51:46.394 INFO  SelectVariants - Executing as rlk0015@node178 on Linux v2.6.32-754.22.1.el6.x86_64 amd64
+21:51:46.394 INFO  SelectVariants - Java runtime: Java HotSpot(TM) 64-Bit Server VM v1.8.0_91-b14
+21:51:46.394 INFO  SelectVariants - Start Date/Time: January 22, 2022 9:51:45 PM CST
+21:51:46.394 INFO  SelectVariants - ------------------------------------------------------------
+21:51:46.394 INFO  SelectVariants - ------------------------------------------------------------
+21:51:46.394 INFO  SelectVariants - HTSJDK Version: 2.21.2
+21:51:46.394 INFO  SelectVariants - Picard Version: 2.21.9
+21:51:46.394 INFO  SelectVariants - HTSJDK Defaults.COMPRESSION_LEVEL : 2
+21:51:46.394 INFO  SelectVariants - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+21:51:46.394 INFO  SelectVariants - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+21:51:46.394 INFO  SelectVariants - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+21:51:46.394 INFO  SelectVariants - Deflater: IntelDeflater
+21:51:46.395 INFO  SelectVariants - Inflater: IntelInflater
+21:51:46.395 INFO  SelectVariants - GCS max retries/reopens: 20
+21:51:46.395 INFO  SelectVariants - Requester pays: disabled
+21:51:46.395 INFO  SelectVariants - Initializing engine
+21:51:47.969 INFO  SelectVariants - Shutting down engine
+[January 22, 2022 9:51:47 PM CST] org.broadinstitute.hellbender.tools.walkers.variantutils.SelectVariants done. Elapsed time: 0.04 minutes.
+Runtime.totalMemory()=2148532224
+***********************************************************************
+
+A USER ERROR has occurred: Couldn't read file file:///gpfs01/scratch/rlk0015/Telag/May2020/WorkingDirectory/GATKRNA/allsites.vcf. Error was: It doesn't exist.
+
+***********************************************************************
+Set the system property GATK_STACKTRACE_ON_USER_EXCEPTION (--java-options '-DGATK_STACKTRACE_ON_USER_EXCEPTION=true') to print the stack trace.
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).

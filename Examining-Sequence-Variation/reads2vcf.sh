@@ -616,17 +616,17 @@ cd $WorkingDirectory/mappedReadsRNA
 # ••••••• This approach is called "bootstrapping" by GATK developers ••••••• #
 function indexReference {
   # INDEX REF TO USE FOR SNP CALLING
-    samtools faidx $WorkingDirectory/References/TelagGenome.fasta
+    samtools faidx $WorkingDirectory/References/"$1".fasta
     java -Xmx8g -jar /tools/picard-tools-2.4.1/CreateSequenceDictionary.jar \
-          R= $WorkingDirectory/References/TelagGenome.fasta \
-          O= $WorkingDirectory/References/TelagGenome.dict 
+          R= $WorkingDirectory/References/"$1".fasta \
+          O= $WorkingDirectory/References/"$1".dict 
 }
 
 function use-HaplotypeCaller {
 while read i
 do
   /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" HaplotypeCaller \
-    -R $WorkingDirectory/References/TelagGenome.fasta \
+    -R $WorkingDirectory/References/$3\
     -I "$i"_"$1".bam \
     -O "$i"_"$1".g.vcf \
     -ERC GVCF
@@ -652,6 +652,21 @@ function get-just-SNPs {
 	-V genotyped_"$1".vcf \
 	--select-type-to-include SNP \
 	-O JustSNPs_"$1".vcf
+}
+
+function get-allsites-vcf {
+    # Joint genotyping
+    /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" GenotypeGVCFs \
+    	-R $WorkingDirectory/References/TelagGenome.fasta \
+    	-V gendb://SNP_database_$1 \
+        -all-sites \
+    	-O "$2"_allsites.vcf 
+    # Get SNPs
+    /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" SelectVariants \
+	-R $WorkingDirectory/References/TelagGenome.fasta \
+	-V allsites.vcf \
+	--select-type-to-include SNP \
+	-O JustSNPs_"$2"_allsites.vcf
 }
 
 function use-BaseRecalibrator {

@@ -1,0 +1,160 @@
+[E::fai_build3] Failed to open the FASTA file /scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelegansGenome_CapturedGenes.fasta
+Could not build fai index /scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelegansGenome_CapturedGenes.fasta.fai
+[Sat Jan 22 20:50:28 CST 2022] net.sf.picard.sam.CreateSequenceDictionary REFERENCE=/scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelegansGenome_CapturedGenes.fasta OUTPUT=/scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelegansGenome_CapturedGenes.dict    TRUNCATE_NAMES_AT_WHITESPACE=true NUM_SEQUENCES=2147483647 VERBOSITY=INFO QUIET=false VALIDATION_STRINGENCY=STRICT COMPRESSION_LEVEL=5 MAX_RECORDS_IN_RAM=500000 CREATE_INDEX=false CREATE_MD5_FILE=false
+[Sat Jan 22 20:50:28 CST 2022] Executing as rlk0015@node178 on Linux 2.6.32-754.22.1.el6.x86_64 amd64; Java HotSpot(TM) 64-Bit Server VM 1.8.0_91-b14; Picard version: 1.79(1282)
+[Sat Jan 22 20:50:28 CST 2022] net.sf.picard.sam.CreateSequenceDictionary done. Elapsed time: 0.00 minutes.
+Runtime.totalMemory()=2017984512
+FAQ:  http://sourceforge.net/apps/mediawiki/picard/index.php?title=Main_Page
+Exception in thread "main" net.sf.picard.PicardException: Error opening file: TelegansGenome_CapturedGenes.fasta
+	at net.sf.picard.io.IoUtil.openFileForReading(IoUtil.java:202)
+	at net.sf.picard.reference.FastaSequenceFile.<init>(FastaSequenceFile.java:53)
+	at net.sf.picard.reference.ReferenceSequenceFileFactory.getReferenceSequenceFile(ReferenceSequenceFileFactory.java:81)
+	at net.sf.picard.sam.CreateSequenceDictionary.makeSequenceDictionary(CreateSequenceDictionary.java:132)
+	at net.sf.picard.sam.CreateSequenceDictionary.doWork(CreateSequenceDictionary.java:117)
+	at net.sf.picard.cmdline.CommandLineProgram.instanceMain(CommandLineProgram.java:177)
+	at net.sf.picard.sam.CreateSequenceDictionary.main(CreateSequenceDictionary.java:93)
+Caused by: java.io.FileNotFoundException: /scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelegansGenome_CapturedGenes.fasta (No such file or directory)
+	at java.io.FileInputStream.open0(Native Method)
+	at java.io.FileInputStream.open(FileInputStream.java:195)
+	at java.io.FileInputStream.<init>(FileInputStream.java:138)
+	at net.sf.picard.io.IoUtil.openFileForReading(IoUtil.java:198)
+	... 6 more
+Using GATK jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -Xmx16g -jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar GenotypeGVCFs -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome_CapturedGenes.fasta -V gendb://SNP_database_2 -all-sites -O allsites.vcf
+20:50:33.184 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar!/com/intel/gkl/native/libgkl_compression.so
+Jan 22, 2022 8:50:33 PM shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials runningOnComputeEngine
+INFO: Failed to detect whether we are running on Google Compute Engine.
+20:50:33.872 INFO  GenotypeGVCFs - ------------------------------------------------------------
+20:50:33.872 INFO  GenotypeGVCFs - The Genome Analysis Toolkit (GATK) v4.1.7.0
+20:50:33.872 INFO  GenotypeGVCFs - For support and documentation go to https://software.broadinstitute.org/gatk/
+20:50:33.872 INFO  GenotypeGVCFs - Executing as rlk0015@node178 on Linux v2.6.32-754.22.1.el6.x86_64 amd64
+20:50:33.872 INFO  GenotypeGVCFs - Java runtime: Java HotSpot(TM) 64-Bit Server VM v1.8.0_91-b14
+20:50:33.872 INFO  GenotypeGVCFs - Start Date/Time: January 22, 2022 8:50:33 PM CST
+20:50:33.872 INFO  GenotypeGVCFs - ------------------------------------------------------------
+20:50:33.873 INFO  GenotypeGVCFs - ------------------------------------------------------------
+20:50:33.873 INFO  GenotypeGVCFs - HTSJDK Version: 2.21.2
+20:50:33.873 INFO  GenotypeGVCFs - Picard Version: 2.21.9
+20:50:33.873 INFO  GenotypeGVCFs - HTSJDK Defaults.COMPRESSION_LEVEL : 2
+20:50:33.873 INFO  GenotypeGVCFs - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+20:50:33.874 INFO  GenotypeGVCFs - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+20:50:33.874 INFO  GenotypeGVCFs - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+20:50:33.874 INFO  GenotypeGVCFs - Deflater: IntelDeflater
+20:50:33.874 INFO  GenotypeGVCFs - Inflater: IntelInflater
+20:50:33.874 INFO  GenotypeGVCFs - GCS max retries/reopens: 20
+20:50:33.874 INFO  GenotypeGVCFs - Requester pays: disabled
+20:50:33.874 INFO  GenotypeGVCFs - Initializing engine
+20:50:33.919 INFO  GenotypeGVCFs - Shutting down engine
+[January 22, 2022 8:50:33 PM CST] org.broadinstitute.hellbender.tools.walkers.GenotypeGVCFs done. Elapsed time: 0.01 minutes.
+Runtime.totalMemory()=2136997888
+***********************************************************************
+
+A USER ERROR has occurred: Fasta index file file:///scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome_CapturedGenes.fasta.fai for reference file:///scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome_CapturedGenes.fasta does not exist. Please see http://gatkforums.broadinstitute.org/discussion/1601/how-can-i-prepare-a-fasta-file-to-use-as-reference for help creating it.
+
+***********************************************************************
+Set the system property GATK_STACKTRACE_ON_USER_EXCEPTION (--java-options '-DGATK_STACKTRACE_ON_USER_EXCEPTION=true') to print the stack trace.
+Using GATK jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -Xmx16g -jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar SelectVariants -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome_CapturedGenes.fasta -V allsites.vcf --select-type-to-include SNP -O JustSNPs_allsites.vcf
+20:50:38.362 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar!/com/intel/gkl/native/libgkl_compression.so
+Jan 22, 2022 8:50:39 PM shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials runningOnComputeEngine
+INFO: Failed to detect whether we are running on Google Compute Engine.
+20:50:39.019 INFO  SelectVariants - ------------------------------------------------------------
+20:50:39.020 INFO  SelectVariants - The Genome Analysis Toolkit (GATK) v4.1.7.0
+20:50:39.042 INFO  SelectVariants - For support and documentation go to https://software.broadinstitute.org/gatk/
+20:50:39.042 INFO  SelectVariants - Executing as rlk0015@node178 on Linux v2.6.32-754.22.1.el6.x86_64 amd64
+20:50:39.042 INFO  SelectVariants - Java runtime: Java HotSpot(TM) 64-Bit Server VM v1.8.0_91-b14
+20:50:39.042 INFO  SelectVariants - Start Date/Time: January 22, 2022 8:50:38 PM CST
+20:50:39.042 INFO  SelectVariants - ------------------------------------------------------------
+20:50:39.042 INFO  SelectVariants - ------------------------------------------------------------
+20:50:39.042 INFO  SelectVariants - HTSJDK Version: 2.21.2
+20:50:39.042 INFO  SelectVariants - Picard Version: 2.21.9
+20:50:39.043 INFO  SelectVariants - HTSJDK Defaults.COMPRESSION_LEVEL : 2
+20:50:39.043 INFO  SelectVariants - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+20:50:39.043 INFO  SelectVariants - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+20:50:39.043 INFO  SelectVariants - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+20:50:39.043 INFO  SelectVariants - Deflater: IntelDeflater
+20:50:39.043 INFO  SelectVariants - Inflater: IntelInflater
+20:50:39.043 INFO  SelectVariants - GCS max retries/reopens: 20
+20:50:39.043 INFO  SelectVariants - Requester pays: disabled
+20:50:39.043 INFO  SelectVariants - Initializing engine
+20:50:39.066 INFO  SelectVariants - Shutting down engine
+[January 22, 2022 8:50:39 PM CST] org.broadinstitute.hellbender.tools.walkers.variantutils.SelectVariants done. Elapsed time: 0.01 minutes.
+Runtime.totalMemory()=2215116800
+***********************************************************************
+
+A USER ERROR has occurred: Fasta index file file:///scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome_CapturedGenes.fasta.fai for reference file:///scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome_CapturedGenes.fasta does not exist. Please see http://gatkforums.broadinstitute.org/discussion/1601/how-can-i-prepare-a-fasta-file-to-use-as-reference for help creating it.
+
+***********************************************************************
+Set the system property GATK_STACKTRACE_ON_USER_EXCEPTION (--java-options '-DGATK_STACKTRACE_ON_USER_EXCEPTION=true') to print the stack trace.
+Using GATK jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -Xmx16g -jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar GenotypeGVCFs -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome_CapturedGenes.fasta -V gendb://SNP_database_2 -all-sites -O allsites.vcf
+20:50:43.718 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar!/com/intel/gkl/native/libgkl_compression.so
+Jan 22, 2022 8:50:44 PM shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials runningOnComputeEngine
+INFO: Failed to detect whether we are running on Google Compute Engine.
+20:50:44.463 INFO  GenotypeGVCFs - ------------------------------------------------------------
+20:50:44.464 INFO  GenotypeGVCFs - The Genome Analysis Toolkit (GATK) v4.1.7.0
+20:50:44.464 INFO  GenotypeGVCFs - For support and documentation go to https://software.broadinstitute.org/gatk/
+20:50:44.464 INFO  GenotypeGVCFs - Executing as rlk0015@node178 on Linux v2.6.32-754.22.1.el6.x86_64 amd64
+20:50:44.464 INFO  GenotypeGVCFs - Java runtime: Java HotSpot(TM) 64-Bit Server VM v1.8.0_91-b14
+20:50:44.464 INFO  GenotypeGVCFs - Start Date/Time: January 22, 2022 8:50:43 PM CST
+20:50:44.464 INFO  GenotypeGVCFs - ------------------------------------------------------------
+20:50:44.464 INFO  GenotypeGVCFs - ------------------------------------------------------------
+20:50:44.465 INFO  GenotypeGVCFs - HTSJDK Version: 2.21.2
+20:50:44.465 INFO  GenotypeGVCFs - Picard Version: 2.21.9
+20:50:44.465 INFO  GenotypeGVCFs - HTSJDK Defaults.COMPRESSION_LEVEL : 2
+20:50:44.465 INFO  GenotypeGVCFs - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+20:50:44.465 INFO  GenotypeGVCFs - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+20:50:44.465 INFO  GenotypeGVCFs - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+20:50:44.465 INFO  GenotypeGVCFs - Deflater: IntelDeflater
+20:50:44.465 INFO  GenotypeGVCFs - Inflater: IntelInflater
+20:50:44.465 INFO  GenotypeGVCFs - GCS max retries/reopens: 20
+20:50:44.465 INFO  GenotypeGVCFs - Requester pays: disabled
+20:50:44.465 INFO  GenotypeGVCFs - Initializing engine
+20:50:44.484 INFO  GenotypeGVCFs - Shutting down engine
+[January 22, 2022 8:50:44 PM CST] org.broadinstitute.hellbender.tools.walkers.GenotypeGVCFs done. Elapsed time: 0.01 minutes.
+Runtime.totalMemory()=2181038080
+***********************************************************************
+
+A USER ERROR has occurred: Fasta index file file:///scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome_CapturedGenes.fasta.fai for reference file:///scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome_CapturedGenes.fasta does not exist. Please see http://gatkforums.broadinstitute.org/discussion/1601/how-can-i-prepare-a-fasta-file-to-use-as-reference for help creating it.
+
+***********************************************************************
+Set the system property GATK_STACKTRACE_ON_USER_EXCEPTION (--java-options '-DGATK_STACKTRACE_ON_USER_EXCEPTION=true') to print the stack trace.
+Using GATK jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -Xmx16g -jar /gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar SelectVariants -R /scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome_CapturedGenes.fasta -V allsites.vcf --select-type-to-include SNP -O JustSNPs_allsites.vcf
+20:50:49.042 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/gpfs01/tools/gatk-4.1.7.0/gatk-package-4.1.7.0-local.jar!/com/intel/gkl/native/libgkl_compression.so
+Jan 22, 2022 8:50:49 PM shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials runningOnComputeEngine
+INFO: Failed to detect whether we are running on Google Compute Engine.
+20:50:49.784 INFO  SelectVariants - ------------------------------------------------------------
+20:50:49.785 INFO  SelectVariants - The Genome Analysis Toolkit (GATK) v4.1.7.0
+20:50:49.785 INFO  SelectVariants - For support and documentation go to https://software.broadinstitute.org/gatk/
+20:50:49.785 INFO  SelectVariants - Executing as rlk0015@node178 on Linux v2.6.32-754.22.1.el6.x86_64 amd64
+20:50:49.785 INFO  SelectVariants - Java runtime: Java HotSpot(TM) 64-Bit Server VM v1.8.0_91-b14
+20:50:49.785 INFO  SelectVariants - Start Date/Time: January 22, 2022 8:50:49 PM CST
+20:50:49.785 INFO  SelectVariants - ------------------------------------------------------------
+20:50:49.785 INFO  SelectVariants - ------------------------------------------------------------
+20:50:49.786 INFO  SelectVariants - HTSJDK Version: 2.21.2
+20:50:49.788 INFO  SelectVariants - Picard Version: 2.21.9
+20:50:49.788 INFO  SelectVariants - HTSJDK Defaults.COMPRESSION_LEVEL : 2
+20:50:49.788 INFO  SelectVariants - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+20:50:49.788 INFO  SelectVariants - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+20:50:49.788 INFO  SelectVariants - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+20:50:49.788 INFO  SelectVariants - Deflater: IntelDeflater
+20:50:49.788 INFO  SelectVariants - Inflater: IntelInflater
+20:50:49.788 INFO  SelectVariants - GCS max retries/reopens: 20
+20:50:49.788 INFO  SelectVariants - Requester pays: disabled
+20:50:49.788 INFO  SelectVariants - Initializing engine
+20:50:49.812 INFO  SelectVariants - Shutting down engine
+[January 22, 2022 8:50:49 PM CST] org.broadinstitute.hellbender.tools.walkers.variantutils.SelectVariants done. Elapsed time: 0.01 minutes.
+Runtime.totalMemory()=2185756672
+***********************************************************************
+
+A USER ERROR has occurred: Fasta index file file:///scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome_CapturedGenes.fasta.fai for reference file:///scratch/rlk0015/Telag/May2020/WorkingDirectory/References/TelagGenome_CapturedGenes.fasta does not exist. Please see http://gatkforums.broadinstitute.org/discussion/1601/how-can-i-prepare-a-fasta-file-to-use-as-reference for help creating it.
+
+***********************************************************************
+Set the system property GATK_STACKTRACE_ON_USER_EXCEPTION (--java-options '-DGATK_STACKTRACE_ON_USER_EXCEPTION=true') to print the stack trace.
+Permission denied, please try again.
+Permission denied, please try again.
+Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).

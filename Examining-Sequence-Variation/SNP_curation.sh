@@ -105,7 +105,9 @@ function createPopFiles {
   rm *PIK*.txt
   mkdir -p pairwisePops
   mkdir -p allPops
+  mkdir -p pixyPops
   mv *_*.txt pairwisePops
+  mv *.pix pixyPops
   mv *.txt allPops
   cd allPops
   ls *.txt > PopList
@@ -249,45 +251,92 @@ done<$WorkingDirectory/References/GeneBEDs/Full_CDS_CapturedGeneList.txt
 }
 
 function getPairwisePopGen {
+cd $WorkingDirectory
+rm popGenLog.txt
 mkdir -p $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats
 cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops
-echo "begin pairwise file creation" >> Log.txt
+echo "begin pairwise pop gen" >> Log.txt
 while read i
 do
   cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats
-  echo -e "Population\tN\tMissenseSNPs\tSynonymousSNPs\tTranscriptSNPs\tTajD\tFst" >> "$i".txt
+  rm "$i".txt
+  echo -e "Population\tN\tMissenseSNPs\tSynonymousSNPs\tTranscriptSNPs\tTajD\tfst\tdxy\tpop1pi\tpop2pi" >> "$i".txt
   while read j
   do
-    pop1= `echo $j | AWK -F"_" '{print $1}'`
-    pop2= `echo $j | AWK -F"_" '{print $2}'`
+    echo "pairwise pops: ${j}" >> $WorkingDirectory/popGenLog.txt
+    echo "gene: ${i}" >> $WorkingDirectory/popGenLog.txt
+    pop1=`echo $j | awk -F"_" '{print $1}'`
+    echo -e "\tPopulation 1: ${pop1}" >> $WorkingDirectory/popGenLog.txt
+    pop2=`echo $j | awk -F"_" '{print $2}'`
+    echo -e "\tPopulation 2: ${pop2}" >> $WorkingDirectory/popGenLog.txt
     cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/"$j"
     n="$(wc -l < "$j".txt)"
+    echo -e "\tnumber of individuals: ${n}" >> $WorkingDirectory/popGenLog.txt
     cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/"$j"/missense/"$i"
     misSNPcount="$(grep -v "^#" "$i"_CDS_"$j".vcf | wc -l)"
+    echo -e "\tmisSNPcount: ${misSNPcount}" >> $WorkingDirectory/popGenLog.txt
+    # Use vcftools to calculate Fst for each missense site
+    vcftools --vcf "$i"_CDS_"$j".vcf \
+        --weir-fst-pop $WorkingDirectory/SNP_analysis/Populations/allPops/"$pop1".txt \
+        --weir-fst-pop $WorkingDirectory/SNP_analysis/Populations/allPops/"$pop2".txt \
+        --out "$j"_"$i"
     cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/"$j"/synonymous/"$i"
     synSNPcount="$(grep -v "^#" "$i"_CDS_"$j".vcf | wc -l)"
+    echo -e "\tsynSNPcount: ${synSNPcount}" >> $WorkingDirectory/popGenLog.txt
     cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/"$j"/exons/"$i"
+    transcriptSNPcount="$(grep -v "^#" "$i"_Exons_"$j".vcf | wc -l)"
+    echo -e "\ttranscriptSNPcount: ${transcriptSNPcount}" >> $WorkingDirectory/popGenLog.txt
+    # Use vcftools to calculate tajima's D for the exonic regions of each gene
     vcftools --vcf "$i"_Exons_"$j".vcf --TajimaD 1000000 --out "$j"_"$i"
-    vcftools --vcf "$i"_Exons_"$j".vcf --weir-fst-pop $WorkingDirectory/SNP_analysis/Populations/allPops/"$pop1".txt --weir-fst-pop $WorkingDirectory/SNP_analysis/Populations/allPops/"$pop2".txt --out "$j"_"$i"
-    transcriptSNPcount="$(awk 'NR == 2 {print $3}' $j'_'$i.Tajima.D)"
     tajD="$(awk 'NR == 2 {print $4}' $j'_'$i.Tajima.D)"
-    fst="$(awk 'NR == 2 {print $3}' $j'_'$i.Tajima.D)"
-    # pixy
-    bgzip "$i"_Exons_"$j".vcf
-    tabix "$i"_Exons_"$j".vcf.gz
-    conda activate pixy
-    pixy --stats pi fst dxy \
-        --vcf "$i"_Exons_"$j".vcf.gz \
-        --populations $WorkingDirectory/SNP_analysis/Populations/samples-by-population.txt \
-        --window_size 1000000 \
-        --n_core 1 \
-        --bypass_invariant_check 'yes'
-    conda deactivate
-    echo -e "$j\t$n\t$misSNPcount\t$synSNPcount\t$transcriptSNPcount\t$tajD\t$fst" >> $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats/"$i".txt
+    tajD=${tajD:="NA"}
+    echo -e "\ttajD: ${tajD}" >> $WorkingDirectory/popGenLog.txt
+    # pixy function to calculate average fst and dxy for exonic regions of each gene
+    pixyPopGen $i $j
+    cd $WorkingDirectory/SNP_analysis/Populations/pixyPops/$j/$i/
+    fst="$(awk 'NR == 2 {print $6}' "$i"_"$j"_perGene_fst.txt)"
+    fst=${fst:="NA"}
+    echo -e "\tfst: ${fst}" >> $WorkingDirectory/popGenLog.txt
+    dxy="$(awk 'NR == 2 {print $6}' "$i"_"$j"_perGene_dxy.txt)"
+    dxy=${dxy:="NA"}
+    echo -e "\tdxy: ${dxy}" >> $WorkingDirectory/popGenLog.txt
+    # the pi values calculated from pixy are average pairwise differences within each population
+    pop1pi="$(awk 'NR == 2 {print $5}' "$i"_"$j"_perGene_pi.txt)"
+    pop1pi=${pop1pi:="NA"}
+    echo -e "\tpop1pi: ${pop1pi}" >> $WorkingDirectory/popGenLog.txt
+    pop2pi="$(awk 'NR == 3 {print $5}' "$i"_"$j"_perGene_pi.txt)"
+    pop2pi=${pop2pi:="NA"}
+    echo -e "\tpop2pi: ${pop2pi}" >> $WorkingDirectory/popGenLog.txt
+    cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/"$j"/exons/"$i"
+    echo -e "$j\t$n\t$misSNPcount\t$synSNPcount\t$transcriptSNPcount\t$tajD\t$fst\t$dxy\t$pop1pi\t$pop2pi" >> $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats/"$i".txt
   done<$WorkingDirectory/SNP_analysis/Populations/pairwisePops/PairwisePopsList
   cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats
   python $pythonScripts/addEcotypes.py "$i".txt "$i"_withEcotypes.txt
 done<$WorkingDirectory/References/GeneBEDs/Full_CDS_CapturedGeneList.txt
+}
+
+function pixyPopGen {
+  # mkdir -p $WorkingDirectory/SNP_analysis/Populations/pixyPops/$1/$2
+  # cp $WorkingDirectory/SNP_analysis/Populations/pairwisePops/$1/exons/$2/"$2"_Exons_"$1".vcf* \
+  #    $WorkingDirectory/SNP_analysis/Populations/pixyPops/$1/$2/
+  cp $WorkingDirectory/SNP_analysis/Populations/pairwisePops/$2/missense/$1/"$1"_CDS_"$2".vcf* \
+     $WorkingDirectory/SNP_analysis/Populations/pixyPops/$2/$1/
+  cd $WorkingDirectory/SNP_analysis/Populations/pixyPops/$2/$1/
+  mv ../../"$2".pix ../
+  rm pixy_tmpfile*
+  bgzip "$1"_CDS_"$2".vcf
+  tabix -p vcf "$1"_CDS_"$2".vcf.gz
+  bgzip "$1"_Exons_"$2".vcf
+  tabix -p vcf "$1"_Exons_"$2".vcf.gz
+  conda activate pixy
+  pixy --stats pi fst dxy \
+      --vcf "$1"_Exons_"$2".vcf.gz \
+      --populations ../"$2".pix \
+      --bed_file $WorkingDirectory/References/GeneBEDs/"$1"_Exons.bed \
+      --output_prefix "$1"_"$2" \
+      --n_core 1 \
+      --bypass_invariant_check 'yes'
+  conda deactivate
 }
 
 function getTranscriptLengths {
