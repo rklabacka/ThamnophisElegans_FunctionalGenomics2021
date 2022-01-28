@@ -654,21 +654,6 @@ function get-just-SNPs {
 	-O JustSNPs_"$1".vcf
 }
 
-function get-allsites-vcf {
-    # Joint genotyping
-    /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" GenotypeGVCFs \
-    	-R $WorkingDirectory/References/TelagGenome.fasta \
-    	-V gendb://SNP_database_$1 \
-        -all-sites \
-    	-O "$2"_allsites.vcf 
-    # Get SNPs
-    /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" SelectVariants \
-	-R $WorkingDirectory/References/TelagGenome.fasta \
-	-V allsites.vcf \
-	--select-type-to-include SNP \
-	-O JustSNPs_"$2"_allsites.vcf
-}
-
 function use-BaseRecalibrator {
 while read i
 do
