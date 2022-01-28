@@ -185,14 +185,6 @@ source reads2vcf.sh
   #+ COMPLETED ## -- rename files; see reads2vcf.sh for details
   #+ COMPLETED renameSortedBAMs
 
-  # I realized I had to get an allsites vcf for appropriate fst / dxy estimations,
-  # and that meant I needed to call SNPs again. 
-
-  cd $WorkingDirectory/GATKDNA
-   get-allsites-vcf 2 DNA
-  cd $WorkingDirectory/GATKRNA
-   get-allsites-vcf 2 RNA 
-   
  
 # waiting   # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # waiting   # The following functions are called from the SNP_curation.sh script
