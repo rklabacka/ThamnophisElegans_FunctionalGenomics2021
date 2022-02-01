@@ -315,6 +315,13 @@ do
 done<$WorkingDirectory/References/GeneBEDs/Full_CDS_CapturedGeneList.txt
 }
 
+function pairwisePopGen-2 {
+cd $WorkingDirectory/variantFiltration
+python3 ~/myTools/genomics_general/VCF_processing/parseVCF.py -i Full_Exons.vcf.gz | bgzip > Full_Exons.geno.gz
+
+
+}
+
 function pixyPopGen {
   # mkdir -p $WorkingDirectory/SNP_analysis/Populations/pixyPops/$1/$2
   # cp $WorkingDirectory/SNP_analysis/Populations/pairwisePops/$1/exons/$2/"$2"_Exons_"$1".vcf* \
