@@ -41,7 +41,7 @@ echo ------------------------------------------------------
 WorkingDirectory=/scratch/rlk0015/Telegans_SeqCapProject/WorkingDirectory
 pythonScripts=/home/rlk0015/projects/Thamnophis/ThamnophisElegans_FunctionalGenomics2021/Examining-Sequence-Variation/pythonScripts
 
-function loadModules {
+function loadModules_Hopper {
   module load fastqc/11.5
   module load gnu-parallel/20160322
   module load trimmomatic/0.36
@@ -66,6 +66,13 @@ function loadModules {
   module load perl/5.26.1
 }
 
+function loadModules {
+  module load bcftools/1.11
+  module load samtools/1.11
+  module load vcftools/0.1.17
+  module load bedtools/2.30.0
+}
+
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # The following functions are called from the reads2vcf.sh script
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -73,7 +80,8 @@ cd /home/rlk0015/SeqCap/code/GenomicProcessingPipeline/Examining-Sequence-Variat
 source reads2vcf.sh
 
  # prepare environment
- loadModules
+ # for Hopper: loadModules_Hopper
+ loadModules # If you encounter errors, see if modules from loadModules_Hopper need inclusion
  createWorkingEnvironment-reads2vcf
  
 #  ## ------------------------
