@@ -316,10 +316,9 @@ done<$WorkingDirectory/References/GeneBEDs/Full_CDS_CapturedGeneList.txt
 }
 
 function pairwisePopGen-2 {
+conda activate ThamnophisPopGen
 cd $WorkingDirectory/variantFiltration
-python3 ~/myTools/genomics_general/VCF_processing/parseVCF.py -i Full_Exons.vcf.gz | bgzip > Full_Exons.geno.gz
-
-
+parseVCF.py -i Full_Exons.vcf.gz | bgzip > Full_Exons.geno.gz
 }
 
 function pixyPopGen {
