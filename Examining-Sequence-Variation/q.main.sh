@@ -38,8 +38,8 @@ echo PBS: current home directory is $PBS_O_HOME
 echo PBS: PATH = $PBS_O_PATH
 echo ------------------------------------------------------
 
-WorkingDirectory=/scratch/rlk0015/Telag/May2020/WorkingDirectory
-pythonScripts=/home/rlk0015/SeqCap/code/GenomicProcessingPipeline/Examining-Sequence-Variation/pythonScripts
+WorkingDirectory=/scratch/rlk0015/Telegans_SeqCapProject/WorkingDirectory
+pythonScripts=/home/rlk0015/projects/Thamnophis/ThamnophisElegans_FunctionalGenomics2021/Examining-Sequence-Variation/pythonScripts
 
 function loadModules {
   module load fastqc/11.5
