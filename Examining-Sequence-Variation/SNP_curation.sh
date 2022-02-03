@@ -166,9 +166,10 @@ function createPairwiseVCFs {
 function getVariantBED {
 cd $WorkingDirectory/variantFiltration
 gunzip "$1".vcf.gz
-vcf2bed < "$1".vcf > "$1"_variants.bed
+vcf2bed < "$1".vcf > $WorkingDirectory/References/"$1"_variants.bed
 bgzip "$1"_variants.bed
 bgzip "$1".vcf
+bcftools index -f bgzip "$1".vcf
 }
 
 function functionalAnnotation {
@@ -256,29 +257,27 @@ done<$WorkingDirectory/References/GeneBEDs/Full_CDS_CapturedGeneList.txt
 
 function getPairwisePopGen {
 cd $WorkingDirectory
-rm popGenLog.txt
 mkdir -p $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats
 cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops
 echo "begin pairwise pop gen" >> Log.txt
 while read i
 do
   cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats
-  rm "$i".txt
   echo -e "Population\tN\tMissenseSNPs\tSynonymousSNPs\tTranscriptSNPs\tTajD\tfst\tdxy\tpop1pi\tpop2pi" >> "$i".txt
   while read j
   do
-    echo "pairwise pops: ${j}" >> $WorkingDirectory/popGenLog.txt
-    echo "gene: ${i}" >> $WorkingDirectory/popGenLog.txt
+      echo "pairwise pops: ${j}" >> $WorkingDirectory/popGenLog.txt
+      echo "gene: ${i}" >> $WorkingDirectory/popGenLog.txt
     pop1=`echo $j | awk -F"_" '{print $1}'`
-    echo -e "\tPopulation 1: ${pop1}" >> $WorkingDirectory/popGenLog.txt
+      echo -e "\tPopulation 1: ${pop1}" >> $WorkingDirectory/popGenLog.txt
     pop2=`echo $j | awk -F"_" '{print $2}'`
-    echo -e "\tPopulation 2: ${pop2}" >> $WorkingDirectory/popGenLog.txt
+      echo -e "\tPopulation 2: ${pop2}" >> $WorkingDirectory/popGenLog.txt
     cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/"$j"
     n="$(wc -l < "$j".txt)"
-    echo -e "\tnumber of individuals: ${n}" >> $WorkingDirectory/popGenLog.txt
+      echo -e "\tnumber of individuals: ${n}" >> $WorkingDirectory/popGenLog.txt
     cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/"$j"/missense/"$i"
     misSNPcount="$(grep -v "^#" "$i"_CDS_"$j".vcf | wc -l)"
-    echo -e "\tmisSNPcount: ${misSNPcount}" >> $WorkingDirectory/popGenLog.txt
+      echo -e "\tmisSNPcount: ${misSNPcount}" >> $WorkingDirectory/popGenLog.txt
     # Use vcftools to calculate Fst for each missense site
     vcftools --vcf "$i"_CDS_"$j".vcf \
         --weir-fst-pop $WorkingDirectory/SNP_analysis/Populations/allPops/"$pop1".txt \
@@ -286,33 +285,33 @@ do
         --out "$j"_"$i"
     cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/"$j"/synonymous/"$i"
     synSNPcount="$(grep -v "^#" "$i"_CDS_"$j".vcf | wc -l)"
-    echo -e "\tsynSNPcount: ${synSNPcount}" >> $WorkingDirectory/popGenLog.txt
+      echo -e "\tsynSNPcount: ${synSNPcount}" >> $WorkingDirectory/popGenLog.txt
     cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/"$j"/exons/"$i"
     transcriptSNPcount="$(grep -v "^#" "$i"_Exons_"$j".vcf | wc -l)"
-    echo -e "\ttranscriptSNPcount: ${transcriptSNPcount}" >> $WorkingDirectory/popGenLog.txt
+      echo -e "\ttranscriptSNPcount: ${transcriptSNPcount}" >> $WorkingDirectory/popGenLog.txt
     # Use vcftools to calculate tajima's D for the exonic regions of each gene
     vcftools --vcf "$i"_Exons_"$j".vcf --TajimaD 1000000 --out "$j"_"$i"
     tajD="$(awk 'NR == 2 {print $4}' $j'_'$i.Tajima.D)"
     tajD=${tajD:="NA"}
-    echo -e "\ttajD: ${tajD}" >> $WorkingDirectory/popGenLog.txt
+      echo -e "\ttajD: ${tajD}" >> $WorkingDirectory/popGenLog.txt
     # pixy function to calculate average fst and dxy for exonic regions of each gene
-    pixyPopGen $i $j
+    # pixyPopGen $i $j # now using 
     cd $WorkingDirectory/SNP_analysis/Populations/pixyPops/$j/$i/
     fst="$(awk 'NR == 2 {print $6}' "$i"_"$j"_perGene_fst.txt)"
     fst=${fst:="NA"}
-    echo -e "\tfst: ${fst}" >> $WorkingDirectory/popGenLog.txt
+      echo -e "\tfst: ${fst}" >> $WorkingDirectory/popGenLog.txt
     dxy="$(awk 'NR == 2 {print $6}' "$i"_"$j"_perGene_dxy.txt)"
     dxy=${dxy:="NA"}
-    echo -e "\tdxy: ${dxy}" >> $WorkingDirectory/popGenLog.txt
+      echo -e "\tdxy: ${dxy}" >> $WorkingDirectory/popGenLog.txt
     # the pi values calculated from pixy are average pairwise differences within each population
     pop1pi="$(awk 'NR == 2 {print $5}' "$i"_"$j"_perGene_pi.txt)"
     pop1pi=${pop1pi:="NA"}
-    echo -e "\tpop1pi: ${pop1pi}" >> $WorkingDirectory/popGenLog.txt
+      echo -e "\tpop1pi: ${pop1pi}" >> $WorkingDirectory/popGenLog.txt
     pop2pi="$(awk 'NR == 3 {print $5}' "$i"_"$j"_perGene_pi.txt)"
     pop2pi=${pop2pi:="NA"}
-    echo -e "\tpop2pi: ${pop2pi}" >> $WorkingDirectory/popGenLog.txt
+      echo -e "\tpop2pi: ${pop2pi}" >> $WorkingDirectory/popGenLog.txt
     cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/"$j"/exons/"$i"
-    echo -e "$j\t$n\t$misSNPcount\t$synSNPcount\t$transcriptSNPcount\t$tajD\t$fst\t$dxy\t$pop1pi\t$pop2pi" >> $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats/"$i".txt
+      echo -e "$j\t$n\t$misSNPcount\t$synSNPcount\t$transcriptSNPcount\t$tajD\t$fst\t$dxy\t$pop1pi\t$pop2pi" >> $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats/"$i".txt
   done<$WorkingDirectory/SNP_analysis/Populations/pairwisePops/PairwisePopsList
   cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats
   python $pythonScripts/addEcotypes.py "$i".txt "$i"_withEcotypes.txt
@@ -320,14 +319,34 @@ done<$WorkingDirectory/References/GeneBEDs/Full_CDS_CapturedGeneList.txt
 }
 
 function pairwisePopGen-2 {
-conda activate ThamnophisPopGen
-cd $WorkingDirectory/variantFiltration
-parseVCF.py -i Full_Exons.vcf.gz | bgzip > Full_Exons.geno.gz
+# This function is used to get population genetics statistics from pairwise population comparisons
+# It is less expensive (computationally), since the genomics-general package performs the population pairing and statistical calculations
+# Fst, Dxy, and Pi are obtained for both windows and sites
+
+# Step 1: Create working environment 
+mkdir -p $WorkingDirectory/SNP_analysis/genomics-general
+cd $WorkingDirectory/SNP_analysis/genomics-general
+# I created this conda environment outside of the script. It includes the modules required for genomics-general
+conda activate ThamnophisPopGen 
+# Step 2: Create the geno files to be used by the genomics-general program popgenWindows.py
+parseVCF.py -i $WorkingDirectory/variantFiltration/Full_Exons.vcf.gz | bgzip > Full_Exons.geno.gz
+parseVCF.py -i $WorkingDirectory/variantFiltration/Full_CDS_missense.vcf.gz | bgzip > Full_CDS_missense.geno.gz
+# Step 3: Create variables to be used for popGenWindows.py
 pops=$WorkingDirectory/SNP_analysis/Populations/samples-by-population.txt
 bedfile=$WorkingDirectory/References/SeqCap_CapturedGenes_abbrev.bed
-geno=$WorkingDirectory/variantFiltration/Full_Exons.geno.gz
-popgenWindows.py --popsFile $pops --windCoords $bedfile -g $geno -o genes.windows.csv.gz -f phased -m 1 -T 4 --windType predefined --writeFailedWindows -p MAH -p MER -p PVM -p SUM -p STO -p CHR -p RON -p ROC -p ELF -p NAM -p MAR -p PAP
-
+windows=$WorkingDirectory/variantFiltration/Full_Exons.geno.gz
+sites=$WorkingDirectory/variantFiltration/Full_CDS_missense.geno.gz
+# Step 4: Get population genetics statistics for target genes from transcribed windows for each gene
+popgenWindows.py --popsFile $pops --windCoords $bedfile -g $windows -o genes.popgen.csv.gz -f phased -m 1 -T 4 --windType predefined --writeFailedWindows -p MAH -p MER -p PVM -p SUM -p STO -p CHR -p RON -p ROC -p ELF -p NAM -p MAR -p PAP
+# Step 5: Get population genetics statistics for target genes for each missense site 
+popgenWindows.py --popsFile $pops --windCoords $bedfile -g $sites -o missense.popgen.csv.gz -f phased -m 1 -T 4 --windType predefined --writeFailedWindows -p MAH -p MER -p PVM -p SUM -p STO -p CHR -p RON -p ROC -p ELF -p NAM -p MAR -p PAP
+# Step 6: 
+echo "geneID" > Header.txt
+awk '{print $4}' $WorkingDirectory/References/SeqCap_CapturedGenes.bed > GeneIDs.txt
+cat Header.txt GeneIDs.txt > temp.txt ; mv temp.txt GeneIDs.txt
+paste GeneIDs.txt genes.windows.csv > temp.csv ; mv temp.csv genes.windows.csv
+sed -i "s/\t/,/" genes.windows.csv
+head -n -4 genes.windows.csv > temp.txt ; mv temp.txt genes.windows.csv
 }
 
 function pixyPopGen {
