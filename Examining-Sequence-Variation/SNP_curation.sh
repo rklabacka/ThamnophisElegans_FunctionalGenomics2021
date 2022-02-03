@@ -108,8 +108,12 @@ function createPopFiles {
   mkdir -p pixyPops
   mv *_*.txt pairwisePops
   mv *.pix pixyPops
+  cd pixyPops
+  rm *PIK*.pix
+  cd ..
   mv *.txt allPops
   cd allPops
+  rm PIK.txt
   ls *.txt > PopList
   python $pythonScripts/joinPopulations.py PopList ../samples-by-population.txt
 } 
@@ -319,6 +323,11 @@ function pairwisePopGen-2 {
 conda activate ThamnophisPopGen
 cd $WorkingDirectory/variantFiltration
 parseVCF.py -i Full_Exons.vcf.gz | bgzip > Full_Exons.geno.gz
+pops=$WorkingDirectory/SNP_analysis/Populations/samples-by-population.txt
+bedfile=$WorkingDirectory/References/SeqCap_CapturedGenes_abbrev.bed
+geno=$WorkingDirectory/variantFiltration/Full_Exons.geno.gz
+popgenWindows.py --popsFile $pops --windCoords $bedfile -g $geno -o genes.windows.csv.gz -f phased -m 1 -T 4 --windType predefined --writeFailedWindows -p MAH -p MER -p PVM -p SUM -p STO -p CHR -p RON -p ROC -p ELF -p NAM -p MAR -p PAP
+
 }
 
 function pixyPopGen {
