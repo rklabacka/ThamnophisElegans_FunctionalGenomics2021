@@ -1,43 +1,5 @@
 #!/bin/sh
 
-# This is the bash script used for SNP analysis of the results
-# from the reads2vcf.sh script
-
-# Prepared by Randy Klabacka
-
-# -- Job details for Hopper cluster at Auburn University -- ##
-#Give job a name
-#PBS -N FullScript_May2020
-
-#-- We recommend passing your environment variables down to the
-#-- compute nodes with -V, but this is optional
-#PBS -V
-
-#-- Specify the number of nodes and cores you want to use
-#-- Hopper's standard compute nodes have a total of 20 cores each
-#-- so, to use all the processors on a single machine, set your
-#-- ppn (processors per node) to 20.
-#PBS -l nodes=1:ppn=10,walltime=05:00:00:00
-#-- Indicate if\when you want to receive email about your job
-#-- The directive below sends email if the job is (a) aborted, 
-#-- when it (b) begins, and when it (e) ends
-#PBS -m abe rlk0015@auburn.edu
-
-echo ------------------------------------------------------
-echo -n 'Job is running on node '; cat $PBS_NODEFILE
-echo ------------------------------------------------------
-echo PBS: qsub is running on $PBS_O_HOST
-echo PBS: originating queue is $PBS_O_QUEUE
-echo PBS: executing queue is $PBS_QUEUE
-echo PBS: working directory is $PBS_O_WORKDIR
-echo PBS: execution mode is $PBS_ENVIRONMENT
-echo PBS: job identifier is $PBS_JOBID
-echo PBS: job name is $PBS_JOBNAME
-echo PBS: node file is $PBS_NODEFILE
-echo PBS: current home directory is $PBS_O_HOME
-echo PBS: PATH = $PBS_O_PATH
-echo ------------------------------------------------------
-
 function combineDatasets {
 cd $WorkingDirectory/variantFiltration
 # Jessica's WGS variants at variable sites discovered from q.FullScript_May2020.sh WGS_Genes.recode.vcf.gz WGS_Exons.recode.vcf.gz and WGS_CDS.recode.vcf.gz were copied here frome box already
@@ -263,7 +225,8 @@ echo "begin pairwise pop gen" >> Log.txt
 while read i
 do
   cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats
-  echo -e "Population\tN\tMissenseSNPs\tSynonymousSNPs\tTranscriptSNPs\tTajD\tfst\tdxy\tpop1pi\tpop2pi" >> "$i".txt
+  # Add header to gene outfile
+  echo -e "Population\tN\tMissenseSNPs\tSynonymousSNPs\tTranscriptSNPs\tTajD" >> "$i".txt
   while read j
   do
       echo "pairwise pops: ${j}" >> $WorkingDirectory/popGenLog.txt
@@ -294,31 +257,34 @@ do
     tajD="$(awk 'NR == 2 {print $4}' $j'_'$i.Tajima.D)"
     tajD=${tajD:="NA"}
       echo -e "\ttajD: ${tajD}" >> $WorkingDirectory/popGenLog.txt
+    # Now using genomics-general package for dxy, fst, and pi ---------------------------------
+    # Remove this comment and modify header for outfile if you decide to re-implement
     # pixy function to calculate average fst and dxy for exonic regions of each gene
-    # pixyPopGen $i $j # now using 
-    cd $WorkingDirectory/SNP_analysis/Populations/pixyPops/$j/$i/
-    fst="$(awk 'NR == 2 {print $6}' "$i"_"$j"_perGene_fst.txt)"
-    fst=${fst:="NA"}
-      echo -e "\tfst: ${fst}" >> $WorkingDirectory/popGenLog.txt
-    dxy="$(awk 'NR == 2 {print $6}' "$i"_"$j"_perGene_dxy.txt)"
-    dxy=${dxy:="NA"}
-      echo -e "\tdxy: ${dxy}" >> $WorkingDirectory/popGenLog.txt
-    # the pi values calculated from pixy are average pairwise differences within each population
-    pop1pi="$(awk 'NR == 2 {print $5}' "$i"_"$j"_perGene_pi.txt)"
-    pop1pi=${pop1pi:="NA"}
-      echo -e "\tpop1pi: ${pop1pi}" >> $WorkingDirectory/popGenLog.txt
-    pop2pi="$(awk 'NR == 3 {print $5}' "$i"_"$j"_perGene_pi.txt)"
-    pop2pi=${pop2pi:="NA"}
-      echo -e "\tpop2pi: ${pop2pi}" >> $WorkingDirectory/popGenLog.txt
-    cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/"$j"/exons/"$i"
-      echo -e "$j\t$n\t$misSNPcount\t$synSNPcount\t$transcriptSNPcount\t$tajD\t$fst\t$dxy\t$pop1pi\t$pop2pi" >> $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats/"$i".txt
+    # pixyPopGen $i $j  
+    # cd $WorkingDirectory/SNP_analysis/Populations/pixyPops/$j/$i/
+    # fst="$(awk 'NR == 2 {print $6}' "$i"_"$j"_perGene_fst.txt)"
+    # fst=${fst:="NA"}
+    #   echo -e "\tfst: ${fst}" >> $WorkingDirectory/popGenLog.txt
+    # dxy="$(awk 'NR == 2 {print $6}' "$i"_"$j"_perGene_dxy.txt)"
+    # dxy=${dxy:="NA"}
+    #   echo -e "\tdxy: ${dxy}" >> $WorkingDirectory/popGenLog.txt
+    # # the pi values calculated from pixy are average pairwise differences within each population
+    # pop1pi="$(awk 'NR == 2 {print $5}' "$i"_"$j"_perGene_pi.txt)"
+    # pop1pi=${pop1pi:="NA"}
+    #   echo -e "\tpop1pi: ${pop1pi}" >> $WorkingDirectory/popGenLog.txt
+    # pop2pi="$(awk 'NR == 3 {print $5}' "$i"_"$j"_perGene_pi.txt)"
+    # pop2pi=${pop2pi:="NA"}
+    #   echo -e "\tpop2pi: ${pop2pi}" >> $WorkingDirectory/popGenLog.txt
+    # --------------------------------------------------------------------------
+    # Add values to gene outfile
+      echo -e "$j\t$n\t$misSNPcount\t$synSNPcount\t$transcriptSNPcount\t$tajD" >> $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats/"$i".txt
   done<$WorkingDirectory/SNP_analysis/Populations/pairwisePops/PairwisePopsList
   cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats
   python $pythonScripts/addEcotypes.py "$i".txt "$i"_withEcotypes.txt
 done<$WorkingDirectory/References/GeneBEDs/Full_CDS_CapturedGeneList.txt
 }
 
-function pairwisePopGen-2 {
+function pairwisePopGen2 {
 # This function is used to get population genetics statistics from pairwise population comparisons
 # It is less expensive (computationally), since the genomics-general package performs the population pairing and statistical calculations
 # Fst, Dxy, and Pi are obtained for both windows and sites
