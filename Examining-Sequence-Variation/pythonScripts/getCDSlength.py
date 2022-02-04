@@ -1,5 +1,10 @@
 #! usr/bin/env/ python
+"""
+This is the older script version of getTranscriptLengths.py
+"""
+
 import sys
+
 
 GFF_read = open(sys.argv[1], 'r')
 Variants_read = open(sys.argv[2], 'r')
