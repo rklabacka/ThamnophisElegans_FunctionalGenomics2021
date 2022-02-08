@@ -217,6 +217,22 @@ done<$WorkingDirectory/References/GeneBEDs/Full_CDS_CapturedGeneList.txt
   echo "total variants: $locivar" >> Full_"$1""$2"_Nvariants.txt
 }
 
+function getGeneTajD {
+cd $WorkingDirectory/SNP_analysis/variantsByGene/"$1$2"
+echo "Gene  TajD" >> Full_"$1$2"_TajD.txt
+while read i
+do
+  cd $WorkingDirectory/SNP_analysis/variantsByGene/"$1$2"/$i
+  variants=($(ls *vcf))
+  vcftools --vcf $variants --TajimaD 1000000 --out "$i"
+  rm "$i".log
+  TajD=$(awk 'FNR == 2 {print $4}' "$i".Tajima.D) 
+  TajD=${TajD:="NA"}
+  cd $WorkingDirectory/SNP_analysis/variantsByGene/"$1$2"
+  echo "$i  $TajD" >> Full_"$1$2"_TajD.txt
+done<$WorkingDirectory/References/GeneBEDs/Full_CDS_CapturedGeneList.txt
+}
+
 function getPairwisePopGen {
 cd $WorkingDirectory
 mkdir -p $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats
@@ -343,6 +359,7 @@ function getTranscriptLengths {
 cd $WorkingDirectory/SNP_analysis/variantsByGene/"$1""$2"
 python $pythonScripts/getTranscriptLengths.py $WorkingDirectory/References/SeqCap_Captured"$1".gff Full_"$1""$2"_Nvariants.txt Full_"$1""$2"_TranscriptLengths.txt
 python $pythonScripts/getVariableRegionsGFF.py Full_"$1""$2"_TranscriptLengths.txt $WorkingDirectory/References/SeqCap_Captured"$1".gff $WorkingDirectory/References/Full_Variable"$1""$2".gff Full_"$1""$2"_variableGenes.txt
+
 }
 
 function vcf2faa {

@@ -212,6 +212,7 @@ source ./SNP_curation.sh
 #+ COMPLETE  createPopFiles
 #+ COMPLETE  # -- create vcf files containing samples for each pairwise pop comparison
 #+ COMPLETE  createPairwiseVCFs
+#+ COMPLETE  getGeneTajD Exons
 # -- calculate PopGen statistics for each pairwise pop comparison
 getPairwisePopGen
 #+ WAITING  
