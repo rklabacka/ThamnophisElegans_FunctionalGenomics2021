@@ -1,4 +1,4 @@
-# GenomicProcessingPipeline
+# Bioinformatic Piplines for sequence variants and gene expression.
 
 Pipeline for processing "raw" genomic data (whole-genome sequencing, RNA sequencing, and target-capture sequencing)
 _This code was used for data processing and analyses in Klabacka et al. (in prep)_
