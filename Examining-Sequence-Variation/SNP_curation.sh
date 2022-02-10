@@ -315,6 +315,8 @@ parseVCF.py -i $WorkingDirectory/variantFiltration/Full_Exons.vcf.gz | bgzip > F
 parseVCF.py -i $WorkingDirectory/variantFiltration/Full_CDS_missense.vcf.gz | bgzip > Full_CDS_missense.geno.gz
 # Step 3: Create variables to be used for popGenWindows.py
 pops=$WorkingDirectory/SNP_analysis/Populations/samples-by-population.txt
+# WORKING ON THIS BELOW vvvvvvvvvvv
+python $pythonScripts/addEcotypes2.py $pops $WorkingDirectory/SNP_analysis/Populations/samples-by-ecotype.txt
 bedfile=$WorkingDirectory/References/SeqCap_CapturedGenes_abbrev.bed
 windows=$WorkingDirectory/variantFiltration/Full_Exons.geno.gz
 sites=$WorkingDirectory/variantFiltration/Full_CDS_missense.geno.gz
