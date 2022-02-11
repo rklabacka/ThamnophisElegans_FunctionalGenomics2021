@@ -315,22 +315,31 @@ parseVCF.py -i $WorkingDirectory/variantFiltration/Full_Exons.vcf.gz | bgzip > F
 parseVCF.py -i $WorkingDirectory/variantFiltration/Full_CDS_missense.vcf.gz | bgzip > Full_CDS_missense.geno.gz
 # Step 3: Create variables to be used for popGenWindows.py
 pops=$WorkingDirectory/SNP_analysis/Populations/samples-by-population.txt
-# WORKING ON THIS BELOW vvvvvvvvvvv
 python $pythonScripts/addEcotypes2.py $pops $WorkingDirectory/SNP_analysis/Populations/samples-by-ecotype.txt
+ecos=$WorkingDirectory/SNP_analysis/Populations/samples-by-ecotype.txt
 bedfile=$WorkingDirectory/References/SeqCap_CapturedGenes_abbrev.bed
 windows=$WorkingDirectory/variantFiltration/Full_Exons.geno.gz
 sites=$WorkingDirectory/variantFiltration/Full_CDS_missense.geno.gz
 # Step 4: Get population genetics statistics for target genes from transcribed windows for each gene
 popgenWindows.py --popsFile $pops --windCoords $bedfile -g $windows -o genes.popgen.csv.gz -f phased -m 1 -T 4 --windType predefined --writeFailedWindows -p MAH -p MER -p PVM -p SUM -p STO -p CHR -p RON -p ROC -p ELF -p NAM -p MAR -p PAP
+popgenWindows.py --popsFile $ecos --windCoords $bedfile -g $windows -o genes.ecogen.csv.gz -f phased -m 1 -T 4 --windType predefined --writeFailedWindows -p L -p M
 # Step 5: Get population genetics statistics for target genes for each missense site 
 popgenWindows.py --popsFile $pops --windCoords $bedfile -g $sites -o missense.popgen.csv.gz -f phased -m 1 -T 4 --windType predefined --writeFailedWindows -p MAH -p MER -p PVM -p SUM -p STO -p CHR -p RON -p ROC -p ELF -p NAM -p MAR -p PAP
+popgenWindows.py --popsFile $ecos --windCoords $bedfile -g $sites -o missense.ecogen.csv.gz -f phased -m 1 -T 4 --windType predefined --writeFailedWindows -p L -p M
 # Step 6: 
 echo "geneID" > Header.txt
 awk '{print $4}' $WorkingDirectory/References/SeqCap_CapturedGenes.bed > GeneIDs.txt
 cat Header.txt GeneIDs.txt > temp.txt ; mv temp.txt GeneIDs.txt
-paste GeneIDs.txt genes.windows.csv > temp.csv ; mv temp.csv genes.windows.csv
-sed -i "s/\t/,/" genes.windows.csv
-head -n -4 genes.windows.csv > temp.txt ; mv temp.txt genes.windows.csv
+genomics-general_add-genes GeneIDs.txt genes.popgen.csv.gz
+genomics-general_add-genes GeneIDs.txt genes.ecogen.csv.gz
+genomics-general_add-genes GeneIDs.txt missense.popgen.csv.gz
+genomics-general_add-genes GeneIDs.txt missense.ecogen.csv.gz
+}
+
+function genomics-general_add-genes {
+paste $1 $2 > temp.csv ; mv temp.csv $2
+sed -i "s/\t/,/" $2
+head -n -4 $2 > temp.txt ; mv temp.txt $2
 }
 
 function pixyPopGen {
