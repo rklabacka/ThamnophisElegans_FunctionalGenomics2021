@@ -947,23 +947,30 @@ function initial-VariantFiltration {
 
 function hard-VariantFiltration {
   # Step 1: Get rid of low-quality (mean) genotyping:
-  bcftools view  -i  'MIN(FMT/GQ)>20' "$1".vcf > "$2"_HardFilterStep1.vcf
+    vcftools --vcf "$1".vcf --out "$2"_HardFilterStep1 --minGQ 20 --recode --recode-INFO-all
+    mv "$2"_HardFilterStep1.recode.vcf "$2"_HardFilterStep1.vcf
     echo "Post genotype Quality filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep1.vcf | wc -l)" >> Log.txt
   # Step 2: Get rid of low-depth individuals per site
-    bcftools view  -i  'MIN(FMT/DP>9)' "$2"_HardFilterStep1.vcf > "$2"_HardFilterStep2.vcf 
+    vcftools --vcf "$2"_HardFilterStep1.vcf --out "$2"_HardFilterStep2 --minDP 10 --recode --recode-INFO-all
+    mv "$2"_HardFilterStep2.recode.vcf "$2"_HardFilterStep2.vcf
     echo "Post depth filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep2.vcf | wc -l)" >> Log.txt
   # Step 3: Get rid of unwanted individuals (T. sirtalis, duplicates, and siblings)
-    vcftools --remove $WorkingDirectory/References/Full_IndividualsToRemove.txt --vcf "$2"_HardFilterStep2.vcf --recode --out "$2"_HardFilterStep3.vcf
+    vcftools --remove $WorkingDirectory/References/Full_IndividualsToRemove.txt --vcf "$2"_HardFilterStep2.vcf --recode --recode-INFO-all --out "$2"_HardFilterStep3.vcf
     mv "$2"_HardFilterStep3.vcf.recode.vcf "$2"_HardFilterStep3.vcf
   # Step 4: Get rid of multiallelic SNPs (more than 2 alleles):
     bcftools view -m2 -M2 -v snps "$2"_HardFilterStep3.vcf > "$2"_HardFilterStep4.vcf
     echo "Post multiallelic filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep4.vcf | wc -l)" >> Log.txt
   # Step 5: Get rid of low-frequency alleles- here just singletons:
-    vcftools --mac 2 --vcf "$2"_HardFilterStep4.vcf --recode --recode-INFO-all --out "$2"_HardFilterStep5.vcf
-    mv "$2"_HardFilterStep5.vcf.recode.vcf "$2"_HardFilterStep5.vcf
+    vcftools --mac 2 --vcf "$2"_HardFilterStep4.vcf --recode --recode-INFO-all --out "$2"_HardFilterStep5
+    mv "$2"_HardFilterStep5.recode.vcf "$2"_HardFilterStep5.vcf
     echo "Post singleton filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep5.vcf | wc -l)" >> Log.txt
-    bgzip "$2"_HardFilterStep5.vcf
-    bcftools index -f "$2"_HardFilterStep5.vcf
+  # Step 6: Remove sites missing high amounts of data
+    vcftools --max-missing 0.3 --vcf "$2"_HardFilterStep5.vcf --recode --recode-INFO-all --out "$2"_HardFilterStep6
+    mv "$2"_HardFilterStep6.recode.vcf "$2"_HardFilterStep6.vcf
+    echo "Post removal of sites with high missing data: $(grep -v "^#" "$2"_HardFilterStep6.vcf | wc -l)" >> Log.txt
+  # Finishing: Compress data
+    bgzip "$2"_HardFilterStep6.vcf
+    bcftools index -f "$2"_HardFilterStep6.vcf
 
 }
 
@@ -998,7 +1005,7 @@ function removeRNAedits {
   bgzip -f remove_from_RNA.vcf
   bcftools index -f remove_from_RNA.vcf.gz
   # Get RNA vcf with fixed variants unique to RNA removed
-  bcftools isec -p isec2_results -n-1 -c all remove_from_RNA.vcf.gz SeqCap_HardFilterStep5.vcf.gz
+  bcftools isec -p isec2_results -n-1 -c all remove_from_RNA.vcf.gz SeqCap_HardFilterStep6.vcf.gz
   cd isec2_results
   mv 0001.vcf ../JustSNPs_removedRNAedits.vcf
   cd ..
