@@ -16,9 +16,6 @@ import sys
 import re
 ############
 
-pop_ecotypes = {"MAR": "L", "ELF": "L", "MAH": "M", "PAP": "M", "NAM": "M", "MER": "L", "STO": "L", "SUM": "M", "PVM": "M", "RON": "M", "CHR": "L", "ROC": "L"}
-L = ["MAR", "ELF", "MER", "STO", "CHR", "ROC"]
-M = ["MAH", "PAP", "NAM", "SUM", "PVM", "RON"]
 
 def infer_ecotype_comparison(pop1, pop2):
     '''
@@ -49,15 +46,20 @@ def readTable(infile, outfile):
     '''
     with open(infile, 'r') as instream:
         with open(outfile, 'w') as outstream:
-            outstream.write(instream.readline())
             for line in instream:
-                REpattern_string = r'([A-Z]{3}])'
+                sample = line.split("\t")[0]
+                REpattern_string = r'([A-Z]{3})'
                 REpattern_obj = re.compile(REpattern_string)
-                
-                pops = line.split("_")
-                pop1 = pops[0]
-                pop2 = pops[1].split("\t")[0]
-                outstream.write(line.strip() + "\t" + infer_ecotype_comparison(pop1, pop2) + "\n")
+                search_result = re.search(REpattern_obj, line)
+                if search_result.group(0) in L:
+                    outstream.write(sample + "\tL\n")
+                elif search_result.group(0) in M:
+                    outstream.write(sample + "\tM\n")
+                else:
+                    print("ERROR: No ecotype assignment given for " + sample)
             
 if __name__ == '__main__':
+    pop_ecotypes = {"PIK" : "L" , "MAR": "L", "ELF": "L", "MAH": "M", "PAP": "M", "NAM": "M", "MER": "L", "STO": "L", "SUM": "M", "PVM": "M", "RON": "M", "CHR": "L", "ROC": "L"}
+    L = ["PIK", "MAR", "ELF", "MER", "STO", "CHR", "ROC"]
+    M = ["MAH", "PAP", "NAM", "SUM", "PVM", "RON"]
     readTable(sys.argv[1], sys.argv[2])
