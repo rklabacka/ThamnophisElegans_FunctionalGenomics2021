@@ -319,8 +319,8 @@ pops=$WorkingDirectory/SNP_analysis/Populations/samples-by-population.txt
 python $pythonScripts/addEcotypes2.py $pops $WorkingDirectory/SNP_analysis/Populations/samples-by-ecotype.txt
 ecos=$WorkingDirectory/SNP_analysis/Populations/samples-by-ecotype.txt
 bedfile=$WorkingDirectory/References/SeqCap_CapturedGenes_abbrev.bed
-windows=$WorkingDirectory/variantFiltration/Full_Exons.geno.gz
-sites=$WorkingDirectory/variantFiltration/Full_CDS_missense.geno.gz
+windows=$WorkingDirectory/SNP_analysis/genomics-general/Full_Exons.geno.gz
+sites=$WorkingDirectory/SNP_analysis/genomics-general/Full_CDS_missense.geno.gz
 # Step 4: Get population genetics statistics for target genes from transcribed windows for each gene
 popgenWindows.py --popsFile $pops --windCoords $bedfile -g $windows -o genes.popgen.csv.gz -f phased -m 1 -T 4 --windType predefined --writeFailedWindows -p MAH -p MER -p PVM -p SUM -p STO -p CHR -p RON -p ROC -p ELF -p NAM -p MAR -p PAP
 popgenWindows.py --popsFile $ecos --windCoords $bedfile -g $windows -o genes.ecogen.csv.gz -f phased -m 1 -T 4 --windType predefined --writeFailedWindows -p L -p M
@@ -331,10 +331,10 @@ popgenWindows.py --popsFile $ecos --windCoords $bedfile -g $sites -o missense.ec
 echo "geneID" > Header.txt
 awk '{print $4}' $WorkingDirectory/References/SeqCap_CapturedGenes.bed > GeneIDs.txt
 cat Header.txt GeneIDs.txt > temp.txt ; mv temp.txt GeneIDs.txt
-genomics-general_add-genes GeneIDs.txt genes.popgen.csv.gz
-genomics-general_add-genes GeneIDs.txt genes.ecogen.csv.gz
-genomics-general_add-genes GeneIDs.txt missense.popgen.csv.gz
-genomics-general_add-genes GeneIDs.txt missense.ecogen.csv.gz
+genomics-general_add-genes GeneIDs.txt genes.popgen.csv
+genomics-general_add-genes GeneIDs.txt genes.ecogen.csv
+genomics-general_add-genes GeneIDs.txt missense.popgen.csv
+genomics-general_add-genes GeneIDs.txt missense.ecogen.csv
 }
 
 function genomics-general_add-genes {
