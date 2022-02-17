@@ -136,7 +136,7 @@ bcftools index -f bgzip "$1".vcf
 
 function functionalAnnotation {
 # Step 1: Download and install
-  cd ~/installations
+  cd ~
   wget wget https://snpeff.blob.core.windows.net/versions/snpEff_latest_core.zip
   unzip snpEff_latest_core.zip
 # Step 2: Create genome annotation database
@@ -146,7 +146,9 @@ function functionalAnnotation {
   mkdir -p rThaEle1 genomes
   cp $WorkingDirectory/References/SeqCap_CapturedCDS.gff ./rThaEle1/genes.gff
   cp $WorkingDirectory/References/TelagGenome.fasta ./genomes/rThaEle1.fa
-  cd ~/installations/snpEff
+  cd ~/snpEff
+  # Before running the build command below, make sure you have the configuration file with your genome specified
+  # You will also need to make sure you have enough memory alloted for the build
   java -jar /tools/snpeff-5.0/snpEff.jar build -gff3 -v rThaEle1
 # Step 3: Run snpEff
   cd $WorkingDirectory/variantFiltration
@@ -203,19 +205,17 @@ sort -u Full_"$1""$2"_Captures.txt > Full_"$1""$2"_CapturedGeneList.txt
 }
 
 function getVCFbyGene {
-# echo "    Entered getGeneVariants for $3"
 # Extract SNPs by gene from vcf
 locivar=0
 while read i
   do
- #  echo "        Gene: $i"
   mkdir -p "$i"
-  bcftools view -R $WorkingDirectory/References/GeneBEDs/"$i"_"$1".bed "$2" > "$i"/"$i"_"$1""$4"_"$3".vcf
-  locusvar="$(grep -v "^#" "$i"/"$i"_"$1""$4"_"$3".vcf| wc -l)"
-  echo "$i	$locusvar" >> Full_"$1""$4"_Nvariants.txt
+  bcftools view -R $WorkingDirectory/References/GeneBEDs/"$i"_"$1".bed "$2" > "$i"/"$i"_"$1$3".vcf
+  locusvar="$(grep -v "^#" "$i"/"$i"_"$1$3".vcf| wc -l)"
+  echo "$i	$locusvar" >> Full_"$1""$3"_Nvariants.txt
   locivar=$((locusvar + locivar))
 done<$WorkingDirectory/References/GeneBEDs/Full_CDS_CapturedGeneList.txt
-  echo "total variants: $locivar" >> Full_"$1""$2"_Nvariants.txt
+  echo "total variants: $locivar" >> Full_"$1$3"_Nvariants.txt
 }
 
 function getGeneTajD {
