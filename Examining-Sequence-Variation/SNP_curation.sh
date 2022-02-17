@@ -21,9 +21,9 @@ bgzip SeqCap_CDS.vcf
 bcftools index -f SeqCap_Genes.vcf.gz
 bcftools index -f SeqCap_Exons.vcf.gz
 bcftools index -f SeqCap_CDS.vcf.gz
-bgzip WGS_Genes.vcf
-bgzip WGS_Exons.vcf
-bgzip WGS_CDS.vcf
+bgzip -f WGS_Genes.vcf
+bgzip -f WGS_Exons.vcf
+bgzip -f WGS_CDS.vcf
 bcftools index -f WGS_Genes.vcf.gz
 bcftools index -f WGS_Exons.vcf.gz
 bcftools index -f WGS_CDS.vcf.gz
@@ -31,12 +31,12 @@ echo "merging WGS data to RNA-Seq+Seq-Cap" >> Log.txt
 bcftools merge SeqCap_CDS.vcf.gz WGS_CDS.vcf.gz -O v -o Full_CDS.vcf
 bcftools merge SeqCap_Exons.vcf.gz WGS_Exons.vcf.gz -O v -o Full_Exons.vcf
 bcftools merge SeqCap_Genes.vcf.gz WGS_Genes.vcf.gz -O v -o Full_Genes.vcf
-bgzip Full_CDS.vcf
-bgzip Full_Exons.vcf
-bgzip Full_Genes.vcf
-bcftools index -f Full_CDS.vcf
-bcftools index -f Full_Exons.vcf
-bcftools index -f Full_Genes.vcf
+bgzip -f Full_CDS.vcf
+bgzip -f Full_Exons.vcf
+bgzip -f Full_Genes.vcf
+bcftools index -f Full_CDS.vcf.gz
+bcftools index -f Full_Exons.vcf.gz
+bcftools index -f Full_Genes.vcf.gz
 }
 
 function sortVariants {
@@ -136,22 +136,22 @@ bcftools index -f bgzip "$1".vcf
 
 function functionalAnnotation {
 # Step 1: Download and install
-  cd ~
+  cd ~/installations
   wget wget https://snpeff.blob.core.windows.net/versions/snpEff_latest_core.zip
-  gunzip snpEff_latest_core.zip
+  unzip snpEff_latest_core.zip
 # Step 2: Create genome annotation database
   cd snpEff
   mkdir -p data
   cd data
   mkdir -p rThaEle1 genomes
-  cp $WorkingDirectory/References/"$1"_CapturedCDS.gff rThaEle1/genes.gff
-  cp $WorkingDirectory/References/TelagGenome.fasta genomes/rThaEle1.fa
-  cd ~/snpEff
-  java -jar /tools/snpeff-4.3p/snpEff.jar build -gff3 -v rThaEle1
+  cp $WorkingDirectory/References/SeqCap_CapturedCDS.gff ./rThaEle1/genes.gff
+  cp $WorkingDirectory/References/TelagGenome.fasta ./genomes/rThaEle1.fa
+  cd ~/installations/snpEff
+  java -jar /tools/snpeff-5.0/snpEff.jar build -gff3 -v rThaEle1
 # Step 3: Run snpEff
   cd $WorkingDirectory/variantFiltration
   gunzip "$1"_CDS.vcf.gz
-  java -jar /tools/snpeff-4.3p/snpEff.jar -c ~/snpEff/snpEff.config -v rThaEle1 "$1"_CDS.vcf > "$1"_CDS_ann.vcf
+  java -jar /tools/snpeff-5.0/snpEff.jar -c ~/snpEff/snpEff.config -v rThaEle1 "$1"_CDS.vcf > "$1"_CDS_ann.vcf
   # This didn't work with the raw gff downloaded from genbank (TelagGenome.gff). 
   # Instead, I had to use the "$1"_CapturedCDS.gff file I modified to only include CDS in genes of interest.
 # Step 4: Pull out missense and synonymous mutations
@@ -160,7 +160,8 @@ function functionalAnnotation {
   echo "total CDS SNP count: $(grep -v "^#" "$1"_CDS_ann.vcf | wc -l)" >> Log.txt
   echo "missense SNP count: $(grep -v "^#" "$1"_CDS_missense.vcf | wc -l)" >> Log.txt
   echo "synonymous SNP count: $(grep -v "^#" "$1"_CDS_synonymous.vcf | wc -l)" >> Log.txt
-  bgzip "$1"_CDS.vcf.gz
+  bgzip "$1"_CDS.vcf
+  bcftools index -f "$1"_CDS.vcf
   bgzip "$1"_CDS_missense.vcf
   bgzip "$1"_CDS_synonymous.vcf
   bcftools index -f "$1"_CDS_missense.vcf.gz
