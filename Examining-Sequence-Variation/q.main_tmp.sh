@@ -152,7 +152,7 @@ cd /home/rlk0015/projects/Thamnophis/ThamnophisElegans_FunctionalGenomics2021/Ex
 #+ COMPLETE   getSpecificVariants SeqCap CDS
 #+ COMPLETE   getSpecificVariants SeqCap Exons
 #+ COMPLETE   ## -- Copy final step of hard filtering (for nomenclature purposes)
-#+ COMPLETE   cp SeqCap_HardFilterStep5.vcf SeqCap_Genes.vcf
+#+ COMPLETE   cp SeqCap_HardFilterStep6.vcf SeqCap_Genes.vcf
 #+ COMPLETE   ## -- plot the variants (you can do this with all of the files as desired)
 #+ COMPLETE   plotVariants SeqCap_Exons.vcf
 #+ COMPLETE   plotVariants SeqCap_Annotated.vcf
