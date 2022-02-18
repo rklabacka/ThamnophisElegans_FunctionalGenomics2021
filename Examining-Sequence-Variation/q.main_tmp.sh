@@ -199,22 +199,23 @@ source ./SNP_curation.sh
 #+ COMPLETE  getTranscriptLengths CDS _missense
 #+ COMPLETE  getTranscriptLengths CDS _synonymous
 #+ COMPLETE  
-#+ COMPLETE  # -- convert vcf to fasta for targeted genes
-#+ COMPLETE  vcf2faa
-#+ COMPLETE  reference2faa
-#+ COMPLETE  # -- move captured target genes to new directory
-#+ COMPLETE  moveCapturedGenes
-#+ COMPLETE  # -- create alignments for peptide and nucleotide sequences
-#+ COMPLETE  createMSA faa protein Sequences maskedMSA
-#+ COMPLETE  createMSA fna transcript Sequences maskedMSA
+#+ NEED      # -- convert vcf to fasta for targeted genes
+#+ NEED      vcf2faa
+#+ NEED      reference2faa
+#+ NEED      # -- move captured target genes to new directory
+#+ NEED      moveCapturedGenes
+#+ NEED      # -- create alignments for peptide and nucleotide sequences
+#+ NEED      createMSA faa protein Sequences maskedMSA
+#+ NEED      createMSA fna transcript Sequences maskedMSA
 #+ COMPLETE  
 #+ COMPLETE  # -- create population text files for pops and pairwise comparisons
 #+ COMPLETE  createPopFiles
 #+ COMPLETE  # -- create vcf files containing samples for each pairwise pop comparison
 #+ COMPLETE  createPairwiseVCFs
 #+ COMPLETE  getGeneTajD Exons
+pairwisePopGen2
 # -- calculate PopGen statistics for each pairwise pop comparison
-getPairwisePopGen
+#+ WAITINGgetPairwisePopGen
 #+ WAITING  
 #+ WAITING# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 #+ WAITING# The following functions are called from the annotateVCF.sh script
