@@ -970,19 +970,8 @@ function hard-VariantFiltration {
     echo "Post removal of sites with high missing data: $(grep -v "^#" "$2"_HardFilterStep6.vcf | wc -l)" >> Log.txt
   # Finishing: Compress data
     bgzip "$2"_HardFilterStep6.vcf
-    bcftools index -f "$2"_HardFilterStep6.vcf
+    bcftools index -f "$2"_HardFilterStep6.vcf.gz
 
-}
-
-function removeRNAedits_old {
-  vcftools --gzvcf JustSNPs_RNA.vcf.gz --non-ref-af 1 \
-  --recode --recode-INFO-all --out potential-RNA-Substitutions
-  mv potential-RNA-Substitutions.recode.vcf potential-RNA-Substitutions.vcf
-  grep -v "#" potential-RNA-Substitutions.vcf | cut -f 1,2 > potential-RNA-Substitutions.txt
-  vcftools --vcf Merged.vcf --exclude-positions potential-RNA-Substitutions.txt \
-  --recode --recode-INFO-all --out removedRNAedits
-  mv removedRNAedits.recode.vcf removedRNAedits.vcf
-  echo "removedRNAedits.vcf variants: $(grep -v "^#" removedRNAedits.vcf | wc -l)" >> Log.txt
 }
 
 function removeRNAedits {
