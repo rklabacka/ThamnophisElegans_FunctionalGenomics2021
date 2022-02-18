@@ -43,7 +43,8 @@ function sortVariants {
 cd $WorkingDirectory/variantFiltration
 cp "$1".vcf.gz "$1"_original.vcf.gz
 bcftools index -f "$1".vcf.gz
-bcftools norm -d snps "$1".vcf.gz -O v -o "$1"_dupsRemoved.vcf
+bcftools norm -d snps "$1".vcf.gz -O v -o "$1"_dupsIDed.vcf
+bcftools view -m2 -M2 -v snps "$1"_dupsIDed.vcf > "$1"_dupsRemoved.vcf
 bcftools sort "$1"_dupsRemoved.vcf -O z -o "$1"_sorted.vcf.gz
 gunzip "$1".vcf.gz
 echo "original:  $(grep -v "^#" "$1".vcf | wc -l)" >> Log.txt
@@ -175,23 +176,18 @@ function functionalAnnotation {
 
 function getGeneVariants {
 # Get CDS SNPs and prepare for extraction
+cd $WorkingDirectory/variantFiltration
+bgzip -f Full_"$1$2".vcf
+bcftools index -f Full_"$1$2".vcf.gz
 mkdir -p $WorkingDirectory/SNP_analysis/variantsByGene/"$1""$2"
 cd $WorkingDirectory/SNP_analysis/variantsByGene/"$1""$2"
 cp $WorkingDirectory/variantFiltration/Full_"$1""$2".vcf.gz .
-bcftools index -f Full_"$1""$2".vcf.gz
+bcftools index -f Full_"$1$2".vcf.gz
 #+ COMPLETED # Create bed file for each gene
 #+ COMPLETED getBEDbyGene $1 $2
 # Extract SNPs by gene from vcf
 echo "begin SNP extraction by gene from vcf" >> Log.txt
 cd $WorkingDirectory/SNP_analysis/variantsByGene/"$1""$2"
-# WARNING: The following command has not been verified
-# within the getGeneVariants function.
-## -- Previously the code in the function getVCFbyGene
-## -- was included as hard code within the getGeneVariants
-## -- function. I created a separate function for
-## -- getVCFbyGene when I needed to use the same process
-## -- for the createPairwiseVCFs function. That being said,
-## -- it should work fine.
 getVCFbyGene $1 $WorkingDirectory/variantFiltration/Full_"$1""$2".vcf.gz $2 
 }
 
@@ -303,41 +299,53 @@ done<$WorkingDirectory/References/GeneBEDs/Full_CDS_CapturedGeneList.txt
 
 function pairwisePopGen2 {
 # This function is used to get population genetics statistics from pairwise population comparisons
-# It is less expensive (computationally), since the genomics-general package performs the population pairing and statistical calculations
+# It is less expensive (computationally), since the genomics_general package performs the population pairing and statistical calculations
 # Fst, Dxy, and Pi are obtained for both windows and sites
 
 # Step 1: Create working environment 
-mkdir -p $WorkingDirectory/SNP_analysis/genomics-general
-cd $WorkingDirectory/SNP_analysis/genomics-general
-# I created this conda environment outside of the script. It includes the modules required for genomics-general
+mkdir -p $WorkingDirectory/SNP_analysis/genomics_general
+cd $WorkingDirectory/SNP_analysis/genomics_general
+# I created this conda environment outside of the script. It includes the modules required for genomics_general
 conda activate ThamnophisPopGen 
-# Step 2: Create the geno files to be used by the genomics-general program popgenWindows.py
+# Step 2: Create the geno files to be used by the genomics_general program popgenWindows.py
 parseVCF.py -i $WorkingDirectory/variantFiltration/Full_Exons.vcf.gz | bgzip > Full_Exons.geno.gz
 parseVCF.py -i $WorkingDirectory/variantFiltration/Full_CDS_missense.vcf.gz | bgzip > Full_CDS_missense.geno.gz
+# Step 3: Create windows file (this is already done for the genes, just needs to be done for missense SNPs)
+cd $WorkingDirectory/variantFiltration
+gunzip Full_CDS_missense.vcf.gz
+vcf2bed < Full_CDS_missense.vcf > $WorkingDirectory/References/Full_CDS_missense.bed
+bgzip -f Full_CDS_missense.vcf
+bcftools index -f Full_CDS_missense.vcf.gz
 # Step 3: Create variables to be used for popGenWindows.py
+cd $WorkingDirectory/SNP_analysis/genomics_general
 pops=$WorkingDirectory/SNP_analysis/Populations/samples-by-population.txt
-python $pythonScripts/addEcotypes2.py $pops $WorkingDirectory/SNP_analysis/Populations/samples-by-ecotype.txt
+# COMPLETE python $pythonScripts/addEcotypes2.py $pops $WorkingDirectory/SNP_analysis/Populations/samples-by-ecotype.txt
 ecos=$WorkingDirectory/SNP_analysis/Populations/samples-by-ecotype.txt
-bedfile=$WorkingDirectory/References/SeqCap_CapturedGenes_abbrev.bed
-windows=$WorkingDirectory/SNP_analysis/genomics-general/Full_Exons.geno.gz
-sites=$WorkingDirectory/SNP_analysis/genomics-general/Full_CDS_missense.geno.gz
+genes=$WorkingDirectory/SNP_analysis/genomics_general/Full_Exons.geno.gz
+sites=$WorkingDirectory/SNP_analysis/genomics_general/Full_CDS_missense.geno.gz
+bedfile_genes=$WorkingDirectory/References/SeqCap_CapturedGenes_abbrev.bed
+bedfile_missense=$WorkingDirectory/References/Full_CDS_missense.bed
 # Step 4: Get population genetics statistics for target genes from transcribed windows for each gene
-popgenWindows.py --popsFile $pops --windCoords $bedfile -g $windows -o genes.popgen.csv.gz -f phased -m 1 -T 4 --windType predefined --writeFailedWindows -p MAH -p MER -p PVM -p SUM -p STO -p CHR -p RON -p ROC -p ELF -p NAM -p MAR -p PAP
-popgenWindows.py --popsFile $ecos --windCoords $bedfile -g $windows -o genes.ecogen.csv.gz -f phased -m 1 -T 4 --windType predefined --writeFailedWindows -p L -p M
+popgenWindows.py --popsFile $pops --windCoords $bedfile_genes -g $genes -o genes.popgen.csv.gz -f phased -m 1 -T 8 --windType predefined --writeFailedWindows -p MAH -p MER -p PVM -p SUM -p STO -p CHR -p RON -p ROC -p ELF -p NAM -p MAR -p PAP
+popgenWindows.py --popsFile $ecos --windCoords $bedfile_genes -g $genes -o genes.ecogen.csv.gz -f phased -m 1 -T 8 --windType predefined --writeFailedWindows -p L -p M
 # Step 5: Get population genetics statistics for target genes for each missense site 
-popgenWindows.py --popsFile $pops --windCoords $bedfile -g $sites -o missense.popgen.csv.gz -f phased -m 1 -T 4 --windType predefined --writeFailedWindows -p MAH -p MER -p PVM -p SUM -p STO -p CHR -p RON -p ROC -p ELF -p NAM -p MAR -p PAP
-popgenWindows.py --popsFile $ecos --windCoords $bedfile -g $sites -o missense.ecogen.csv.gz -f phased -m 1 -T 4 --windType predefined --writeFailedWindows -p L -p M
+popgenWindows.py --popsFile $pops --windCoords $bedfile_missense -g $sites -o missense.popgen.csv.gz -f phased -m 1 -T 8 --windType predefined --writeFailedWindows -p MAH -p MER -p PVM -p SUM -p STO -p CHR -p RON -p ROC -p ELF -p NAM -p MAR -p PAP
+popgenWindows.py --popsFile $ecos --windCoords $bedfile_missense -g $sites -o missense.ecogen.csv.gz -f phased -m 1 -T 8 --windType predefined --writeFailedWindows -p L -p M
 # Step 6: 
 echo "geneID" > Header.txt
 awk '{print $4}' $WorkingDirectory/References/SeqCap_CapturedGenes.bed > GeneIDs.txt
 cat Header.txt GeneIDs.txt > temp.txt ; mv temp.txt GeneIDs.txt
-genomics-general_add-genes GeneIDs.txt genes.popgen.csv
-genomics-general_add-genes GeneIDs.txt genes.ecogen.csv
-genomics-general_add-genes GeneIDs.txt missense.popgen.csv
-genomics-general_add-genes GeneIDs.txt missense.ecogen.csv
+gunzip genes.popgen.csv.gz
+gunzip genes.ecogen.csv.gz
+gunzip missense.popgen.csv.gz
+gunzip missense.ecogen.csv
+genomics_general_add-genes GeneIDs.txt genes.popgen.csv
+genomics_general_add-genes GeneIDs.txt genes.ecogen.csv
+genomics_general_add-genes GeneIDs.txt missense.popgen.csv
+genomics_general_add-genes GeneIDs.txt missense.ecogen.csv
 }
 
-function genomics-general_add-genes {
+function genomics_general_add-genes {
 paste $1 $2 > temp.csv ; mv temp.csv $2
 sed -i "s/\t/,/" $2
 head -n -4 $2 > temp.txt ; mv temp.txt $2
@@ -368,8 +376,13 @@ function pixyPopGen {
 }
 
 function getTranscriptLengths {
+echo $1
 cd $WorkingDirectory/SNP_analysis/variantsByGene/"$1""$2"
-python $pythonScripts/getTranscriptLengths.py $WorkingDirectory/References/SeqCap_Captured"$1".gff Full_"$1""$2"_Nvariants.txt Full_"$1""$2"_TranscriptLengths.txt
+if [[ "$1" == "CDS" ]]; then
+  python $pythonScripts/getCDSlength.py $WorkingDirectory/References/SeqCap_Captured"$1".gff Full_"$1""$2"_Nvariants.txt Full_"$1""$2"_TranscriptLengths.txt Log.txt
+else
+  python $pythonScripts/getTranscriptLengths.py $WorkingDirectory/References/SeqCap_Captured"$1".gff Full_"$1""$2"_Nvariants.txt Full_"$1""$2"_TranscriptLengths.txt
+fi
 python $pythonScripts/getVariableRegionsGFF.py Full_"$1""$2"_TranscriptLengths.txt $WorkingDirectory/References/SeqCap_Captured"$1".gff $WorkingDirectory/References/Full_Variable"$1""$2".gff Full_"$1""$2"_variableGenes.txt
 
 }
