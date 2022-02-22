@@ -42,6 +42,7 @@ function loadModules {
   module load samtools/1.11
   module load vcftools/0.1.17
   module load bedtools/2.30.0
+  module load gffreader/12.7
 }
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -213,7 +214,7 @@ source ./SNP_curation.sh
 #+ COMPLETE  # -- create vcf files containing samples for each pairwise pop comparison
 #+ COMPLETE  createPairwiseVCFs
 #+ COMPLETE  getGeneTajD Exons
-pairwisePopGen2
+#+ COMPLETE  pairwisePopGen2
 # -- calculate PopGen statistics for each pairwise pop comparison
 #+ WAITINGgetPairwisePopGen
 #+ WAITING  
