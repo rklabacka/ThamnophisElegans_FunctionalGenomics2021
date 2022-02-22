@@ -98,7 +98,20 @@ Bioinformatic pipelines can be complex and complicated. Here I will describe the
 # <a name="variant-call-processing"></a>
 3.  Variant Call Processing & Filtration 
 
-    With .vcf files for both Seq-Cap and RNA-Seq datasets, we are now ready to merge these files. We do this using the 'merge' utility within the software package (bcftools)[https://samtools.github.io/bcftools/bcftools.html]. Using an abbreviated annotation file specific to our targeted genes (created using blast tools implemented in the function probes2gff within the reads2vcf.sh code file), we annotated and extracted the merged SNPs from our target genes using the bcftools 'annotate' utility and an awk command. We then performed variant filtration within the annotated .vcf using the software package [vcftools](http://vcftools.sourceforge.net/) and bcftools. In brief, we removed variant sites that were: reference-specific (singletons in reference), strand odds ratio > 3 (high strand bias), quality of depth < 2 (variant confidence divided by raw depth), RMS mapping quality < 40 (root mean square quality over all mapped reads at a sight), fisher strand > 60 (Phred-scaled probability that strand bias exists at a site), genotype quality < 20, multiallelic (more than 2 alleles), depth < 10, or singletons (parameters and order described in reads2vcf.sh). Finally, we can pull out the SNPs within exons and those within coding regions and put these within their own files using bcftools 'annotate' utility in with our specified annotation files as input. We finish this step with three files: SeqCap_Genes.vcf, SeqCap_Exons.vcf, and SeqCap_CDS.vcf (while these files are prefixed with 'SeqCap', they also include SNPs from the RNA-Seq dataset).
+    With .vcf files for both Seq-Cap and RNA-Seq datasets, we are now ready to merge these files. We do this using the 'merge' utility within the software package (bcftools)[https://samtools.github.io/bcftools/bcftools.html]. Using an abbreviated annotation file specific to our targeted genes (created using blast tools implemented in the function probes2gff within the reads2vcf.sh code file), we annotated and extracted the merged SNPs from our target genes using the bcftools 'annotate' utility and an awk command. We then performed variant filtration within the annotated .vcf using the software packages [vcftools](http://vcftools.sourceforge.net/) and bcftools. In brief, we removed variant sites that were: reference-specific (singletons in reference), strand odds ratio > 3 (high strand bias), quality of depth < 2 (variant confidence divided by raw depth), RMS mapping quality < 40 (root mean square quality over all mapped reads at a sight), fisher strand > 60 (Phred-scaled probability that strand bias exists at a site), singletons (alleles only present in one individual, and multiallelic (more than 2 alleles), or those with high missing data (maximum missing: 70 percent).
+
+    We also removed genotypes whose genotype quality < 20 or depth < 10 (parameters and order described in reads2vcf.sh). Finally, we can pull out the SNPs within exons and those within coding regions and put these within their own files using bcftools 'annotate' utility in with our specified annotation files as input. We finish this step with three files: SeqCap_Genes.vcf, SeqCap_Exons.vcf, and SeqCap_CDS.vcf (while these files are prefixed with 'SeqCap', they also include SNPs from the RNA-Seq dataset).
+
+    At each filtering step, we quantified the number of SNPs in the output VCF. The results are as follows:
+
+| Step |                     filtering settings                          |    n   |
+|:----:|:---------------------------------------------------------------:|:------:|
+|  0   | Pre-filter                                                      | 70,177 |
+|  I   | GATK Best Practices: SOR, QD, MQ, MQRankSum, FS, ReadPosRankSum | 64,648 |
+|  II  | Remove individual genotypes with low GQ or low DP               | 64,648 |
+|  III | Remove multi-allelic SNPs                                       | 63,000 |
+|  IV  | Remove singletons                                               | 21,898 |
+|  V   | Remove sites with high amounts of missing data                  | 12,512 |
 
 # <a name="SNP-curation"></a>
 4.  SNP Curation
