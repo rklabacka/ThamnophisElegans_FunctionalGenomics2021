@@ -101,10 +101,10 @@ function createPairwiseVCFs {
         $WorkingDirectory/variantFiltration/Full_CDS_synonymous.vcf > "$i"/synonymous/Full_CDS_synonymous_"$i".vcf
     bcftools view --samples-file "$i"/"$i".txt --min-ac=1 --no-update \
         $WorkingDirectory/variantFiltration/Full_Exons.vcf > "$i"/exons/Full_Exons_"$i".vcf
-    n="$(wc -l < "$i")"
+    n="$(wc -l < "$i"/"$i".txt)"
     misSNPcount="$(grep -v "^#" "$i"/missense/Full_CDS_missense_"$i".vcf | wc -l)"
     synSNPcount="$(grep -v "^#" "$i"/synonymous/Full_CDS_synonymous_"$i".vcf | wc -l)"
-    echo -e "$i\t$n\t$misSNPcount\t$synSNPcount\t$tajD" >> PairwisePopSegregatingSites.txt
+    echo -e "$i\t$n\t$misSNPcount\t$synSNPcount" >> PairwisePopSegregatingSites.txt
     j="$i"
     k="$i"
     cd "$i"/missense/
@@ -124,6 +124,10 @@ function createPairwiseVCFs {
   bgzip Full_CDS_missense.vcf
   bgzip Full_CDS_synonymous.vcf
   bgzip Full_Exons.vcf
+  bcftools index -f Full_CDS_missense.vcf.gz
+  bcftools index -f Full_CDS_synonymous.vcf.gz
+  bcftools index -f Full_Exons.vcf.gz
+
 }
 
 function getVariantBED {
@@ -239,7 +243,7 @@ while read i
 do
   cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats
   # Add header to gene outfile
-  echo -e "Population\tN\tMissenseSNPs\tSynonymousSNPs\tTranscriptSNPs\tTajD" >> "$i".txt
+  echo -e "Population\tN\tMissenseSNPs\tSynonymousSNPs\tTranscriptSNPs\tTajD\tPi" >> "$i".txt
   while read j
   do
       echo "pairwise pops: ${j}" >> $WorkingDirectory/popGenLog.txt
@@ -252,45 +256,54 @@ do
     n="$(wc -l < "$j".txt)"
       echo -e "\tnumber of individuals: ${n}" >> $WorkingDirectory/popGenLog.txt
     cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/"$j"/missense/"$i"
-    misSNPcount="$(grep -v "^#" "$i"_CDS_"$j".vcf | wc -l)"
+    misSNPcount="$(grep -v "^#" "$i"_CDS"$j".vcf | wc -l)"
       echo -e "\tmisSNPcount: ${misSNPcount}" >> $WorkingDirectory/popGenLog.txt
-    # Use vcftools to calculate Fst for each missense site
-    vcftools --vcf "$i"_CDS_"$j".vcf \
-        --weir-fst-pop $WorkingDirectory/SNP_analysis/Populations/allPops/"$pop1".txt \
-        --weir-fst-pop $WorkingDirectory/SNP_analysis/Populations/allPops/"$pop2".txt \
-        --out "$j"_"$i"
+    #+ ++++++++ No longer using (see pairwisePopGen2 below for fst calculation ++++++++++ +#
+    #+ # Use vcftools to calculate Fst for each missense site
+    #+ vcftools --vcf "$i"_CDS"$j".vcf \
+    #+     --weir-fst-pop $WorkingDirectory/SNP_analysis/Populations/allPops/"$pop1".txt \
+    #+     --weir-fst-pop $WorkingDirectory/SNP_analysis/Populations/allPops/"$pop2".txt \
+    #+     --out "$j"_"$i"
+    #+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ +#
     cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/"$j"/synonymous/"$i"
-    synSNPcount="$(grep -v "^#" "$i"_CDS_"$j".vcf | wc -l)"
+    synSNPcount="$(grep -v "^#" "$i"_CDS"$j".vcf | wc -l)"
       echo -e "\tsynSNPcount: ${synSNPcount}" >> $WorkingDirectory/popGenLog.txt
     cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/"$j"/exons/"$i"
-    transcriptSNPcount="$(grep -v "^#" "$i"_Exons_"$j".vcf | wc -l)"
+    transcriptSNPcount="$(grep -v "^#" "$i"_Exons"$j".vcf | wc -l)"
       echo -e "\ttranscriptSNPcount: ${transcriptSNPcount}" >> $WorkingDirectory/popGenLog.txt
     # Use vcftools to calculate tajima's D for the exonic regions of each gene
-    vcftools --vcf "$i"_Exons_"$j".vcf --TajimaD 1000000 --out "$j"_"$i"
+    vcftools --vcf "$i"_Exons"$j".vcf --TajimaD 1000000 --out "$j"_"$i"
     tajD="$(awk 'NR == 2 {print $4}' $j'_'$i.Tajima.D)"
     tajD=${tajD:="NA"}
+    mv "$j"_"$i".log "$j"_"$i".tajd.log
       echo -e "\ttajD: ${tajD}" >> $WorkingDirectory/popGenLog.txt
-    # Now using genomics-general package for dxy, fst, and pi ---------------------------------
-    # Remove this comment and modify header for outfile if you decide to re-implement
-    # pixy function to calculate average fst and dxy for exonic regions of each gene
-    # pixyPopGen $i $j  
-    # cd $WorkingDirectory/SNP_analysis/Populations/pixyPops/$j/$i/
-    # fst="$(awk 'NR == 2 {print $6}' "$i"_"$j"_perGene_fst.txt)"
-    # fst=${fst:="NA"}
-    #   echo -e "\tfst: ${fst}" >> $WorkingDirectory/popGenLog.txt
-    # dxy="$(awk 'NR == 2 {print $6}' "$i"_"$j"_perGene_dxy.txt)"
-    # dxy=${dxy:="NA"}
-    #   echo -e "\tdxy: ${dxy}" >> $WorkingDirectory/popGenLog.txt
-    # # the pi values calculated from pixy are average pairwise differences within each population
-    # pop1pi="$(awk 'NR == 2 {print $5}' "$i"_"$j"_perGene_pi.txt)"
-    # pop1pi=${pop1pi:="NA"}
-    #   echo -e "\tpop1pi: ${pop1pi}" >> $WorkingDirectory/popGenLog.txt
-    # pop2pi="$(awk 'NR == 3 {print $5}' "$i"_"$j"_perGene_pi.txt)"
-    # pop2pi=${pop2pi:="NA"}
-    #   echo -e "\tpop2pi: ${pop2pi}" >> $WorkingDirectory/popGenLog.txt
-    # --------------------------------------------------------------------------
+    # Use vcftools to calculate pi for the exonic regions of each gene
+    vcftools --vcf "$i"_Exons"$j".vcf --window-pi 1000000 --out "$j"_"$i"
+    pi="$(awk 'NR == 2 {print $5}' $j'_'$i.windowed.pi)"
+    pi=${pi:="NA"}
+    mv "$j"_"$i".log "$j"_"$i".pi.log
+      echo -e "\tpi: ${pi}" >> $WorkingDirectory/popGenLog.txt
+    #+ ++++++++++++++++ Not doing, see pairwisePopGen2 for calculation of dxy and fst +++++ +#
+    #+  Remove this comment and modify header for outfile if you decide to re-implement
+    #+  pixy function to calculate average fst and dxy for exonic regions of each gene
+    #+  pixyPopGen $i $j  
+    #+  cd $WorkingDirectory/SNP_analysis/Populations/pixyPops/$j/$i/
+    #+  fst="$(awk 'NR == 2 {print $6}' "$i"_"$j"_perGene_fst.txt)"
+    #+  fst=${fst:="NA"}
+    #+    echo -e "\tfst: ${fst}" >> $WorkingDirectory/popGenLog.txt
+    #+  dxy="$(awk 'NR == 2 {print $6}' "$i"_"$j"_perGene_dxy.txt)"
+    #+  dxy=${dxy:="NA"}
+    #+    echo -e "\tdxy: ${dxy}" >> $WorkingDirectory/popGenLog.txt
+    #+  # the pi values calculated from pixy are average pairwise differences within each population
+    #+  pop1pi="$(awk 'NR == 2 {print $5}' "$i"_"$j"_perGene_pi.txt)"
+    #+  pop1pi=${pop1pi:="NA"}
+    #+    echo -e "\tpop1pi: ${pop1pi}" >> $WorkingDirectory/popGenLog.txt
+    #+  pop2pi="$(awk 'NR == 3 {print $5}' "$i"_"$j"_perGene_pi.txt)"
+    #+  pop2pi=${pop2pi:="NA"}
+    #+    echo -e "\tpop2pi: ${pop2pi}" >> $WorkingDirectory/popGenLog.txt
+    #+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     # Add values to gene outfile
-      echo -e "$j\t$n\t$misSNPcount\t$synSNPcount\t$transcriptSNPcount\t$tajD" >> $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats/"$i".txt
+      echo -e "$j\t$n\t$misSNPcount\t$synSNPcount\t$transcriptSNPcount\t$tajD\t$pi" >> $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats/"$i".txt
   done<$WorkingDirectory/SNP_analysis/Populations/pairwisePops/PairwisePopsList
   cd $WorkingDirectory/SNP_analysis/Populations/pairwisePops/PopGenStats
   python $pythonScripts/addEcotypes.py "$i".txt "$i"_withEcotypes.txt
@@ -345,13 +358,14 @@ genomics_general_add-genes GeneIDs.txt missense.popgen.csv
 genomics_general_add-genes GeneIDs.txt missense.ecogen.csv
 }
 
-function genomics_general_add-genes {
-paste $1 $2 > temp.csv ; mv temp.csv $2
-sed -i "s/\t/,/" $2
-head -n -4 $2 > temp.txt ; mv temp.txt $2
-}
+# function genomics_general_add-genes {
+# paste $1 $2 > temp.csv ; mv temp.csv $2
+# sed -i "s/\t/,/" $2
+# head -n -4 $2 > temp.txt ; mv temp.txt $2
+# }
 
 function pixyPopGen {
+  # Currently not using pixy for pop gen calculations, see instead pairwisePopGen and pairwisePopGen2 functions above
   # mkdir -p $WorkingDirectory/SNP_analysis/Populations/pixyPops/$1/$2
   # cp $WorkingDirectory/SNP_analysis/Populations/pairwisePops/$1/exons/$2/"$2"_Exons_"$1".vcf* \
   #    $WorkingDirectory/SNP_analysis/Populations/pixyPops/$1/$2/
@@ -389,6 +403,7 @@ python $pythonScripts/getVariableRegionsGFF.py Full_"$1""$2"_TranscriptLengths.t
 
 function vcf2faa {
 # This function takes a gene-specific vcf with multiple samples and turns it into fasta files (both fna and faa) for each sample
+conda activate ThamnophisPopGen
 # Prepare GFF for gffread (the gff must be in a particular format in order to work in gffread)
 # DONE python $pythonScripts/modifyGFF_gffread.py $WorkingDirectory/References/Full_VariableCDS.gff $WorkingDirectory/References/Full_VariableCDS_gffread.gff
 mkdir -p $WorkingDirectory/SNP_analysis/vcf2fasta
@@ -397,7 +412,9 @@ cd $WorkingDirectory/SNP_analysis/vcf2fasta
 gunzip Full_CDS.vcf.gz
 cp $WorkingDirectory/variantFiltration/Full_CDS.vcf.gz .
 bcftools index -f Full_CDS.vcf.gz
-bcftools query -l Full_CDS.vcf.gz > sampleList.txt
+bcftools query -l Full_CDS.vcf.gz > sampleList_full.txt
+egrep -v '^[[:digit:]]' sampleList_full.txt > sampleList.txt
+#! At this point you should remove the WGS individuals from sampleList.txt, since we don't have their mapping info
 # Add the reference to the sample list
 echo "RefSeq" >> sampleList.txt
 # Loop through the sample list
@@ -406,13 +423,13 @@ do
   cd $WorkingDirectory/SNP_analysis/vcf2fasta
   mkdir -p "$sample"
   # Create a .vcf for the sample
-  /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" SelectVariants \
+  /tools/gatk-4.1.9.0/gatk --java-options "-Xmx16g" SelectVariants \
     -R $WorkingDirectory/References/TelagGenome.fasta \
     -V Full_CDS.vcf \
     -O "$sample"/"$sample".vcf \
     -sn "$sample"
   # Insert SNPs into the reference genome (this outputs your initial fasta file, which is the size of the genome and includes sites with low mapping depth)
-  /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" FastaAlternateReferenceMaker \
+  /tools/gatk-4.1.9.0/gatk --java-options "-Xmx4g" FastaAlternateReferenceMaker \
     -R $WorkingDirectory/References/TelagGenome.fasta \
     -V "$sample"/"$sample".vcf \
     -O "$sample"/"$sample"_wholeGenome_wrongHeaders.fasta \
@@ -421,7 +438,7 @@ do
   python $pythonScripts/changeGenomeHeaders.py $WorkingDirectory/References/TelagGenome.fasta "$sample"/"$sample"_wholeGenome_wrongHeaders.fasta "$sample"/"$sample"_wholeGenome.fasta
   # Use bedtools to mask regions with low mapping coverage
   bedtools genomecov \
-    -ibam $WorkingDirectory/mappedReadsAll/"$sample".bam -bga | \
+    -ibam $WorkingDirectory/../old/WorkingDirectory_2021/mappedReadsAll/"$sample".bam -bga | \
     awk '$4<2' | \
     bedtools maskfasta -fi "$sample"/"$sample"_wholeGenome.fasta -bed - -fo "$sample"/"$sample"_maskedGenome_wrongHeaders.fasta
   # Change the fasta headers again (they were modified by bedtools)
@@ -436,7 +453,7 @@ do
   mkdir "$sample"/Sequences
   cd "$sample"/Sequences
   # Translate the fasta file to get the peptide sequence
-  python $pythonScripts/parseAndTranslate.py ../"$sample"_maskedCDS.fasta "$sample"
+  ~/miniconda3/bin/python3 $pythonScripts/parseAndTranslate.py ../"$sample"_maskedCDS.fasta "$sample"
 done<sampleList.txt
 # ^^ I created this list of samples from Full_CDS.vcf, using only the samples from Seq Cap or RNA seq
 }
@@ -496,3 +513,26 @@ do
 done
 }
 
+function pca {
+  cd $WorkingDirectory/variantFiltration
+  pca_prepVCF PillarGenes
+  pca_prepVCF BackgroundRandom
+  pca_prepVCF MetabolicFunction
+  pca_prepVCF StressAdaptation
+  pca_prepVCF MacromoleculeDamageRepair
+}
+
+function pca_prepVCF {
+  cd $WorkingDirectory/variantFiltration
+  bcftools view -R $WorkingDirectory/References/SeqCap_Captured"$1".bed Full_Exons.vcf.gz > Full_"$1".vcf
+  pca_plink "$1"
+}
+
+function pca_plink {
+  plink2 --vcf Full_"$1".vcf --double-id --allow-extra-chr \
+    --set-missing-var-ids @:# \
+    --indep-pairwise 50 10 0.1 --out "$1" 
+  plink2 --vcf Full_"$1".vcf --double-id --allow-extra-chr --set-missing-var-ids @:# \
+    --extract "$1".prune.in \
+    --make-bed --pca --out "$1" 
+} 

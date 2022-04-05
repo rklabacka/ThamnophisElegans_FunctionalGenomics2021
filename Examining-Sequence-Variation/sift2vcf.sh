@@ -59,7 +59,7 @@ mkdir -p $WorkingDirectory
 function copyRef-sift2vcf {
 # -- Step 2: Copy reference genome and annotation into working environment
 cd /scratch/rlk0015/Telag/May2020/WorkingDirectory/References
-cp TelegGenome.fasta Thamnophis_elegans.fa
+cp TelagGenome.fasta Thamnophis_elegans.fa
 cp TelagGenome.gtf Thamnophis_elegans.gtf
 bgzip Thamnophis_elegans.fa
 bgzip Thamnophis_elegans.gtf

@@ -1,0 +1,771 @@
+commit 0a0155aec41bad5002fa62fb01e764e4f2a61df5
+Author: rlk0015 <rlk0015@c20-login01.cm.cluster>
+Date:   Fri Feb 18 16:48:33 2022 -0600
+
+    updated q.main_tmp.sh. Also, I failed to mention that on the last commit I updated the sort function in SNP_curation to get rid of multiallelic variants
+
+commit 552a883a3f70d063b4b05ad7afb4be085a693b94
+Author: rlk0015 <rlk0015@c20-login01.cm.cluster>
+Date:   Fri Feb 18 16:46:40 2022 -0600
+
+    updated pairwisePopGen2 function in SNP_curation.sh
+
+commit e7e590268831617ef0116935442387eb3e7438d7
+Author: rlk0015 <rlk0015@c20-login01.cm.cluster>
+Date:   Fri Feb 18 14:54:35 2022 -0600
+
+    removed removeRNAedits_old function from reads2vcf.sh
+
+commit 63685888ca18d73451f4d74a9040af80b0d11e36
+Author: rlk0015 <rlk0015@c20-login01.cm.cluster>
+Date:   Thu Feb 17 16:23:33 2022 -0600
+
+    updated pairwisePopGen2 function in SNP_curation (this function needs a new name)
+
+commit 6fc8f8ead08d3ce2a947da49c14f77c4578faf1b
+Author: rlk0015 <rlk0015@c20-login01.cm.cluster>
+Date:   Thu Feb 17 14:13:48 2022 -0600
+
+    corrected an issue with the SNP_curation.sh function getGeneVariants (was reading in wrong argument for the _synonymous / _missense)
+
+commit 50ac7c41be09b37aa0cf371b4247225b6a78b3e6
+Author: rlk0015 <rlk0015@c20-login01.cm.cluster>
+Date:   Thu Feb 17 09:12:29 2022 -0600
+
+    updated q.main_tmp.sh to include Step6 of variant filtration
+
+commit 4be34683200b97a928b0cebbac3f4541d4668f2c
+Author: rlk0015 <rlk0015@c20-login01.cm.cluster>
+Date:   Thu Feb 17 09:12:01 2022 -0600
+
+    addEcotypes2.py file updated. See docstrings of file for details
+
+commit 37b93cd730c89fe10db55245587b2f49648efa70
+Author: rlk0015 <rlk0015@c20-login01.cm.cluster>
+Date:   Thu Feb 17 09:10:47 2022 -0600
+
+    updated SNP_curation.sh combineDataset and functionalAnnotation functions for Easley (there were also a few typos in these). However, the functionalAnnotation function didn't seem to work in stepwise fashion. Checking on this is the next step
+
+commit c56afdbdfd880406c0af3fea9576651a77e36d07
+Author: rlk0015 <rlk0015@c20-login01.cm.cluster>
+Date:   Tue Feb 15 16:58:50 2022 -0600
+
+    updated reads2vcf.sh function hard-VariantFiltration. Previously it was removing any site that had a single genotype with quality less than 20 or depth less than 10. Now it modifies genotypes with these values to be missing data (./.). I also executed these commands, so scratch is updated. The older files are in old/variantFiltration_Feb2022
+
+commit ef23c5005c9a10c90f8a778248e76b127bb6d1fd
+Author: rlk0015 <rlk0015@c20-login01.cm.cluster>
+Date:   Fri Feb 11 12:32:09 2022 -0600
+
+    added ecotype comparisons to get-pairwisePopGen-2 function within SNP_curation.py
+
+commit d975dde332b962f02184d1202385b42fecacbfe2
+Author: tschwart <schwartz.tonia@gmail.com>
+Date:   Thu Feb 10 10:22:25 2022 -0600
+
+    Update README.md
+
+commit 16c296efd20fcf9d932bac90ebebf91ca72c0216
+Author: rlk0015 <rlk0015@c20-login01.cm.cluster>
+Date:   Thu Feb 10 10:08:35 2022 -0600
+
+    modified SNP_curation
+
+commit d9b6e299fcd864638166ab028bae23bc0467df09
+Author: rlk0015 <rlk0015@c20-login01.cm.cluster>
+Date:   Tue Feb 8 14:58:31 2022 -0600
+
+    created function getGeneTajD to calculate Tajima's D for each gene
+
+commit f2028e2e2d3e34026f6133f143996afc85e25476
+Author: rlk0015 <rlk0015@c20-login01.cm.cluster>
+Date:   Fri Feb 4 15:55:09 2022 -0600
+
+    modified files for compatibility with slurm on Easley
+
+commit 6cf4a3368f55d59d0377fb85ed59e4ad1e80fc80
+Author: rlk0015 <rlk0015@c20-login01.cm.cluster>
+Date:   Fri Feb 4 15:54:37 2022 -0600
+
+    modified the getTranscriptLengths function in SNP_curation to include a log file
+
+commit 010a14062705e332dd54b298714ccf88de2b0d2f
+Author: rlk0015 <rlk0015@c20-login01.cm.cluster>
+Date:   Fri Feb 4 15:21:35 2022 -0600
+
+    reverted getTranscriptLengths.py to previous commit to run with Exons
+
+commit d7cc4f343863fd30bce37ce3f8bfa4c84dffbd5e
+Author: rlk0015 <rlk0015@c20-login01.cm.cluster>
+Date:   Fri Feb 4 15:17:00 2022 -0600
+
+    I realized why I had different getTranscriptLengths.py and getCDSLength.py scripts- I updated these accordingly.
+
+commit 07b66760358eb309c940776ee27149666ec8dbcb
+Author: rlk0015 <rlk0015@c20-login01.cm.cluster>
+Date:   Fri Feb 4 14:50:45 2022 -0600
+
+    added simple docstring to getCDSlength.py indicating that getTranscriptLengths.py was the preferred script.
+
+commit 637df7a13d2931f7692b8526416b090bb0aacaea
+Author: rlk0015 <rlk0015@c20-login01.cm.cluster>
+Date:   Fri Feb 4 14:50:06 2022 -0600
+
+    modified getTranscriptLengths.py to only include the longest CDS (up to this point it had been concatenating lengths, thus incorrectly inflating the calculated coding sequence size)
+
+commit 28fed4d47fffd21fc193803f7be254342c381b8e
+Author: rlk0015 <rlk0015@c20-login01.cm.cluster>
+Date:   Thu Feb 3 16:42:55 2022 -0600
+
+    removed q.main_original.sh. q.main.sh and q.main_tmp.sh contain all up-to-date syntax.
+
+commit 9ae3e5a0a359a3ff1bb195b98af6e43dc8b77a36
+Author: rlk0015 <rlk0015@c20-login01.cm.cluster>
+Date:   Thu Feb 3 16:42:11 2022 -0600
+
+    removed q.tmp.sh
+
+commit ba8a11efe1d8f10e0b97919740a382f6e9ef043f
+Author: rlk0015 <rlk0015@c20-login01.cm.cluster>
+Date:   Thu Feb 3 16:40:00 2022 -0600
+
+    modified files with comments for current running position
+
+commit c388bb644a4a437cbefc3115da635c0282de4015
+Author: rlk0015 <rlk0015@c20-login01.cm.cluster>
+Date:   Thu Feb 3 12:14:25 2022 -0600
+
+    I created a pairwisePopGen-2 function that uses the genomics-general package to get fst and dxy from windows specified in a bed file. I'll now be adding a command within this function to get these values per-site.
+
+commit aef62b4224d7c5f3bafcb094258b67eb4f83ac7c
+Author: rlk0015 <rlk0015@c20-login01.cm.cluster>
+Date:   Wed Feb 2 14:40:32 2022 -0600
+
+    created function getPairwisePopGen-2 for the general_genomics library. This is what Laurie originally used. Notice the conda activate ThamnophisPopGen command- this is important to make sure you import the libraries that are needed for this toolkit
+
+commit 94e894d8161a193ee0e2a34f08d93aa811fde554
+Author: rlk0015 <rlk0015@c20-login01.cm.cluster>
+Date:   Wed Feb 2 14:39:26 2022 -0600
+
+    changed loadModules function in q.main.sh to loadModules_Hopper - this is because many of the modules that we loaded in hopper are not available in Easley (these are the Auburn HPCs). I created a new loadModules functions just for the downstream analyses (post SNP filtering)
+
+commit e271b2583d0f5634186ff2756e1d1d295b4b98bb
+Author: rlk0015 <rlk0015@c20-login01.cm.cluster>
+Date:   Wed Feb 2 11:32:24 2022 -0600
+
+    removed stdout and stderr from previous runs (placed them in outfiles dir), modified working directory and pythonscripts paths in q.main.sh for Easley (previously they were for Hopper).
+
+commit 9e6319c00fb630eb9df41de822a99a7e3632df7c
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 1 07:13:52 2022 -0600
+
+    final hopper commit
+
+commit 686555ec49130ccf1231627249cb22114519264e
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Fri Jan 28 14:48:06 2022 -0600
+
+    removed the get-allsites-vcf.sh command from reads2vcf.sh script. See commit de9ac3b813b25a812ef9837253185c336d17e845 for rationale
+
+commit de9ac3b813b25a812ef9837253185c336d17e845
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Fri Jan 28 14:46:41 2022 -0600
+
+    removed get-allsites-vcf command from q.main.sh. This was taking waaaay too much time and memory to create. If there is a desire to create an allsites vcf, I advice returning to the BWA -mem step and mapping to an abbreviated version of the genome. Just be aware that you'll also have to have an annotation file that accounts for the filtering.
+
+commit 2a306ec876e6371fce854305882d76320bad924e
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Mon Jan 24 14:37:42 2022 -0600
+
+    I found out that to use this cool new popgen package (pixy), I needed an allsites vcf. To get this, I have to re-call SNPs. I created a new function, called get-allsites-vcf within the reads2vcf.sh script.
+
+commit 2f6ddc295d4d92f196a29163f82e9784745fe4b2
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Fri Jan 21 09:11:01 2022 -0600
+
+    cleaning up pipeline. Also modifying createPairwiseVCFs, createPopFiles, and getPairwisePopGen functions within SNP_curation.sh. Lastly, modified parsePopulations.py in pythonScripts. All of these changes were for calculating population genetic statistics using the package pixy.
+
+commit 2dd15fb9419eb4795f866c558b84f83c37bcf4b2
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Wed Jan 12 16:50:34 2022 -0600
+
+    moved RemoveRNAEdit command to after filtering in reads2vcf pipeline
+
+commit fc72d21c6117962b599929d9f6a9f4e9648b0f18
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Wed Dec 1 10:57:18 2021 -0600
+
+    updated removeRNAedits command in reads2vcf (using bcftools isec tool)
+
+commit c2ead5095c215829fc47605efcafc1cb2e20096f
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Mon Jun 28 17:37:35 2021 -0500
+
+    Created SNP curation section in the README and added annotation to the SNP_curation.sh file
+
+commit 098f5d96a2e1fe942a9fc42ae45f9dc6447118ce
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Mon Jun 28 16:39:37 2021 -0500
+
+    completed SNP processing section of README
+
+commit d56cc6f8636f0f24aa8da1c4f3f1e4d8f9cac653
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Fri Jun 25 17:42:21 2021 -0500
+
+    Updated README and modified the removeRNAedits function within reads2vcf.sh (and where it is called in q.main.sh). The function was removing sites from the Merged.vcf instead of the JustSNPs_RNA.vcf.
+
+commit 53b8f08c089df4c23df027e8eaf1bb3521586056
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Fri Jun 25 12:20:05 2021 -0500
+
+    created variant processing section in README
+
+commit 0bae3eac8498b9259f394a363ba55cdd522c09ca
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Fri Jun 25 12:12:42 2021 -0500
+
+    working on table of contents
+
+commit 037faf6f679580e8c148ebb866fbacc556304a95
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Fri Jun 25 12:09:39 2021 -0500
+
+    working on table of contents
+
+commit f4eda7a0233395c9c252db9cf5db70d164406629
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Fri Jun 25 12:05:14 2021 -0500
+
+    added content to variant calling section of README
+
+commit 0a76914f03d4e653eef1e7cf8df7c9dcdfe000b4
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Thu Jun 24 16:46:02 2021 -0500
+
+    Added to calling variants section of README
+
+commit 2b992fe29a55d080763ea8bc0058e919769a5857
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Thu Jun 24 12:04:02 2021 -0500
+
+    began the variant calling section in README
+
+commit 609727ccb8085dfff1e8110d37a10a8852081dab
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Thu Jun 24 11:23:37 2021 -0500
+
+    finished raw reads to mapping section in README
+
+commit 5f52ef26efcfff91147f7f83db57e91a95c72017
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Thu Jun 24 11:11:49 2021 -0500
+
+    changed 'CleanReadFastQC.png' to 'CleanReadsFastQC.png'
+
+commit d4a955bfe11998aead6a0abe28226bc412e8373a
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Thu Jun 24 11:10:49 2021 -0500
+
+    Updated read me with clean reads fastqc image
+
+commit 73f3db0b1016d0321d91fe27cb96cf641162ca99
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Thu Jun 24 11:09:37 2021 -0500
+
+    added
+    'CleanReadsFastQC.png'
+
+commit bcc5b43ad41ec8bd5a8def2eb6bbf7012b54864e
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Thu Jun 24 10:53:03 2021 -0500
+
+    changed image name from 'RawReadFastQC.png' to 'RawReadsFastQC.png'
+
+commit f1089fac3fc11e323bdbc1d17fdc2e92bb4b8c46
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Thu Jun 24 10:51:19 2021 -0500
+
+    changed images location to Examining-Sequence-Variation
+
+commit eb24226575997d6ca5824023faae9a228b2bffbb
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Thu Jun 24 10:50:10 2021 -0500
+
+    changed images location to Examining-Sequence-Variation
+
+commit b5a290bdb247788576518f5942bb740850abc642
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Thu Jun 24 10:49:13 2021 -0500
+
+    Added fastqc info to README along with a fastqc image to a new images directory
+
+commit f1b8c18b60c2d11926fa80a80cc6afbbfe52eb46
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Thu Jun 24 10:04:48 2021 -0500
+
+    updated README
+
+commit 35d846ef9209e5672142241a47f680992382602e
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Wed Jun 23 15:52:14 2021 -0500
+
+    Added basic file descriptions for Examining-Sequence-Variation to the README
+
+commit 4e6bc6cdd8f09b51c2895507ace3de9444c2e82f
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Wed Jun 23 15:14:32 2021 -0500
+
+    Updated README
+
+commit d8a3a0953726069590c05d98cec3ab1d80996052
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Wed Jun 23 14:43:36 2021 -0500
+
+    updating README
+
+commit a3b12bc396e4ac54d9d4fceb67ff7f1280f86819
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Wed Jun 23 14:35:19 2021 -0500
+
+    updating README
+
+commit cc4e6dd065c20ab0168f8ddaf77577cd4aff965c
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Wed Jun 23 14:30:26 2021 -0500
+
+    changed SNP_analysis.sh to SNP_curation.sh (to not confuse people with Laurie's pop gen analysis folder)
+
+commit a5eac43c9b85edf64af6100f651a87a053215f01
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Wed Jun 23 14:27:59 2021 -0500
+
+    removed q.rsyncTsirtalGenome.sh and put the rsync code within digital lab notebook
+
+commit 231105d6d6dab51ddb5fb22f4bac36056aaaba4a
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Wed Jun 23 13:33:10 2021 -0500
+
+    moved q.functionalAnnotation.sh to sift2vcf.sh and made all commands modular as functions. Added function implementation into q.main.sh. I also changed some of the names of functions that were the same between files by adding -<script name> to the end of the functions (e.g., copyRef-sift2vcf)
+
+commit 4b3e6e5fa6b340082a5656d88725eab11902c5d6
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Jun 22 17:33:28 2021 -0500
+
+    edited q.functionalAnnotation.sh
+
+commit 5a151d8e10d851e3d2884863d8f6eb7e908b9f80
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Jun 22 15:28:02 2021 -0500
+
+    removed q.MitoHaplotypeTreeEstimation.sh script (this script was used for Gangloff et al., 2020)
+
+commit 95a83efd11070c6d35c7593128fe9feb87f68688
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Jun 22 15:26:29 2021 -0500
+
+    removed snp_main.sh file (this was a trial file)
+
+commit d7418fc5c606570423172e8823cd9902a4112015
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Jun 22 15:25:26 2021 -0500
+
+    removed old q.main_protected.sh and q.SNP_analysis.sh scripts
+
+commit 63e6962ad17958be917b37e5e91792efcd3e3c9c
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Jun 22 15:23:57 2021 -0500
+
+    Finalized creation of q.main.sh script and modified the SNP_analysis.sh and reads2vcf.sh scripts. I also changed the parsePopulations.py script to be more modular
+
+commit 1c0c53584b0dda1bce52a2f19f85ca9cd852ed47
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Jun 22 13:04:15 2021 -0500
+
+    updating pipelines with comments
+
+commit 9b266e486b0e3ca0248ae73252bedb8a94b48d2c
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Fri May 21 09:52:00 2021 -0500
+
+    removed output files
+
+commit 861ab5f197b7fd5a05533e922943bb6892fe400d
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Wed May 12 12:25:42 2021 -0500
+
+    no major changes
+
+commit 8b1f29ad1735e856a987cdd7f3f3642c769b1123
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue May 4 11:37:04 2021 -0500
+
+    modified a few files
+
+commit d2be65caa299337d205ac62fb732e6e908ca9ca6
+Author: Laurie Stevison <lstevison@gmail.com>
+Date:   Thu Apr 1 17:10:35 2021 -0500
+
+    Update README.md
+
+commit b53c1733e8f82fe0dd0d0f908702762813dc8ef7
+Author: Laurie Stevison <lstevison@gmail.com>
+Date:   Thu Apr 1 17:02:16 2021 -0500
+
+    Update README.md
+
+commit af950fadebd944d5120b62fe30399e7b95a3d154
+Author: Laurie Stevison <lstevison@gmail.com>
+Date:   Thu Apr 1 09:25:51 2021 -0500
+
+    Add files via upload
+
+commit 8f9a499d79abe1e9c29715addad1015b1afc3a6b
+Author: Laurie Stevison <lstevison@gmail.com>
+Date:   Thu Apr 1 09:25:35 2021 -0500
+
+    Add files via upload
+
+commit 91e16435687747bf80d3a2b7cb6cfb7edc56e7bb
+Author: Laurie Stevison <lstevison@gmail.com>
+Date:   Thu Apr 1 09:10:58 2021 -0500
+
+    Add files via upload
+
+commit 55ae5910e001faec7a709a33dfe15dc8ab324145
+Author: Laurie Stevison <lstevison@gmail.com>
+Date:   Thu Apr 1 09:10:27 2021 -0500
+
+    Create readme.md
+
+commit d9d72bfc1f90acea382cab13a3e2c6227bd15a83
+Author: Laurie Stevison <lstevison@gmail.com>
+Date:   Thu Apr 1 09:09:34 2021 -0500
+
+    Create README.md
+
+commit 616aad184448a6b09c9d414ff3d3646a80dc0bf7
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Thu Mar 25 16:53:44 2021 -0500
+
+    modularized getTranscriptLengths.py
+
+commit c4e088eb84d655a5c2b55916122e01ce9e0a73d6
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Thu Mar 25 15:49:45 2021 -0500
+
+    removed output files
+
+commit 48546f15939cd7bf75849335d58359c5c781a8b9
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Thu Mar 25 15:46:33 2021 -0500
+
+    Commiting unknown changes... oops!
+
+commit 3f2e66ef28594171a2844489c3d803cd44004e97
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Mon Mar 15 16:10:36 2021 -0500
+
+    created function within q.SNP_analysis.sh to count variable sites for pairwise population comparisons
+
+commit f074ae38be1a4e569ec01a8fd71ebd52b3d9a0c6
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Mon Mar 15 14:28:22 2021 -0500
+
+    added function to q.SNP_analysis.sh to parse out samples by population and create pairwise population sample files
+
+commit 54b328b76bea0f2de3cf736350f150e2b3f102f6
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Mon Mar 15 11:20:03 2021 -0500
+
+    Modified hard filtration step of q.reads2vcf.sh to include:
+    1. Removal of unwanted individuals (previously in sorting function of q.SNP_analysis.sh)
+    2. Genotype quality fintration
+    3. Depth filtration
+
+commit 38622b4acc6260dd8a4bc74be65a41ce4724de33
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Mar 2 16:44:36 2021 -0600
+
+    modified python scripts slightly, modified q.SNP_analysis.sh for getting masked faa alignments
+
+commit 2e9c5e988ecbe99b788e29260449a7965026a6fd
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Thu Feb 25 09:20:37 2021 -0600
+
+    moved outfiles outside of git repository
+
+commit ac852fe2c57f5e3a52e0efb6efbae079feeaed1e
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Thu Feb 25 09:19:10 2021 -0600
+
+    Created q.creatSIFTdb.sh. I ran this a few times unsuccesfully, with the last run being my downloading of the UniProt90.fasta database
+
+commit 44a8a6f9ce183dfc50b1911f44591f33de949877
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Mon Feb 22 14:40:48 2021 -0600
+
+    modified getCDSlengths.py
+
+commit 188ae65854b719a481dc56d6102cc01f624de309
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Sat Feb 20 10:58:28 2021 -0600
+
+    modified q.SNP_analysis.sh for Full datasets (WGS+RNAseq+SeqCap) and moved output files
+
+commit 4d7b91c8c89390780b67328729635e09c792c166
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Wed Feb 17 20:29:39 2021 -0600
+
+    removed unwanted genes from shrinkGFF.py
+
+commit 240336a7c74972d005beacd01cf61c90db481c99
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 16 16:54:40 2021 -0600
+
+    Sorting command on q.SNP_analysis.sh
+
+commit 12ec001b55c0f52dab3d06f691929532f11215c1
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Mon Feb 15 20:05:35 2021 -0600
+
+    changed capturedGenes list to set in shrinkGFF.py
+
+commit d89b6d059a836114e0ef18ed4a1e41414c9e2947
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Mon Feb 15 17:06:34 2021 -0600
+
+    Commented out lines in q.reads2vcf.sh to run file for new shrinkGFF.py script
+
+commit f6b819b75d6d040a82d4f63824f906e3f53f7b83
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Mon Feb 15 17:02:29 2021 -0600
+
+    modified append/removed genes in shrinkGFF.py
+
+commit 8c6f252bd590b0b6a5834c27e7b139b2689874dd
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Mon Feb 15 15:12:09 2021 -0600
+
+    "typo in shrinkGFF.py"
+
+commit a2c560004a4640bb6abd34ea2781f1021434c339
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Mon Feb 15 14:49:25 2021 -0600
+
+    updated shrinkGFF.py to include/exclude genes found during manual search of blast results
+
+commit ed4018cebeb900cd122b6e407e7343ebbdee4110
+Author: rklabacka <klabacka.randy@gmail.com>
+Date:   Mon Feb 15 10:21:38 2021 -0600
+
+    Modified q.reads2vcf.sh due to SRR mismatches
+
+commit f79c3e3d53de6015611e0c6ca52f8bb5ac4e9c93
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 15:35:02 2021 -0600
+
+    shrinkGFF.py updated with shrinkGFF_v5.py
+
+commit dd1513baf5de7f2915a297100a6c3244ce9c995c
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 15:34:35 2021 -0600
+
+    shrinkGFF.py updated with shrinkGFF_v4.py
+
+commit 058d2ffab361991fb3b8bb238d7b09631263484e
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 15:34:10 2021 -0600
+
+    shrinkGFF.py updated with shrinkGFF_v3.py
+
+commit b4361ee8dbd1b6640ca1e035fbf33fcc2b0f6240
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 15:33:42 2021 -0600
+
+    shrinkGFF.py updated with shrinkGFF_v2.py
+
+commit bc7c7aeb2c6d59e4c75262668c71aa76ea2dfd83
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 15:32:36 2021 -0600
+
+    added python script shrinkGFF.py
+
+commit cc86963c485f6c3c6edcb33bc0bd1d2e3d0e7824
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 15:31:24 2021 -0600
+
+    updated parseAndTranslate.py to what is now parseAndTranslate2.py
+
+commit cf159c5f565ab7a97d80ba509095d9c91abcfe8d
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 15:30:39 2021 -0600
+
+    added python scripts
+
+commit b0387415c89bcf538a4743e9a85f74ccb4f3f0a1
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 15:26:29 2021 -0600
+
+    q.reads2vcf.sh is q.FullScript_May2020.sh
+
+commit acdd946f124b464679c6d6bbe39d39f731d301c9
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 15:25:34 2021 -0600
+
+    q.reads2vcf.sh is q.FullScript_May2020_old16.sh
+
+commit 979f8388054fdff3378dbe79f03be195645a77a4
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 15:25:05 2021 -0600
+
+    q.reads2vcf.sh is q.FullScript_May2020_old15.sh
+
+commit 0ad5a4c78b3d915acad418da1e7f06472823b91b
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 15:24:29 2021 -0600
+
+    q.reads2vcf.sh is q.FullScript_May2020_old14.sh
+
+commit a03f1aba02180b2ce69463ffd1884313402190db
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 15:23:23 2021 -0600
+
+    q.reads2vcf.sh is q.FullScript_May2020_old13.sh
+
+commit 72fa8e9d873876fee6a48ecfc5055a3c717942a2
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 15:22:48 2021 -0600
+
+    q.reads2vcf.sh is q.FullScript_May2020_old12.sh
+
+commit 404716e058bfb8695a4d3908293ce40cbb6300db
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 13:57:46 2021 -0600
+
+    q.reads2vcf.sh is q.FullScript_May2020_old11.sh
+
+commit a2d7a1a8be74011a21ca0c4d92414c418c27856a
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 13:48:26 2021 -0600
+
+    q.reads2vcf.sh is q.FullScript_May2020_old10.sh
+
+commit 3ab1d0df01a2c6046e412207585a6136aee1a2fd
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 13:48:04 2021 -0600
+
+    q.reads2vcf.sh is q.FullScript_May2020_old9.sh
+
+commit 12feaae3501f3450562a1a9005038cebf236337e
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 13:47:42 2021 -0600
+
+    q.reads2vcf.sh is q.FullScript_May2020_old8.sh
+
+commit 0077350f33b4b7559037f86ea18c99582337d09c
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 13:47:14 2021 -0600
+
+    q.reads2vcf.sh is q.FullScript_May2020_old7.sh
+
+commit c542010a846cbb7a3c3d4301b29580024f4ea28a
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 13:46:53 2021 -0600
+
+    q.reads2vcf.sh is q.FullScript_May2020_old6.sh
+
+commit 9c516db5077747ad31160e8cf5ec37f049051b4f
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 13:46:28 2021 -0600
+
+    q.reads2vcf.sh is q.FullScript_May2020_old5.sh
+
+commit c07cf8c7cf73d6682211a7b3e9653ed662b6474e
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 13:46:00 2021 -0600
+
+    q.reads2vcf.sh is q.FullScript_May2020_old4.sh
+
+commit cb03201d5e614ed75ec3b6527b79dd052fabdbc3
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 13:45:27 2021 -0600
+
+    q.reads2vcf.sh is q.FullScript_May2020_old3.sh
+
+commit abe36c8e1d07553d1b8de085a55ec2fb14dab9e0
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 13:44:54 2021 -0600
+
+    q.reads2vcf.sh is q.FullScript_May2020_old2.sh
+
+commit 3d2a6f450e03bc116a0bac2297063ca2653f0c92
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 13:44:26 2021 -0600
+
+    q.reads2vcf.sh is q.FullScript_May2020_old.sh
+
+commit c54e436f616fa08b2d9b1946ec881cdf8c33fa96
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 13:43:19 2021 -0600
+
+    q.reads2vcf.sh is q.FullScript_April2020.sh
+
+commit c70f01e4612ee812b75de8156ef5faa9885075ba
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 13:37:13 2021 -0600
+
+    Added q.MitoHaplotypeTreeEstimation.sh, which was used to estimate the phylogeny for the ExpGeron paper
+
+commit 227d80528875817430c2e28fb287d25d6e6e5a5d
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 13:35:09 2021 -0600
+
+    here q.reads2vcf.sh is the q.FullScript_Aug2019.sh pipeline
+
+commit 2ad4a57a3f83052b9549308c8058988e1e4eab1f
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 13:33:12 2021 -0600
+
+    Here the q.reads2vcf.sh pipeline is from the q.FullScript_June2019.sh pipeline
+
+commit 1cd571bc42c421b7712dee14f144a0ff95cff0c4
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 13:32:09 2021 -0600
+
+    Here the q.reads2vcf.sh pipeline is from the q.FullScript_March2019.sh pipeline
+
+commit 3963b3e47ebc5ca75c392c524ae77aebff2174e4
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 13:31:07 2021 -0600
+
+    Here q.reads2vcf.sh was from the q.FullScript_Feb2019.sh pipeline
+
+commit 2839111900fece207f5570709bfcd7c44d5675e6
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 13:28:58 2021 -0600
+
+    Here we were mapping to a reduced transcriptome, trying to use the SeqCap_Pop pipeline (which uses Phyluce) [Cas a guide
+
+commit 5ab9af1321b0f06c2e8ca6e83ffd737a0a033c0a
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 13:25:27 2021 -0600
+
+    April 2018 pipeline - to show where I was at during this time. We had moved from mapping to the exons, to mapping to exons with overhangs, to creating loci with a number of N base pairs joining exons, to mapping to the T. sirtalis genome, and at this point we were planning on simply using the transcriptome
+
+commit 5d412d137f6947f8f8cc45795de93aaf7df12464
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 13:22:25 2021 -0600
+
+    Added rsync code for T. elegans genome and December 2017 pipeline
+
+commit 29d76702117e81c3b6fb92e43704aa69528617e4
+Author: Randy L. Klabacka <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 13:17:24 2021 -0600
+
+    2017 pipeline
+
+commit fa8e3e8d0f572a2232c66a59a1b6ac3c222f18c7
+Author: Randy <klabacka.randy@gmail.com>
+Date:   Tue Feb 9 13:13:25 2021 -0600
+
+    Initial commit

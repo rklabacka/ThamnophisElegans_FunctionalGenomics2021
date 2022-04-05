@@ -1,8 +1,8 @@
 #!/bin/sh
 #SBATCH --job-name=Thamnophis_main_tmp
 #SBATCH --nodes=1                     # node(s) required for job
-#SBATCH --ntasks=1                    # number of tasks across all nodes
-#SBATCH --partition=general           # name of partition
+#SBATCH --ntasks=4                    # number of tasks across all nodes
+#SBATCH --partition=jro0014_amd       # name of partition
 #SBATCH --time=20:00:00               # Run time (D-HH:MM:SS)
 #SBATCH --output=test-%j.out          # Output file. %j is replaced with job ID
 #SBATCH --error=test_error-%j.err     # Error file. %j is replaced with job ID
@@ -43,6 +43,8 @@ function loadModules {
   module load vcftools/0.1.17
   module load bedtools/2.30.0
   module load gffreader/12.7
+  module load gatk/4.1.9.0
+  conda init bash
 }
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -201,7 +203,7 @@ source ./SNP_curation.sh
 #+ COMPLETE  getTranscriptLengths CDS _synonymous
 #+ COMPLETE  
 #+ NEED      # -- convert vcf to fasta for targeted genes
-#+ NEED      vcf2faa
+vcf2faa
 #+ NEED      reference2faa
 #+ NEED      # -- move captured target genes to new directory
 #+ NEED      moveCapturedGenes

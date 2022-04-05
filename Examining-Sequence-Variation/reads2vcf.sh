@@ -900,7 +900,7 @@ function plotVariants {
 source /home/rlk0015/miniconda3/etc/profile.d/conda.sh
 conda activate vcfEnv
 python $pythonScripts/vcf2table.py "$1" "$1"_table
-~/SeqCap/RScripts/plotvcftable.R -I "$1"_table -O "$1"_plot.pdf
+~/projects/Thamnophis/ThamnophisElegans_FunctionalGenomics2021/Examining-Sequence-Variation/plotvcftable.R -I "$1"_table -O "$1"_plot.pdf
 }
 
 function initial-VariantFiltration {
