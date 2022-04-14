@@ -321,12 +321,19 @@ cd $WorkingDirectory/SNP_analysis/genomics_general
 # I created this conda environment outside of the script. It includes the modules required for genomics_general
 conda activate ThamnophisPopGen 
 # Step 2: Create the geno files to be used by the genomics_general program popgenWindows.py
+parseVCF.py -i $WorkingDirectory/variantFiltration/Full_Genes.vcf.gz | bgzip > Full_Genes.geno.gz
 parseVCF.py -i $WorkingDirectory/variantFiltration/Full_Exons.vcf.gz | bgzip > Full_Exons.geno.gz
-parseVCF.py -i $WorkingDirectory/variantFiltration/Full_CDS_missense.vcf.gz | bgzip > Full_CDS_missense.geno.gz
+  bcftools annotate \
+    -a $WorkingDirectory/References/SeqCap_CapturedGenes.bed.gz \
+    -c CHROM,FROM,TO,GENE \
+    -o Full_CDS_missense_annotated.vcf.gz \
+    -O z \
+    -h <(echo '##INFO=<ID=GENE,Number=1,Type=String,Description="Gene name">') \
+    $WorkingDirectory/variantFiltration/Full_CDS_missense.vcf.gz
+parseVCF.py -i Full_CDS_missense_annotated.vcf.gz | bgzip > Full_CDS_missense.geno.gz
 # Step 3: Create windows file (this is already done for the genes, just needs to be done for missense SNPs)
-cd $WorkingDirectory/variantFiltration
-gunzip Full_CDS_missense.vcf.gz
-vcf2bed < Full_CDS_missense.vcf > $WorkingDirectory/References/Full_CDS_missense.bed
+gunzip Full_CDS_missense_annotated.vcf.gz
+vcf2bed < Full_CDS_missense_annotated.vcf > $WorkingDirectory/References/Full_CDS_missense.bed
 bgzip -f Full_CDS_missense.vcf
 bcftools index -f Full_CDS_missense.vcf.gz
 # Step 3: Create variables to be used for popGenWindows.py
@@ -347,22 +354,29 @@ popgenWindows.py --popsFile $ecos --windCoords $bedfile_missense -g $sites -o mi
 # Step 6: 
 echo "geneID" > Header.txt
 awk '{print $4}' $WorkingDirectory/References/SeqCap_CapturedGenes.bed > GeneIDs.txt
+awk '{print $9}' $WorkingDirectory/References/Full_CDS_missense.bed > MissIDs.txt
+sed -i 's/.*GENE=\(gene-\w*\);.*$/\1/' MissIDs.txt 
 cat Header.txt GeneIDs.txt > temp.txt ; mv temp.txt GeneIDs.txt
+cat Header.txt MissIDs.txt > temp.txt ; mv temp.txt MissIDs.txt
+gunzip exons.popgen.csv.gz
+gunzip exons.ecogen.csv.gz
 gunzip genes.popgen.csv.gz
 gunzip genes.ecogen.csv.gz
 gunzip missense.popgen.csv.gz
 gunzip missense.ecogen.csv
+genomics_general_add-genes GeneIDs.txt exons.popgen.csv
+genomics_general_add-genes GeneIDs.txt exons.ecogen.csv
 genomics_general_add-genes GeneIDs.txt genes.popgen.csv
 genomics_general_add-genes GeneIDs.txt genes.ecogen.csv
-genomics_general_add-genes GeneIDs.txt missense.popgen.csv
-genomics_general_add-genes GeneIDs.txt missense.ecogen.csv
+genomics_general_add-genes MissIDs.txt missense.popgen.csv
+genomics_general_add-genes MissIDs.txt missense.ecogen.csv
 }
 
-# function genomics_general_add-genes {
-# paste $1 $2 > temp.csv ; mv temp.csv $2
-# sed -i "s/\t/,/" $2
-# head -n -4 $2 > temp.txt ; mv temp.txt $2
-# }
+function genomics_general_add-genes {
+paste $1 $2 > temp.csv ; mv temp.csv $2
+sed -i "s/\t/,/" $2
+head -n -4 $2 > temp.txt ; mv temp.txt $2
+}
 
 function pixyPopGen {
   # Currently not using pixy for pop gen calculations, see instead pairwisePopGen and pairwisePopGen2 functions above
@@ -482,15 +496,13 @@ function moveCapturedGenes {
 function createMSA {
   cd $WorkingDirectory/SNP_analysis/vcf2fasta/RefSeq/Sequences/CapturedGenes
   ls *."$1" | cut -d "_" -f 2,3,4 | sort > "$2"List.txt
+  mv *."$1" ../
   mkdir -p $WorkingDirectory/SNP_analysis/"$4"/Captured"$1"
   cd $WorkingDirectory/SNP_analysis/"$4"/Captured"$1"
   while read fasta
   do
     while read sample
     do
-      sed -i "s/>"$sample"_"$sample"_"$sample"_/"$sample"_/" $WorkingDirectory/SNP_analysis/vcf2fasta/"$sample"/"$3"/"$sample"_"$fasta"
-      sed -i "s/>"$sample"_"$sample"_/"$sample"_/" $WorkingDirectory/SNP_analysis/vcf2fasta/"$sample"/"$3"/"$sample"_"$fasta"
-      sed -i "s/>rna/>"$sample"_/" $WorkingDirectory/SNP_analysis/vcf2fasta/"$sample"/"$3"/"$sample"_"$fasta"
       cat $WorkingDirectory/SNP_analysis/vcf2fasta/"$sample"/"$3"/"$sample"_"$fasta" >> Alignment_"$fasta"
       echo "" >> Alignment_"$fasta"
     done<$WorkingDirectory/SNP_analysis/vcf2fasta/sampleList.txt

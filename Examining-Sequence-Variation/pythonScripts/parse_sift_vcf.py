@@ -47,7 +47,7 @@ class AnnotatedSNP:
         self.sift_cat = search_result.group(7)
 
     def parse_snpeff_info(self, info_in):
-        pattern_str = r'\|missense_variant\|(\w+)\|'
+        pattern_str = r'\|(?:missense_variant|missense_variant\&splice_region_variant)\|(\w+)\|'
         pattern_obj = re.compile(pattern_str)
         search_result = re.search(pattern_obj, info_in)
         self.snpeff_cat = search_result.group(1) 
@@ -71,7 +71,7 @@ def parse_sift(infile_in, snp_dict_in):
             ref = line[3]
             alt = line[4]
             info = line[7]
-            print(info)
+            #import pdb; pdb.set_trace()
             new_snp = AnnotatedSNP(chrom, site, ref, alt, info)
             snp_dict_in[site] = new_snp
     return snp_dict_in
@@ -85,7 +85,6 @@ def parse_snpeff(infile_in, snp_dict_in):
     '''
     for line in infile_in:
         if line[0] != "#":
-            print(line)
             line = line.split("\t")
             site = line[1]
             info = line[7]
