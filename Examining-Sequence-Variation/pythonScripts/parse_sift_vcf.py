@@ -126,6 +126,6 @@ if __name__ == '__main__':
         write_outfile(snp_dict, outfile)
 
     # print gene list
-    with open(sys.argv[-1] + ".gene_list" , 'w') as outlist:
-       write_gene_set(snp_dict, outlist)
+    # with open(sys.argv[-1] + ".gene_list" , 'w') as outlist:
+    #   write_gene_set(snp_dict, outlist)
 

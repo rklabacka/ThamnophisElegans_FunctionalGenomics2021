@@ -218,8 +218,9 @@ source ./SNP_curation.sh
 #+ COMPLETE  getGeneTajD Exons
 #+ COMPLETE  pairwisePopGen2
 #+ COMPLETE  sort_samples_by_ecotype
-#+ COMPLETE  get_ecotype_vcf Lakeshore Full_CDS_missense
-#+ COMPLETE  get_ecotype_vcf Meadow Full_CDS_missense
+#+ COMPLETE  get_ecotype_vcf Lakeshore top_fst_dxy_sift
+#+ COMPLETE  get_ecotype_vcf Meadow top_fst_dxy_sift
+#+ COMPLETE  get_ecotype_allele_freq top_fst_dxy_sift
 # -- calculate PopGen statistics for each pairwise pop comparison
 #+ NO LONGER DOING: getPairwisePopGen
 
