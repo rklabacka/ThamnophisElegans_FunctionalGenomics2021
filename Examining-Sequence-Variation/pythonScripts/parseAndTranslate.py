@@ -15,11 +15,11 @@ pepseq = ""
 
 for line in fna_in:
     if line[0] == ">":
-        fna_out.write(header + cds) 
+        fna_out.write(">" + IndName + "_" + header.lstrip(">") + cds) 
         fna_out.close()
         Seq_cds = Seq(cds)
         pepseq = Seq_cds.translate()
-        faa_out.write(header + str(pepseq))
+        faa_out.write(">" + IndName + "_" + header.lstrip(">") + str(pepseq))
         faa_out.close()
         # Begin new isoform/gene
         header = line

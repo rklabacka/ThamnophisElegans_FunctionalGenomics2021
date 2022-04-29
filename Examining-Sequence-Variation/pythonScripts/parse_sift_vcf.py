@@ -96,6 +96,15 @@ def write_outfile(snp_dict_in, outfile_in):
     for snp in snp_dict_in:
         var_line = snp_dict_in[snp].return_attributes()
         outfile_in.write(var_line)
+
+def get_gene_set(snp_dict_in, outlist):
+    gene_set = set()
+    for site in snp_dict_in:
+        gene_set.add(snp_dict_in[site].gene)
+    for gene in gene_set:
+        write.outlist(gene + '\n')
+    
+        
         
 
 if __name__ == '__main__':
@@ -115,3 +124,8 @@ if __name__ == '__main__':
     # print outfile
     with open(sys.argv[-1], 'w') as outfile:
         write_outfile(snp_dict, outfile)
+
+    # print gene list
+    with open(sys.argv[-1] + ".gene_list" , 'w') as outlist:
+       write_gene_set(snp_dict, outlist)
+

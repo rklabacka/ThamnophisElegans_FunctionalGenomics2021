@@ -427,8 +427,8 @@ gunzip Full_CDS.vcf.gz
 cp $WorkingDirectory/variantFiltration/Full_CDS.vcf.gz .
 bcftools index -f Full_CDS.vcf.gz
 bcftools query -l Full_CDS.vcf.gz > sampleList_full.txt
-egrep -v '^[[:digit:]]' sampleList_full.txt > sampleList.txt
 #! At this point you should remove the WGS individuals from sampleList.txt, since we don't have their mapping info
+egrep -v '^[[:digit:]]' sampleList_full.txt > sampleList.txt
 # Add the reference to the sample list
 echo "RefSeq" >> sampleList.txt
 # Loop through the sample list
@@ -463,7 +463,7 @@ do
   gffread \
     -x "$sample"/"$sample"_maskedCDS.fasta \
     -g "$sample"/"$sample"_maskedGenome.fasta \
-    $WorkingDirectory/References/SeqCap_VariableCDS_gffread.gff 
+    $WorkingDirectory/References/Full_VariableCDS_gffread.gff 
   mkdir "$sample"/Sequences
   cd "$sample"/Sequences
   # Translate the fasta file to get the peptide sequence
@@ -478,7 +478,7 @@ mkdir -p RefSeq
 gffread \
   -x RefSeq/RefSeq_maskedCDS.fasta \
   -g $WorkingDirectory/References/TelagGenome.fasta \
-  $WorkingDirectory/References/SeqCap_VariableCDS_gffread.gff 
+  $WorkingDirectory/References/Full_VariableCDS_gffread.gff 
 mkdir RefSeq/Sequences
 cd RefSeq/Sequences
 python $pythonScripts/parseAndTranslate.py ../RefSeq_maskedCDS.fasta RefSeq
@@ -494,6 +494,10 @@ function moveCapturedGenes {
 }
 
 function createMSA {
+  # This funtion may need to be re-ran to get some genes that were not
+  # previously found in the f2fasta/RefSeq/Sequences sequences. As of 
+  # April 14 2022, this has been changed for the reference sequences, 
+  # but no change was made to the samples.
   cd $WorkingDirectory/SNP_analysis/vcf2fasta/RefSeq/Sequences/CapturedGenes
   ls *."$1" | cut -d "_" -f 2,3,4 | sort > "$2"List.txt
   mv *."$1" ../
@@ -518,7 +522,7 @@ do
   gffread \
     -x "$sample"/"$sample"_unmaskedCDS.fasta \
     -g "$sample"/"$sample"_wholeGenome.fasta \
-    $WorkingDirectory/References/SeqCap_VariableCDS_gffread.gff 
+    $WorkingDirectory/References/Full_VariableCDS_gffread.gff 
   mkdir "$sample"/UnmaskedSequences
   cd "$sample"/UnmaskedSequences
   python $pythonScripts/parseAndTranslate.py ../"$sample"_unmaskedCDS.fasta "$sample"
@@ -548,3 +552,17 @@ function pca_plink {
     --extract "$1".prune.in \
     --make-bed --pca --out "$1" 
 } 
+
+function sort_samples_by_ecotype {
+  cd $WorkingDirectory/variantFiltration
+  bcftools query -l Full_Exons.vcf.gz > sampleList_full.txt
+  python $pythonScripts/ecotype_parser.py sampleList_full.txt Lakeshore.txt Meadow.txt
+  mv Lakeshore.txt $WorkingDirectory/References/
+  mv Meadow.txt $WorkingDirectory/References
+}
+
+function get_ecotype_vcf {
+  cd $WorkingDirectory/variantFiltration
+  bcftools view --samples-file $WorkingDirectory/References/"$1".txt "$2".vcf.gz > "$2"_"$1".vcf
+  vcffixup "$2"_"$1".vcf > "$2"_"$1"_fixup.vcf
+}
