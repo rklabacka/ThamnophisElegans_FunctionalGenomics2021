@@ -555,18 +555,21 @@ function pca_plink {
 
 function sort_samples_by_ecotype {
   cd $WorkingDirectory/variantFiltration
-  bcftools query -l top_fst_dxy_sift.vcf > sampleList_full.txt
-  python $pythonScripts/ecotype_parser.py sampleList_full.txt Lakeshore.txt Meadow.txt
-  mv Lakeshore.txt $WorkingDirectory/References/
-  mv Meadow.txt $WorkingDirectory/References
+  bgzip "$1".vcf
+  bcftools index -f "$1".vcf.gz
+  bcftools query -l "$1".vcf.gz > sampleList_full.txt
+  python $pythonScripts/ecotype_parser.py sampleList_full.txt "$1"_Lakeshore.txt "$1"_Meadow.txt
+  mv "$1"_Lakeshore.txt $WorkingDirectory/References/
+  mv "$1"_Meadow.txt $WorkingDirectory/References
 }
 
 function get_ecotype_vcf {
   cd $WorkingDirectory/variantFiltration
-  bcftools view --samples-file $WorkingDirectory/References/"$1".txt "$2".vcf.gz > "$2"_"$1".vcf
-  vcffixup "$2"_"$1".vcf > "$2"_"$1"_fixup.vcf
+  bcftools view --samples-file $WorkingDirectory/References/"$1"_"$2".txt "$1".vcf.gz > "$1"_"$2".vcf
+  vcffixup "$1"_"$2".vcf > "$1"_"$2"_fixup.vcf
 }
 
 function get_ecotype_allele_freq {
+  cd $WorkingDirectory/variantFiltration
   python $pythonScripts/get_ecotype_AF.py -m "$1"_Meadow_fixup.vcf -l "$1"_Lakeshore_fixup.vcf -c "$1".csv
 }
