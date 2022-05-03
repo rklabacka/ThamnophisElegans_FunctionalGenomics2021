@@ -467,7 +467,7 @@ do
   mkdir "$sample"/Sequences
   cd "$sample"/Sequences
   # Translate the fasta file to get the peptide sequence
-  ~/miniconda3/bin/python3 $pythonScripts/parseAndTranslate.py ../"$sample"_maskedCDS.fasta "$sample"
+  ~/miniconda3/bin/python3 $pythonScripts/parse_and_translate.py ../"$sample"_maskedCDS.fasta "$sample"
 done<sampleList.txt
 # ^^ I created this list of samples from Full_CDS.vcf, using only the samples from Seq Cap or RNA seq
 }
