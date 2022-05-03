@@ -572,5 +572,5 @@ function get_ecotype_vcf {
 function get_ecotype_allele_freq {
   conda activate ThamnophisPopGen 
   cd $WorkingDirectory/variantFiltration
-  python $pythonScripts/get_ecotype_AF.py -m "$1"_Meadow_fixup.vcf -l "$1"_Lakeshore_fixup.vcf -c "$1".csv
+  python $pythonScripts/get_ecotype_AF.py -m "$1"_Meadow_fixup.vcf -l "$1"_Lakeshore_fixup.vcf -c "$1"_AF.csv
 .gz}
