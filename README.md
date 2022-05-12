@@ -125,10 +125,10 @@ You'll notice that the quality of each base call ([Phred score](https://en.wikip
      LEADING:20 TRAILING:20 SLIDINGWINDOW:6:20 MINLEN:36
 ```
 
-    Following read cleaning, we check the read quality again using fastqc. This time our position quality scores for our Seq-Cap reads look much better
+Following read cleaning, we check the read quality again using fastqc. This time our position quality scores for our Seq-Cap reads look much better
 ![Clean Read FastQC Quality](./Examining-Sequence-Variation/images/CleanReadsFastQC.png)
 
-    After cleaning our reads, we are ready to map them to a reference. This can be challenging from a study design perspective; the decision for how to map can be a tricky one. If you have a reference genome for your focal taxon (which we luckily did), you can simply map to this. Alternatively, you can map to a transcriptome or the genome of a closely-related species. For our study, we mapped to a reference genome. We map our cleaned reads using two approaches:
+After cleaning our reads, we are ready to map them to a reference. This can be challenging from a study design perspective; the decision for how to map can be a tricky one. If you have a reference genome for your focal taxon (which we luckily did), you can simply map to this. Alternatively, you can map to a transcriptome or the genome of a closely-related species. For our study, we mapped to a reference genome. We map our cleaned reads using two approaches:
 
 
 (1) for our reads from Seq-Cap, we mapped using the program [BWA](https://hpc.nih.gov/apps/bwa.html).
