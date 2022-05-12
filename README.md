@@ -8,6 +8,7 @@ _This code was used for data processing and analyses in Klabacka et al. (in prep
 ## Contents
 
 -   [Project Background](#project-background)
+-   [README Orientation](#readme-orientation)
 -   [Study Design](#study-design)
 -   [Bioinformatics](#bioinformatics)
 
@@ -17,6 +18,25 @@ _This code was used for data processing and analyses in Klabacka et al. (in prep
 ## Project Backround
 
 Studying factors driving natural variation in life-history strategies can help us understand how senescence evolves. Divergent ecotypes (slow-aging and fast-aging) of western terrestrial garter snake (Thamnophis elegans) provide a useful model system for examination of these factors. Here we examine gene expression and population genetics within and between these divergent ecotypes, and find support for hypothesized life-history divergence at the molecular level. We store our code for data processing and analyses, along with documentation for reproduction, within this repository.
+
+---
+
+# <a name="readme-orientation"></a>
+## README Orientation
+
+This README contains code description, code blocks, and images. The code blocks for commands implemented from a shell script are formatted for bash, and will have no prompt.
+
+```
+This is an example of a code block for bash
+```
+
+Code blocks that are formatted for python will have a ```>>>``` prompt.
+
+```
+>>> This is an example of a code block for python
+```
+
+The code blocks may not match the code within the files exactly- they have been simplified to avoid confusion (e.g., no loops, parallelization, or variable names are used in the code blocks). To see more-detailed implementation, refer to the script files.
 
 ---
 
@@ -70,15 +90,59 @@ Bioinformatic pipelines can be complex and complicated. Here I will describe the
 # <a name="raw-reads-2-mapped-alignment"></a>
 1.  Raw Reads to Mapped Alignment
 
-    We begin with raw '.fastq' files which we received from the genomic sequencing company. We need to clean these reads to (A) remove the adapter sequence and (B) remove low-quality information that may be incorrect due to sequencing error. To do this, we first check the quality using the program [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/). This program provides information about our reads, including position-specific quality scores, read-wide quality scores, and adapter content. Here is an example of the position quality scores for our Seq-Cap reads: 
+    We begin with raw '.fastq' files which we received from the genomic sequencing company. We need to clean these reads to (A) remove the adapter sequence and (B) remove low-quality information that may be incorrect due to sequencing error. To do this, we first check the quality using the program [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/). 
+
+```
+fastqc Read_R1.fastq.gz
+```
+
+This program provides information about our reads, including position-specific quality scores, read-wide quality scores, and adapter content. Here is an example of the position quality scores for our Seq-Cap reads: 
 ![Raw Read FastQC Quality](./Examining-Sequence-Variation/images/RawReadsFastQC.png)
 
     You'll notice that the quality of each base call ([Phred score](https://en.wikipedia.org/wiki/Phred_quality_score)] decreases toward the end of the reads. The FastQC output (an html file) contains many other plots to help assess read quality. To clean up our reads and remove the sequence adapters (which were used for binding, sequence initiation, and indexing), we use the program [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic). This program will clean up our reads using our specified parameters.
 
-    Following read cleaning, we check the read quality again. This time our position quality scores for our Seq-Cap reads look much better:
+```
+# Paired-end sequencing reads:
+   java -jar /tools/trimmomatic-0.36/trimmomatic-0.36.jar \
+     PE \
+     -threads 6 \
+     -phred33 \
+     Read_R1.fastq.gz \             # Forward raw read
+     Read_R2.fastq.gz \             # Reverse raw read
+     Cleaned_R1_paired.fastq.gz \   # Cleaned R1 read with pair found
+     Cleaned_R1_unpaired.fastq.gz \ # Cleaned R1 read without pair found
+     Cleaned_R2_paired.fastq.gz \   # Cleaned R1 read with pair found
+     Cleaned_R2_unpaired.fastq.gz \ # Cleaned R1 read without pair found 
+     ILLUMINACLIP:adapters.fa:2:30:10 LEADING:25 TRAILING:25 SLIDINGWINDOW:6:30 MINLEN:36
+
+# Single-end sequencing reads:
+   java -jar /tools/trimmomatic-0.37/bin/trimmomatic.jar \
+     SE \
+     -threads 6 \
+     -phred33 \
+     Read_.fastq.gz  \
+     Read_cleaned.fastq.gz \
+     LEADING:20 TRAILING:20 SLIDINGWINDOW:6:20 MINLEN:36
+```
+
+    Following read cleaning, we check the read quality again using fastqc. This time our position quality scores for our Seq-Cap reads look much better:
 ![Clean Read FastQC Quality](./Examining-Sequence-Variation/images/CleanReadsFastQC.png)
 
-    After cleaning our reads, we are ready to map them to a reference. This can be challenging from a study design perspective; the decision for how to map can be a tricky one. If you have a reference genome for your focal taxon (which we luckily did), you can simply map to this. Alternatively, you can map to a transcriptome or the genome of a closely-related species. We map our cleaned reads using two approaches: (1) for our reads from Seq-Cap, we mapped using the program [BWA](https://hpc.nih.gov/apps/bwa.html), (2) for our reads from RNA-Seq, we used [HiSat2](http://daehwankimlab.github.io/hisat2/). The approach you take depends on your nucleotide type and sequencing approach (e.g., reads from single-end sequencing should be treated differently than those from paired-end sequencing). Mapping will use the clean .fastq files to create a [.sam (sequence alignment map)](https://en.wikipedia.org/wiki/SAM_(file_format)) file. These can be converted to the compressed version, .bam, using [Samtools](https://www.htslib.org/) to increase downstream processing efficiency.
+    After cleaning our reads, we are ready to map them to a reference. This can be challenging from a study design perspective; the decision for how to map can be a tricky one. If you have a reference genome for your focal taxon (which we luckily did), you can simply map to this. Alternatively, you can map to a transcriptome or the genome of a closely-related species. For our study, we mapped to a reference genome. We map our cleaned reads using two approaches:
+
+
+(1) for our reads from Seq-Cap, we mapped using the program [BWA](https://hpc.nih.gov/apps/bwa.html).
+```
+    bwa mem \
+	-t 4 \
+	-M ReferenceGenome \
+        Read_R1_paired.fastq.gz \
+        Read_R2_paired.fastq.gz > \
+        Read_mapped.sam
+```
+
+
+(2) for our reads from RNA-Seq, we used [HiSat2](http://daehwankimlab.github.io/hisat2/). The approach you take depends on your nucleotide type and sequencing approach (e.g., reads from single-end sequencing should be treated differently than those from paired-end sequencing). Mapping will use the clean .fastq files to create a [.sam (sequence alignment map)](https://en.wikipedia.org/wiki/SAM_(file_format)) file. These can be converted to the compressed version, .bam, using [Samtools](https://www.htslib.org/) to increase downstream processing efficiency.
 
 # <a name="raw-reads-2-variant-calls"></a>
 2.  Mapped Alignment to Variant Calls
