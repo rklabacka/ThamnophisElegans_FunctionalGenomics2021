@@ -965,8 +965,8 @@ function hard-VariantFiltration {
     mv "$2"_HardFilterStep2.recode.vcf "$2"_HardFilterStep2.vcf
     echo "Post depth filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep2.vcf | wc -l)" >> Log.txt
   # Step 3: Get rid of unwanted individuals (T. sirtalis, duplicates, and siblings)
-    vcftools --remove $WorkingDirectory/References/Full_IndividualsToRemove.txt --vcf "$2"_HardFilterStep2.vcf --recode --recode-INFO-all --out "$2"_HardFilterStep3.vcf
-    mv "$2"_HardFilterStep3.vcf.recode.vcf "$2"_HardFilterStep3.vcf
+    vcftools --remove $WorkingDirectory/References/Full_IndividualsToRemove.txt --vcf "$2"_HardFilterStep2.vcf --out "$2"_HardFilterStep3 --recode --recode-INFO-all 
+    mv "$2"_HardFilterStep3.recode.vcf "$2"_HardFilterStep3.vcf
   # Step 4: Get rid of multiallelic SNPs (more than 2 alleles):
     bcftools view -m2 -M2 -v snps "$2"_HardFilterStep3.vcf > "$2"_HardFilterStep4.vcf
     echo "Post multiallelic filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep4.vcf | wc -l)" >> Log.txt
