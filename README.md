@@ -126,17 +126,17 @@ We use our high-confidence SNPs to generate a recalibration table (table_0) with
 ```
 
 * Then we used the ```hard-VariantFiltration``` function to further filter the VCF based on our determined criteria. One common area of confusion with VCF filtering is the object of filtration. Some commands filter the site (meaning the entire locus is removed), whereas other commands filter genotypes (meaning a single sample's genotype for a site is removed). We perform six steps of site and genotype filtration: 
-  (1) remove low-quality genotypes
+  -   (1) remove low-quality genotypes
 ```
     vcftools --vcf original.vcf --out HardFilterStep1 --minGQ 20 --recode --recode-INFO-all
     mv HardFilterStep1.recode.vcf HardFilterStep1.vcf # we rename here because vcftools added "recode" to the vcf
 ```
-  (2) remove low-depth genotypes
+  -   (2) remove low-depth genotypes
 ```
     vcftools --vcf HardFilterStep1.vcf --out HardFilterStep2 --minDP 10 --recode --recode-INFO-all
     mv HardFilterStep2.recode.vcf HardFilterStep2.vcf
 ```
-  (3) remove genotypes from individuals who are duplicates/siblings/other species, (4) remove sites with multiple alleles [more than 2], (5) remove sites where the alt allele is represented by a single individual, and (6) remove sites missing high amounts of data.
+  -   (3) remove genotypes from individuals who are duplicates/siblings/other species, (4) remove sites with multiple alleles [more than 2], (5) remove sites where the alt allele is represented by a single individual, and (6) remove sites missing high amounts of data.
 ```
     vcftools --remove Full_IndividualsToRemove.txt --vcf HardFilterStep2.vcf --out HardFilterStep3 --recode --recode-INFO-all 
     mv "$2"_HardFilterStep3.recode.vcf "$2"_HardFilterStep3.vcf
