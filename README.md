@@ -96,10 +96,10 @@ Bioinformatic pipelines can be complex and complicated. Here I will describe the
 fastqc Read_R1.fastq.gz
 ```
 
-This program provides information about our reads, including position-specific quality scores, read-wide quality scores, and adapter content. Here is an example of the position quality scores for our Seq-Cap reads: 
+This program provides information about our reads, including position-specific quality scores, read-wide quality scores, and adapter content. Below is an example of the position quality scores for our Seq-Cap reads 
 ![Raw Read FastQC Quality](./Examining-Sequence-Variation/images/RawReadsFastQC.png)
 
-    You'll notice that the quality of each base call ([Phred score](https://en.wikipedia.org/wiki/Phred_quality_score)] decreases toward the end of the reads. The FastQC output (an html file) contains many other plots to help assess read quality. To clean up our reads and remove the sequence adapters (which were used for binding, sequence initiation, and indexing), we use the program [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic). This program will clean up our reads using our specified parameters.
+You'll notice that the quality of each base call ([Phred score](https://en.wikipedia.org/wiki/Phred_quality_score)] decreases toward the end of the reads. The FastQC output (an html file) contains many other plots to help assess read quality. To clean up our reads and remove the sequence adapters (which were used for binding, sequence initiation, and indexing), we use the program [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic). This program will clean up our reads using our specified parameters.
 
 ```
 # Paired-end sequencing reads:
@@ -125,7 +125,7 @@ This program provides information about our reads, including position-specific q
      LEADING:20 TRAILING:20 SLIDINGWINDOW:6:20 MINLEN:36
 ```
 
-    Following read cleaning, we check the read quality again using fastqc. This time our position quality scores for our Seq-Cap reads look much better:
+    Following read cleaning, we check the read quality again using fastqc. This time our position quality scores for our Seq-Cap reads look much better
 ![Clean Read FastQC Quality](./Examining-Sequence-Variation/images/CleanReadsFastQC.png)
 
     After cleaning our reads, we are ready to map them to a reference. This can be challenging from a study design perspective; the decision for how to map can be a tricky one. If you have a reference genome for your focal taxon (which we luckily did), you can simply map to this. Alternatively, you can map to a transcriptome or the genome of a closely-related species. For our study, we mapped to a reference genome. We map our cleaned reads using two approaches:
