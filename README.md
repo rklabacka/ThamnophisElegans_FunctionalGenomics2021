@@ -126,6 +126,7 @@ We use our high-confidence SNPs to generate a recalibration table (table_0) with
 ```
 
 * Then we used the ```hard-VariantFiltration``` function to further filter the VCF based on our determined criteria. One common area of confusion with VCF filtering is the object of filtration. Some commands filter the site (meaning the entire locus is removed), whereas other commands filter genotypes (meaning a single sample's genotype for a site is removed). We perform six steps of site and genotype filtration: 
+
   .....(i) remove low-quality genotypes
 ```
     vcftools --vcf original.vcf --out HardFilterStep1 --minGQ 20 --recode --recode-INFO-all
@@ -136,26 +137,28 @@ We use our high-confidence SNPs to generate a recalibration table (table_0) with
     vcftools --vcf HardFilterStep1.vcf --out HardFilterStep2 --minDP 10 --recode --recode-INFO-all
     mv HardFilterStep2.recode.vcf HardFilterStep2.vcf
 ```
-  .....(iii) remove genotypes from individuals who are duplicates/siblings/other species, (4) remove sites with multiple alleles [more than 2], (5) remove sites where the alt allele is represented by a single individual, and (6) remove sites missing high amounts of data.
+  .....(iii) remove genotypes from individuals who are duplicates/siblings/other species 
 ```
     vcftools --remove Full_IndividualsToRemove.txt --vcf HardFilterStep2.vcf --out HardFilterStep3 --recode --recode-INFO-all 
     mv "$2"_HardFilterStep3.recode.vcf "$2"_HardFilterStep3.vcf
 ```
-
-  # Step 4: Get rid of multiallelic SNPs (more than 2 alleles):
+  .....(iv) remove sites with multiple alleles [more than 2]
+```
     bcftools view -m2 -M2 -v snps "$2"_HardFilterStep3.vcf > "$2"_HardFilterStep4.vcf
     echo "Post multiallelic filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep4.vcf | wc -l)" >> Log.txt
-  # Step 5: Get rid of low-frequency alleles- here just singletons:
+```
+  .....(v) remove sites where the alt allele is represented by a single individual
+```
     vcftools --mac 2 --vcf "$2"_HardFilterStep4.vcf --recode --recode-INFO-all --out "$2"_HardFilterStep5
     mv "$2"_HardFilterStep5.recode.vcf "$2"_HardFilterStep5.vcf
-    echo "Post singleton filtration $2 variants: $(grep -v "^#" "$2"_HardFilterStep5.vcf | wc -l)" >> Log.txt
-  # Step 6: Remove sites missing high amounts of data
+```
+  .....(vi) remove sites missing high amounts of data ( > 70%)
+```
     vcftools --max-missing 0.3 --vcf "$2"_HardFilterStep5.vcf --recode --recode-INFO-all --out "$2"_HardFilterStep6
     mv "$2"_HardFilterStep6.recode.vcf "$2"_HardFilterStep6.vcf
-    echo "Post removal of sites with high missing data: $(grep -v "^#" "$2"_HardFilterStep6.vcf | wc -l)" >> Log.txt
+```
 
-
-We also removed genotypes whose genotype quality < 20 or depth < 10 (parameters and order described in reads2vcf.sh). Finally, we can pull out the SNPs within exons and those within coding regions and put these within their own files using bcftools 'annotate' utility in with our specified annotation files as input. We finish this step with three files: SeqCap_Genes.vcf, SeqCap_Exons.vcf, and SeqCap_CDS.vcf (while these files are prefixed with 'SeqCap', they also include SNPs from the RNA-Seq dataset).
+Finally, we can pull out the SNPs within exons and those within coding regions and put these within their own files using bcftools 'annotate' utility in with our specified annotation files as input. We finish this step with three files: SeqCap_Genes.vcf, SeqCap_Exons.vcf, and SeqCap_CDS.vcf (while these files are prefixed with 'SeqCap', they also include SNPs from the RNA-Seq dataset).
 
     At each filtering step, we quantified the number of SNPs in the output VCF. The results are as follows:
 
