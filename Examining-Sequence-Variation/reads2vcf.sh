@@ -68,11 +68,13 @@ function performTrimmingPE {
      $WorkingDirectory/cleanReads"$1"/"$i"_R2_unpaired.fastq.gz \
      ILLUMINACLIP:adapters.fa:2:30:10 LEADING:25 TRAILING:25 SLIDINGWINDOW:6:30 MINLEN:36
    done<PE_TrimmList
+  echo "RLK_report: PE TRIMMING COMPLETE"
 }
    
 function performTrimmingSE {
   cd $WorkingDirectory/rawReads"$1"
     java -jar /tools/trimmomatic-0.37/bin/trimmomatic.jar SE -phred33 "$i"_1.fastq.gz  /scratch/GarterSnake/RNAseq_2008Data/CleanedData/"$i"_cleaned.fastq.gz  LEADING:20 TRAILING:20 SLIDINGWINDOW:6:20 MINLEN:36
+  echo "RLK_report: SE TRIMMING COMPLETE"
 }
 
 function copyRef-reads2vcf {
@@ -84,6 +86,8 @@ function copyRef-reads2vcf {
    cd $WorkingDirectory/References
    bwa index -p TelagGenome -a bwtsw TelagGenome.fasta
    gunzip TelagGenome.gff.gz
+  echo "RLK_report: REF COPY COMPLETE"
+}
 }
 
 function mapReadsDNA {
@@ -104,6 +108,7 @@ function mapReadsDNA {
      ###  convert .sam to .bam & sort  ###
      samtools view -@ 2 -bS $WorkingDirectory/mappedReads"$1"/"$i"*_mapped.sam | samtools sort -@ 2 -o $WorkingDirectory/mappedReads"$1"/"$i"_sorted.bam
    done<$WorkingDirectory/mappedReadsDNA/pairedMapList
+  echo "RLK_report: DNA READ MAPPING COMPLETE"
 }
 
 function mapSEReadsRNA {
@@ -139,6 +144,7 @@ function mapSEReadsRNA {
         # eAB: This will run stringtie once and hopefully ONLY use the Ref annotation
     stringtie -p 20 -e -B -G $WorkingDirectory/References/TelagGenome.gtf -o ballgown/"$i"/"$i".gtf  -l "$i"  $WorkingDirectory/mappedReadsRNA/"$i"_sorted.bam
   done<list
+  echo "RLK_report: SE RNA READ MAPPING COMPLETE"
 }
 
 function mapPEReadsRNA {
@@ -158,6 +164,7 @@ function mapPEReadsRNA {
     	# eAB: This will run stringtie once and hopefully ONLY use the Ref annotation
     stringtie -p 20 -e -B -G $WorkingDirectory/References/TelagGenome.gtf -o ballgown/"$i"/"$i".gtf  -l "$i"  $WorkingDirectory/mappedReadsRNA/"$i"_sorted.bam
   done<list
+  echo "RLK_report: PE RNA READ MAPPING COMPLETE"
 }
 function changeSeqCapNames {
   cd $WorkingDirectory/mappedReadsDNA
@@ -257,6 +264,7 @@ function changeSeqCapNames {
   mv HTAdapter94_sorted.bam SUM19_sorted.bam
   mv HTAdapter95_sorted.bam SUM20_sorted.bam
   mv HTAdapter96_sorted.bam SUM21_sorted.bam
+  echo "RLK_report: BAM NAME CHANGE COMPLETE"
 }
 
 function readGroupsRNA {
@@ -400,6 +408,7 @@ function readGroupsRNA {
   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497748_sorted.bam" O="SRR497748_IDed.bam" RGPU="ELF" RGSM="ELF524-03" RGPL="illumina" RGLB="RNASeq2008" 
   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497749_sorted.bam" O="SRR497749_IDed.bam" RGPU="PAP" RGSM="PAP504-03" RGPL="illumina" RGLB="RNASeq2008" 
   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR497738_sorted.bam" O="SRR497738_IDed.bam" RGPU="ELF" RGSM="ELF523-19" RGPL="illumina" RGLB="RNASeq2008" 
+  echo "RLK_report: ADD READ GROUPS COMPLETE"
 }
 
 function prepForVariantCalling {
@@ -427,6 +436,7 @@ function prepForVariantCalling {
       samtools flagstat $WorkingDirectory/GATK"$1"/"$i"_0.bam > $WorkingDirectory/Stats"$1"/"$i"_stats.txt
       samtools depth $WorkingDirectory/GATK"$1"/"$i"_0.bam > $WorkingDirectory/Stats"$1"/"$i"_depth.txt
   done<$WorkingDirectory/mappedReads"$1"/samList
+  echo "RLK_report: VARIANT CALL PREP COMPLETE"
 }
 
 function renameSortedBAMs {
