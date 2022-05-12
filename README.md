@@ -133,6 +133,7 @@ This program provides information about our reads, including position-specific q
 
 (1) for our reads from Seq-Cap, we mapped using the program [BWA](https://hpc.nih.gov/apps/bwa.html).
 ```
+# Mapping DNA paired-end reads
     bwa mem \
 	-t 4 \
 	-M ReferenceGenome \
@@ -141,8 +142,19 @@ This program provides information about our reads, including position-specific q
         Read_mapped.sam
 ```
 
+(2) for our reads from RNA-Seq, we used [HiSat2](http://daehwankimlab.github.io/hisat2/). This required preparing the reference (indexing, extracting splice sites, extracting exons)
 
-(2) for our reads from RNA-Seq, we used [HiSat2](http://daehwankimlab.github.io/hisat2/). The approach you take depends on your nucleotide type and sequencing approach (e.g., reads from single-end sequencing should be treated differently than those from paired-end sequencing). Mapping will use the clean .fastq files to create a [.sam (sequence alignment map)](https://en.wikipedia.org/wiki/SAM_(file_format)) file. These can be converted to the compressed version, .bam, using [Samtools](https://www.htslib.org/) to increase downstream processing efficiency.
+```
+extract_splice_sites.py Reference.gtf > Reference.ss  # This is a python script within the hisat2 alignment toolkit
+extract_exons.py Reference.gtf > Reference.exon       # This is a python script within the hisat2 alignment toolkit
+# Index reference
+hisat2-build -ss Reference.ss --exon Reference.exon Reference.fasta Reference_hisatIndex
+# Map reads
+hisat2 -p 20 --dta -x Reference_hisatIndex -U Read_cleaned.fastq.gz -S Read_mapped.sam
+```
+
+
+The approach you take depends on your nucleotide type and sequencing approach (e.g., reads from single-end sequencing should be treated differently than those from paired-end sequencing). Mapping will use the clean .fastq files to create a [.sam (sequence alignment map)](https://en.wikipedia.org/wiki/SAM_(file_format)) file. These can be converted to the compressed version, .bam, using [Samtools](https://www.htslib.org/) to increase downstream processing efficiency.
 
 # <a name="raw-reads-2-variant-calls"></a>
 2.  Mapped Alignment to Variant Calls
