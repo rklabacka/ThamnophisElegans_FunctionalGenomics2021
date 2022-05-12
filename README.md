@@ -89,7 +89,11 @@ Bioinformatic pipelines can be complex and complicated. Here I will describe the
 
     First, we call variants using [HaplotypeCaller](https://gatk.broadinstitute.org/hc/en-us/articles/360042913231-HaplotypeCaller). We then create a variant database and select only SNPs using [GenomicsDBImport](https://gatk.broadinstitute.org/hc/en-us/articles/360042477052-GenomicsDBImport), [GenotypeGVCFs](https://gatk.broadinstitute.org/hc/en-us/articles/360042914991-GenotypeGVCFs), and [SelectVariants](https://gatk.broadinstitute.org/hc/en-us/articles/360042913071-SelectVariants). During this process, we go from having a vcf for each sample (HaplotypeCaller uses the .bam file to create a .vcf for each individual) to a single .vcf for the full sample set (GenomicsDBImport creates a SNP database using all of the individuals, which is then used to create the .vcf with GenotypeGVCFs). We then use [VariantFiltration](https://gatk.broadinstitute.org/hc/en-us/articles/360042477652-VariantFiltration) to select SNPs we identify with high confidence.
 
-    Next, we perform what GATK developers refer to as "bootstrapping." We use our high-confidence SNPs to generate a recalibration table (table_0) with our .bam file using [BaseRecalibrator](https://gatk.broadinstitute.org/hc/en-us/articles/360042477672-BaseRecalibrator). We then perform base score recalibration to create a new .bam file using [ApplyBQSR](https://gatk.broadinstitute.org/hc/en-us/articles/360042476852-ApplyBQSR). With this new .bam file, we repeat the variant calling process described above (with the exception of variant filtration) and create another recalibration table (table_1). We then compare table_0 with table_1 using [AnalyzeCovariates](https://gatk.broadinstitute.org/hc/en-us/articles/360042911971-AnalyzeCovariates). This tool outputs a pdf that compares assigned quality scores and their accuracy between table_0 and table_1 within each individual. Here is an example of the exported plots:
+    Next, we perform what GATK developers refer to as "bootstrapping" (not to be confused with statistical bootstrapping). The idea behind this suggestion is described in the screenshot below.
+
+![Analyze Covariates Plot 0](./Examining-Sequence-Variation/images/BootstrappingDefinition.png)
+
+We use our high-confidence SNPs to generate a recalibration table (table_0) with our .bam file using [BaseRecalibrator](https://gatk.broadinstitute.org/hc/en-us/articles/360042477672-BaseRecalibrator). We then perform base score recalibration to create a new .bam file using [ApplyBQSR](https://gatk.broadinstitute.org/hc/en-us/articles/360042476852-ApplyBQSR). With this new .bam file, we repeat the variant calling process described above (with the exception of variant filtration) and create another recalibration table (table_1). We then compare table_0 with table_1 using [AnalyzeCovariates](https://gatk.broadinstitute.org/hc/en-us/articles/360042911971-AnalyzeCovariates). This tool outputs a pdf that compares assigned quality scores and their accuracy between table_0 and table_1 within each individual. Here is an example of the exported plots:
 ![Analyze Covariates Plot 0](./Examining-Sequence-Variation/images/AnalyzeCovariates_0.png)
 
     We repeat the above until it appears that that the scores converge. This process uses machine learning to model systematic (non-random) errors in Phred score assignment. Each iteration uses the high-confidence SNPs to update the scores within the .bam files. Ideally this would be done using a database of high-confidence SNPs previously collected. However, this is not an option for many non-model organisms (thus the "bootstrapping" suggestion by GATK). We performed this process for both Seq-Cap and RNA-Seq datasets independently, resulting in a vcf file for each. Here is what the plots will look like once convergence is reached:
@@ -98,7 +102,30 @@ Bioinformatic pipelines can be complex and complicated. Here I will describe the
 # <a name="variant-call-processing"></a>
 3.  Variant Call Processing & Filtration 
 
-    With .vcf files for both Seq-Cap and RNA-Seq datasets, we are now ready to merge these files. We do this using the 'merge' utility within the software package (bcftools)[https://samtools.github.io/bcftools/bcftools.html]. Using an abbreviated annotation file specific to our targeted genes (created using blast tools implemented in the function probes2gff within the reads2vcf.sh code file), we annotated and extracted the merged SNPs from our target genes using the bcftools 'annotate' utility and an awk command. We then performed variant filtration within the annotated .vcf using the software packages [vcftools](http://vcftools.sourceforge.net/) and bcftools. In brief, we removed variant sites that were: reference-specific (singletons in reference), strand odds ratio > 3 (high strand bias), quality of depth < 2 (variant confidence divided by raw depth), RMS mapping quality < 40 (root mean square quality over all mapped reads at a sight), fisher strand > 60 (Phred-scaled probability that strand bias exists at a site), singletons (alleles only present in one individual, and multiallelic (more than 2 alleles), or those with high missing data (maximum missing: 70 percent).
+    With .vcf files for both Seq-Cap and RNA-Seq datasets, we are now ready to merge these files. We do this using the 'merge' utility within the software package (bcftools)[https://samtools.github.io/bcftools/bcftools.html]. Using an abbreviated annotation file specific to our targeted genes (created using blast tools implemented in the function probes2gff within the reads2vcf.sh code file), we annotated and extracted the merged SNPs from our target genes using the bcftools 'annotate' utility and an awk command. We then performed variant filtration within the annotated .vcf using the software packages [GATK](https://gatk.broadinstitute.org), [vcftools](http://vcftools.sourceforge.net/) and [bcftools](https://samtools.github.io/bcftools/bcftools.html). Let's break these steps down:
+
+* First we use the ```initial-VariantFiltration``` function to filter based on recommendations from the GATK best practices. This includes filtering out sites with SOR (estimated strand bias without penalizing reads that occur at the end of exons) > 3.0, QD (variant confidence divided by raw depth at a site) < 2.0, MQ (Root mean square mapping quality over all the reads at the site) < 40.0, MQRankSum (Compares mapping qualities of reads supporting the reference allele tot hose supporting the alternate allele) < -12.5, FS (Phred-scaled probability of strand bias) > 60.0, and ReadPosRankSum < -5.0. 
+
+```
+  /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" VariantFiltration \
+        -R $WorkingDirectory/References/TelagGenome.fasta \
+        -V "$1" \
+        -O "$2"_Init.vcf \
+        --filter-name "SOR" \
+        --filter-expression "SOR > 3.0" \
+        --filter-name "QD" \
+        --filter-expression "QD < 2.0" \
+        --filter-name "MQ" \
+        --filter-expression "MQ < 40.0" \
+        --filter-name "MQRankSum" \
+        --filter-expression "MQRankSum < -12.5" \
+        --filter-name "FS" \
+        --filter-expression "FS > 60.0" \
+        --filter-name "ReadPosRankSum" \
+        --filter-expression "ReadPosRankSum < -5.0"
+```
+
+In brief, we removed variant sites that were: reference-specific (singletons in reference), strand odds ratio > 3 (high strand bias), quality of depth < 2 (variant confidence divided by raw depth), RMS mapping quality < 40 (root mean square quality over all mapped reads at a sight), fisher strand > 60 (Phred-scaled probability that strand bias exists at a site), singletons (alleles only present in one individual, and multiallelic (more than 2 alleles), or those with high missing data (maximum missing: 70 percent).
 
     We also removed genotypes whose genotype quality < 20 or depth < 10 (parameters and order described in reads2vcf.sh). Finally, we can pull out the SNPs within exons and those within coding regions and put these within their own files using bcftools 'annotate' utility in with our specified annotation files as input. We finish this step with three files: SeqCap_Genes.vcf, SeqCap_Exons.vcf, and SeqCap_CDS.vcf (while these files are prefixed with 'SeqCap', they also include SNPs from the RNA-Seq dataset).
 
