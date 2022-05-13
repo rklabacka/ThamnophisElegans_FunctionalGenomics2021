@@ -14,7 +14,7 @@ _This code was used for data processing and analyses in Klabacka et al. (in prep
 # <a name="readme-orientation"></a>
 ## README Orientation
 
-This README contains code description, code blocks, and images. The code blocks for commands implemented from a shell script are formatted for bash, and will have no prompt.
+This README contains code description, code blocks, and reads2vcf/images. The code blocks for commands implemented from a shell script are formatted for bash, and will have no prompt.
 
 ```
 This is an example of a code block for bash
@@ -49,7 +49,7 @@ fastqc Sample1_R1.fastq.gz
 ```
 
 This program provides information about our reads, including position-specific quality scores, read-wide quality scores, and adapter content. Below is an example of the position quality scores for our Seq-Cap reads 
-![Raw Read FastQC Quality](./Examining-Sequence-Variation/images/RawReadsFastQC.png)
+![Raw Read FastQC Quality](./Examining-Sequence-Variation/reads2vcf/images/RawReadsFastQC.png)
 
 You'll notice that the quality of each base call ([Phred score](https://en.wikipedia.org/wiki/Phred_quality_score)] decreases toward the end of the reads. The FastQC output (an html file) contains many other plots to help assess read quality. To clean up our reads and remove the sequence adapters (which were used for binding, sequence initiation, and indexing), we use the program [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic). This program will clean up our reads using our specified parameters.
 
@@ -78,7 +78,7 @@ You'll notice that the quality of each base call ([Phred score](https://en.wikip
 ```
 
 Following read cleaning, we check the read quality again using fastqc. This time our position quality scores for our Seq-Cap reads look much better
-![Clean Read FastQC Quality](./Examining-Sequence-Variation/images/CleanReadsFastQC.png)
+![Clean Read FastQC Quality](./Examining-Sequence-Variation/reads2vcf/images/CleanReadsFastQC.png)
 
 ## Map Reads
 After cleaning our reads, we are ready to map them to a reference. This can be challenging from a study design perspective; the decision for how to map can be a tricky one. If you have a reference genome for your focal taxon, you can simply map to this. Alternatively, you can map to a transcriptome or the genome of a closely-related species. For our study, we mapped to a reference genome. We map our cleaned reads using two approaches:
@@ -151,7 +151,7 @@ gatk-4.1.7.0/gatk --java-options "-Xmx16g" HaplotypeCaller \
   -ERC GVCF
 ```
 
-While performing variant calling, we create our cohort sample map that will be used for combine the gvcf files. All the steps up to this point are occuring for each sample (e.g., in a loop), but we have only been showing the step for a single individual (see function ```use-HaplotypeCaller```).
+While performing variant calling, we create our cohort sample map that will be used to combine the gvcf files. All the steps up to this point are occuring for each sample (e.g., in a loop), but we have only been showing the step for a single individual (see function ```use-HaplotypeCaller```).
 ```
 echo "Sample1$'\t'Sample1_0.g.vcf" >> cohort.sample_map_0
 ## NOTE: We labeled this "cohort.sample_map_0" because it will be for the first iteration of variant calling (i.e., index 0)
@@ -195,7 +195,7 @@ gatk-4.1.7.0/gatk --java-options "-Xmx16g" VariantFiltration \
 
 Next, we perform what GATK developers refer to as "bootstrapping" (not to be confused with statistical bootstrapping). The idea behind this suggestion is described in the screenshot below.
 
-![Analyze Covariates Plot 0](./Examining-Sequence-Variation/images/BootstrappingDefinition.png)
+![Analyze Covariates Plot 0](./Examining-Sequence-Variation/reads2vcf/images/BootstrappingDefinition.png)
 
 We use our high-confidence SNPs to generate a recalibration table (table_0) with our .bam file using [BaseRecalibrator](https://gatk.broadinstitute.org/hc/en-us/articles/360042477672-BaseRecalibrator). This is performed for each individual sample (see function ```use-BaseRecalibrator```).
 
@@ -231,10 +231,10 @@ gatk-4.1.7.0/gatk --java-options "-Xmx16g" AnalyzeCovariates \
 ```
 
 This tool outputs a pdf that compares assigned quality scores and their accuracy between table_0 and table_1 within each individual. Here is an example of the exported plots
-![Analyze Covariates Plot 0](./Examining-Sequence-Variation/images/AnalyzeCovariates_0.png)
+![Analyze Covariates Plot 0](./Examining-Sequence-Variation/reads2vcf/images/AnalyzeCovariates_0.png)
 
 We repeat the above until it appears that that the scores converge. This process uses machine learning to model systematic (non-random) errors in Phred score assignment. Each iteration uses the high-confidence SNPs to update the scores within the .bam files. Ideally this would be done using a database of high-confidence SNPs previously collected. However, this is not an option for many non-model organisms (thus the "bootstrapping" suggestion by GATK). We performed this process for both Seq-Cap and RNA-Seq datasets independently, resulting in a vcf file for each. Here is what the plots will look like once convergence is reached
-![Analyze Covariates Plot 1](./Examining-Sequence-Variation/images/AnalyzeCovariates_1.png)
+![Analyze Covariates Plot 1](./Examining-Sequence-Variation/reads2vcf/images/AnalyzeCovariates_1.png)
 
 # <a name="variant-call-processing"></a>
 3.  Variant Call Processing & Filtration 
