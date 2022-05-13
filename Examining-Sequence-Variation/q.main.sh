@@ -91,8 +91,8 @@ cd /home/rlk0015/projects/Thamnophis/ThamnophisElegans_FunctionalGenomics2021/Ex
 #+ COMPLETE  changeSeqCapNames
 #+ COMPLETE  
 #+ COMPLETE  # Add sequencing read group information to each sample
-#+ COMPLETE  readGroupsRNA 
-#+ COMPLETE  readGroupsDNA
+#+ COMPLETE  AddReadGroupsRNA 
+#+ COMPLETE  AddReadGroupsDNA
 #+ COMPLETE  
 #+ COMPLETE  # Prep for SNP calling and calculate mapping stats
 #+ COMPLETE  indexReference TelegansGenome.fasta
