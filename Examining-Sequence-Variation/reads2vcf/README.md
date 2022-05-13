@@ -30,10 +30,12 @@ The code blocks may not match the code within the files exactly- they have been 
 
 ---
 
-# <a name="bioinformatics"></a>
-## Bioinformatics
+# <a name="workflow"></a>
+## Workflow
 
--   'reads2vcf.sh' : This file contains functions for processing raw reads from RNA-Seq and Seq-Cap (cleaning, mapping, etc.) and calling SNPs 
+-   [Raw Reads to Mapped Alignment](#raw-reads-2-mapped-alignment)
+-   [Mapped Alignment to Variant Calls](#raw-reads-2-variant-calls)
+-   [Variant Call Processing & Filtration](#variant-call-processing)
 
 # <a name="raw-reads-2-mapped-alignment"></a>
 #  Raw Reads to Mapped Alignment
@@ -66,35 +68,24 @@ You'll notice that the quality of each base call ([Phred score](https://en.wikip
      ILLUMINACLIP:adapters.fa:2:30:10 LEADING:25 TRAILING:25 SLIDINGWINDOW:6:30 MINLEN:36
 
 # Single-end sequencing reads:
-   java -jar /tools/trimmomatic-0.37/bin/trimmomatic.jar \
-     SE \
-     -threads 6 \
-     -phred33 \
-     Sample_.fastq.gz  \
-     Sample_cleaned.fastq.gz \
-     LEADING:20 TRAILING:20 SLIDINGWINDOW:6:20 MINLEN:36
+   java -jar /tools/trimmomatic-0.37/bin/trimmomatic.jar SE  -threads 6  -phred33  Sample_.fastq.gz  Sample_cleaned.fastq.gz  LEADING:20 TRAILING:20 SLIDINGWINDOW:6:20 MINLEN:36
 ```
 
 Following read cleaning, we check the read quality again using fastqc. This time our position quality scores for our Seq-Cap reads look much better
 ![Clean Read FastQC Quality](./Examining-Sequence-Variation/images/CleanReadsFastQC.png)
 
+## Map Reads
 After cleaning our reads, we are ready to map them to a reference. This can be challenging from a study design perspective; the decision for how to map can be a tricky one. If you have a reference genome for your focal taxon, you can simply map to this. Alternatively, you can map to a transcriptome or the genome of a closely-related species. For our study, we mapped to a reference genome. We map our cleaned reads using two approaches:
 
 
-(1) for our reads from Seq-Cap, we mapped using the program [BWA](https://hpc.nih.gov/apps/bwa.html).
+1. For our reads from Seq-Cap, we mapped using the program [BWA](https://hpc.nih.gov/apps/bwa.html).
 ```
 # Index reference genome for bwa
     bwa index -p ReferenceGenome -a bwtsw ReferenceGenome.fasta
 # Mapping DNA paired-end reads
-    bwa mem \
-	-t 4 \
-	-M ReferenceGenome \
-        Sample_R1_paired.fastq.gz \
-        Sample_R2_paired.fastq.gz > \
-        Sample_mapped.sam
+    bwa mem -t 4 -M ReferenceGenome  Sample_R1_paired.fastq.gz  Sample_R2_paired.fastq.gz  >  Sample_mapped.sam
 ```
-
-(2) for our reads from RNA-Seq, we used [HiSat2](http://daehwankimlab.github.io/hisat2/). This required preparing the reference (indexing, extracting splice sites, extracting exons)
+2. For our reads from RNA-Seq, we used [HiSat2](http://daehwankimlab.github.io/hisat2/). This required preparing the reference (indexing, extracting splice sites, extracting exons)
 
 ```
 extract_splice_sites.py ReferenceGenome.gtf > ReferenceGenome.ss  # This is a python script within the hisat2 alignment toolkit
@@ -105,26 +96,29 @@ hisat2-build -ss ReferenceGenome.ss --exon ReferenceGenome.exon ReferenceGenome.
 hisat2 -p 20 --dta -x ReferenceGenome_hisatIndex -U Sample_cleaned.fastq.gz -S Sample_mapped.sam
 ```
 
-You can then compress and sort the .sam files to .bam files using [Samtools](https://www.htslib.org/)
+3. You can then compress and sort the .sam files to .bam files using [Samtools](https://www.htslib.org/)
 
 ```
 samtools view -@ 2 -bS Sample_mapped.sam | samtools sort -@ 2 -o Sample_sorted.bam
   
 ```
 
-
 The approach you take depends on your nucleotide type and sequencing approach (e.g., reads from single-end sequencing should be treated differently than those from paired-end sequencing). Mapping will use the clean .fastq files to create a [.sam (sequence alignment map)](https://en.wikipedia.org/wiki/SAM_(file_format)) file. These can be converted to the compressed version, .bam, using [Samtools](https://www.htslib.org/) to increase downstream processing efficiency.
 
 # <a name="raw-reads-2-variant-calls"></a>
-2.  Mapped Alignment to Variant Calls
+##  Mapped Alignment to Variant Calls
 
-    Once reads have been mapped and stored in an alignment file, variation at specific positions can be identified. To prepare for variant calling, it is important to identify reads that might be duplicates (e.g., from PCR). We mark these duplicates using the MarkDuplicates tool from [Picard](https://gatk.broadinstitute.org/hc/en-us/articles/360037052812-MarkDuplicates-Picard-).
+Once reads have been mapped and stored in an alignment file, variation at specific positions can be identified. To prepare for variant calling, it is important to identify reads that might be duplicates (e.g., from PCR). We mark these duplicates using the MarkDuplicates tool from [Picard](https://gatk.broadinstitute.org/hc/en-us/articles/360037052812-MarkDuplicates-Picard-).
 
-    After marking duplicates, we perform a round of variant calling. For this project, we are specifically interested in single nucleotide polymorphisms (SNPs) that we can identify using various tools within the software package [GATK](https://gatk.broadinstitute.org). We follow the [GATK best practices workflow for germline short variant discovery](https://gatk.broadinstitute.org/hc/en-us/articles/360035535932-Germline-short-variant-discovery-SNPs-Indels-) and implement suggestions regarding [base score recalibration](https://gatk.broadinstitute.org/hc/en-us/articles/360035890531-Base-Quality-Score-Recalibration-BQSR-) in non-model organisms. Like many software packages, GATK is updated regularly. We used version [4.1.7](https://gatk.broadinstitute.org/hc/en-us/articles/360042912311--Tool-Documentation-Index), but advise others to be aware that changes in versions may affect functionality/outcomes.
+```
+java -Xmx8g -jar picard.jar AddOrReplaceReadGroups I="Sample_sorted.bam" O="Sample_IDed.bam" RGPU="RunBarcode1" RGSM="ReadGroupSample" RGPL="Illumina" RGLB="ReadGroupLibrary"
+```
 
-    First, we call variants using [HaplotypeCaller](https://gatk.broadinstitute.org/hc/en-us/articles/360042913231-HaplotypeCaller). We then create a variant database and select only SNPs using [GenomicsDBImport](https://gatk.broadinstitute.org/hc/en-us/articles/360042477052-GenomicsDBImport), [GenotypeGVCFs](https://gatk.broadinstitute.org/hc/en-us/articles/360042914991-GenotypeGVCFs), and [SelectVariants](https://gatk.broadinstitute.org/hc/en-us/articles/360042913071-SelectVariants). During this process, we go from having a vcf for each sample (HaplotypeCaller uses the .bam file to create a .vcf for each individual) to a single .vcf for the full sample set (GenomicsDBImport creates a SNP database using all of the individuals, which is then used to create the .vcf with GenotypeGVCFs). We then use [VariantFiltration](https://gatk.broadinstitute.org/hc/en-us/articles/360042477652-VariantFiltration) to select SNPs we identify with high confidence.
+After marking duplicates, we perform a round of variant calling. For this project, we are specifically interested in single nucleotide polymorphisms (SNPs) that we can identify using various tools within the software package [GATK](https://gatk.broadinstitute.org). We follow the [GATK best practices workflow for germline short variant discovery](https://gatk.broadinstitute.org/hc/en-us/articles/360035535932-Germline-short-variant-discovery-SNPs-Indels-) and implement suggestions regarding [base score recalibration](https://gatk.broadinstitute.org/hc/en-us/articles/360035890531-Base-Quality-Score-Recalibration-BQSR-) in non-model organisms. Like many software packages, GATK is updated regularly. We used version [4.1.7](https://gatk.broadinstitute.org/hc/en-us/articles/360042912311--Tool-Documentation-Index), but advise others to be aware that changes in versions may affect functionality/outcomes.
 
-    Next, we perform what GATK developers refer to as "bootstrapping" (not to be confused with statistical bootstrapping). The idea behind this suggestion is described in the screenshot below.
+First, we call variants using [HaplotypeCaller](https://gatk.broadinstitute.org/hc/en-us/articles/360042913231-HaplotypeCaller). We then create a variant database and select only SNPs using [GenomicsDBImport](https://gatk.broadinstitute.org/hc/en-us/articles/360042477052-GenomicsDBImport), [GenotypeGVCFs](https://gatk.broadinstitute.org/hc/en-us/articles/360042914991-GenotypeGVCFs), and [SelectVariants](https://gatk.broadinstitute.org/hc/en-us/articles/360042913071-SelectVariants). During this process, we go from having a vcf for each sample (HaplotypeCaller uses the .bam file to create a .vcf for each individual) to a single .vcf for the full sample set (GenomicsDBImport creates a SNP database using all of the individuals, which is then used to create the .vcf with GenotypeGVCFs). We then use [VariantFiltration](https://gatk.broadinstitute.org/hc/en-us/articles/360042477652-VariantFiltration) to select SNPs we identify with high confidence.
+
+Next, we perform what GATK developers refer to as "bootstrapping" (not to be confused with statistical bootstrapping). The idea behind this suggestion is described in the screenshot below.
 
 ![Analyze Covariates Plot 0](./Examining-Sequence-Variation/images/BootstrappingDefinition.png)
 
