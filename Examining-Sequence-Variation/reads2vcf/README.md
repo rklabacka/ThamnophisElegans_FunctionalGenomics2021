@@ -45,7 +45,7 @@ The code blocks may not match the code within the files exactly- they have been 
 We begin with raw '.fastq' files which we received from the genomic sequencing company. We need to clean these reads to (A) remove the adapter sequence and (B) remove low-quality information that may be incorrect due to sequencing error. To do this, we first check the quality using the program [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/). 
 
 ```
-fastqc Sample_R1.fastq.gz
+fastqc Sample1_R1.fastq.gz
 ```
 
 This program provides information about our reads, including position-specific quality scores, read-wide quality scores, and adapter content. Below is an example of the position quality scores for our Seq-Cap reads 
@@ -59,8 +59,8 @@ You'll notice that the quality of each base call ([Phred score](https://en.wikip
      PE \
      -threads 6 \
      -phred33 \
-     Sample_R1.fastq.gz \             # Forward raw read
-     Sample_R2.fastq.gz \             # Reverse raw read
+     Sample1_R1.fastq.gz \             # Forward raw read
+     Sample1_R2.fastq.gz \             # Reverse raw read
      Cleaned_R1_paired.fastq.gz \   # Cleaned R1 read with pair found
      Cleaned_R1_unpaired.fastq.gz \ # Cleaned R1 read without pair found
      Cleaned_R2_paired.fastq.gz \   # Cleaned R1 read with pair found
@@ -68,7 +68,13 @@ You'll notice that the quality of each base call ([Phred score](https://en.wikip
      ILLUMINACLIP:adapters.fa:2:30:10 LEADING:25 TRAILING:25 SLIDINGWINDOW:6:30 MINLEN:36
 
 # Single-end sequencing reads:
-   java -jar /tools/trimmomatic-0.37/bin/trimmomatic.jar SE  -threads 6  -phred33  Sample_.fastq.gz  Sample_cleaned.fastq.gz  LEADING:20 TRAILING:20 SLIDINGWINDOW:6:20 MINLEN:36
+   java -jar /tools/trimmomatic-0.37/bin/trimmomatic.jar \
+     SE \
+     -threads 6 \
+     -phred33 \
+     Sample1_.fastq.gz  \
+     Sample1_cleaned.fastq.gz \
+     LEADING:20 TRAILING:20 SLIDINGWINDOW:6:20 MINLEN:36
 ```
 
 Following read cleaning, we check the read quality again using fastqc. This time our position quality scores for our Seq-Cap reads look much better
@@ -83,9 +89,9 @@ After cleaning our reads, we are ready to map them to a reference. This can be c
 # Index reference genome for bwa
     bwa index -p ReferenceGenome -a bwtsw ReferenceGenome.fasta
 # Mapping DNA paired-end reads
-    bwa mem -t 4 -M ReferenceGenome  Sample_R1_paired.fastq.gz  Sample_R2_paired.fastq.gz  >  Sample_mapped.sam
+    bwa mem -t 4 -M ReferenceGenome  Sample1_R1_paired.fastq.gz  Sample1_R2_paired.fastq.gz  >  Sample1_mapped.sam
 ```
-2. For our reads from RNA-Seq, we used [HiSat2](http://daehwankimlab.github.io/hisat2/). This required preparing the reference (indexing, extracting splice sites, extracting exons)
+1. For our reads from RNA-Seq, we used [HiSat2](http://daehwankimlab.github.io/hisat2/). This required preparing the reference (indexing, extracting splice sites, extracting exons)
 
 ```
 extract_splice_sites.py ReferenceGenome.gtf > ReferenceGenome.ss  # This is a python script within the hisat2 alignment toolkit
@@ -93,30 +99,97 @@ extract_exons.py ReferenceGenome.gtf > ReferenceGenome.exon       # This is a py
 # Index reference
 hisat2-build -ss ReferenceGenome.ss --exon ReferenceGenome.exon ReferenceGenome.fasta ReferenceGenome_hisatIndex
 # Map reads
-hisat2 -p 20 --dta -x ReferenceGenome_hisatIndex -U Sample_cleaned.fastq.gz -S Sample_mapped.sam
+hisat2 -p 20 --dta -x ReferenceGenome_hisatIndex -U Sample1_cleaned.fastq.gz -S Sample1_mapped.sam
 ```
 
-3. You can then compress and sort the .sam files to .bam files using [Samtools](https://www.htslib.org/)
+1. You can then compress and sort the .sam files to .bam files using [Samtools](https://www.htslib.org/)
 
 ```
-samtools view -@ 2 -bS Sample_mapped.sam | samtools sort -@ 2 -o Sample_sorted.bam
+samtools view -@ 2 -bS Sample1_mapped.sam | samtools sort -@ 2 -o Sample1_sorted.bam
   
+```
+
+1. Lastly, we add read groups to the sorted read files using the functions ```AddReadGroupsRNA``` and ```AddReadGroupsDNA```
+
+```
+java -Xmx8g -jar picard.jar AddOrReplaceReadGroups I="Sample1_sorted.bam" O="Sample1_IDed.bam" RGPU="RunBarcode1" RGSM="ReadGroupSample1" RGPL="Illumina" RGLB="ReadGroupLibrary"
 ```
 
 The approach you take depends on your nucleotide type and sequencing approach (e.g., reads from single-end sequencing should be treated differently than those from paired-end sequencing). Mapping will use the clean .fastq files to create a [.sam (sequence alignment map)](https://en.wikipedia.org/wiki/SAM_(file_format)) file. These can be converted to the compressed version, .bam, using [Samtools](https://www.htslib.org/) to increase downstream processing efficiency.
 
 # <a name="raw-reads-2-variant-calls"></a>
-##  Mapped Alignment to Variant Calls
+##  Call Variants
 
-Once reads have been mapped and stored in an alignment file, variation at specific positions can be identified. To prepare for variant calling, it is important to identify reads that might be duplicates (e.g., from PCR). We mark these duplicates using the MarkDuplicates tool from [Picard](https://gatk.broadinstitute.org/hc/en-us/articles/360037052812-MarkDuplicates-Picard-).
+### Prepare to call variants
+
+Once reads have been mapped and stored in an alignment file, variation at specific positions can be identified. To prepare for variant calling, it is important to identify reads that might be duplicates (e.g., from PCR). We mark these duplicates and index the IDed .bam file using the MarkDuplicates tool from [Picard](https://gatk.broadinstitute.org/hc/en-us/articles/360037052812-MarkDuplicates-Picard-) in the function ```prepForVariantCalling```.
 
 ```
-java -Xmx8g -jar picard.jar AddOrReplaceReadGroups I="Sample_sorted.bam" O="Sample_IDed.bam" RGPU="RunBarcode1" RGSM="ReadGroupSample" RGPL="Illumina" RGLB="ReadGroupLibrary"
+# mark duplicates 
+  java -Xmx8g -jar /tools/picard-tools-2.4.1/MarkDuplicates.jar   INPUT=Sample1_IDed.bam   OUTPUT=Sample1_0.bam   METRICS_FILE=DuplicationMetrics   CREATE_INDEX=true   VALIDATION_STRINGENCY=SILENT   MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=1000   ASSUME_SORTED=TRUE   REMOVE_DUPLICATES=TRUE
+# index sorted bam
+  samtools index Sample1_0.bam
+## NOTE: We labeled this "Sample1_0.bam" because it will be for the first iteration of variant calling (i.e., index 0)
 ```
 
-After marking duplicates, we perform a round of variant calling. For this project, we are specifically interested in single nucleotide polymorphisms (SNPs) that we can identify using various tools within the software package [GATK](https://gatk.broadinstitute.org). We follow the [GATK best practices workflow for germline short variant discovery](https://gatk.broadinstitute.org/hc/en-us/articles/360035535932-Germline-short-variant-discovery-SNPs-Indels-) and implement suggestions regarding [base score recalibration](https://gatk.broadinstitute.org/hc/en-us/articles/360035890531-Base-Quality-Score-Recalibration-BQSR-) in non-model organisms. Like many software packages, GATK is updated regularly. We used version [4.1.7](https://gatk.broadinstitute.org/hc/en-us/articles/360042912311--Tool-Documentation-Index), but advise others to be aware that changes in versions may affect functionality/outcomes.
+### Call variants
 
-First, we call variants using [HaplotypeCaller](https://gatk.broadinstitute.org/hc/en-us/articles/360042913231-HaplotypeCaller). We then create a variant database and select only SNPs using [GenomicsDBImport](https://gatk.broadinstitute.org/hc/en-us/articles/360042477052-GenomicsDBImport), [GenotypeGVCFs](https://gatk.broadinstitute.org/hc/en-us/articles/360042914991-GenotypeGVCFs), and [SelectVariants](https://gatk.broadinstitute.org/hc/en-us/articles/360042913071-SelectVariants). During this process, we go from having a vcf for each sample (HaplotypeCaller uses the .bam file to create a .vcf for each individual) to a single .vcf for the full sample set (GenomicsDBImport creates a SNP database using all of the individuals, which is then used to create the .vcf with GenotypeGVCFs). We then use [VariantFiltration](https://gatk.broadinstitute.org/hc/en-us/articles/360042477652-VariantFiltration) to select SNPs we identify with high confidence.
+After marking duplicates, we perform a round of variant calling. For this project, we are specifically interested in single nucleotide polymorphisms (SNPs) which we can identify using various tools within the software package [GATK](https://gatk.broadinstitute.org). We follow the [GATK best practices workflow for germline short variant discovery](https://gatk.broadinstitute.org/hc/en-us/articles/360035535932-Germline-short-variant-discovery-SNPs-Indels-) and implement suggestions regarding [base score recalibration](https://gatk.broadinstitute.org/hc/en-us/articles/360035890531-Base-Quality-Score-Recalibration-BQSR-) in non-model organisms. Like many software packages, GATK is updated regularly. We used version [4.1.7](https://gatk.broadinstitute.org/hc/en-us/articles/360042912311--Tool-Documentation-Index), but advise others to be aware that changes in versions may affect functionality/outcomes.
+
+First, we index and create a dictionary of our reference for variant calling 
+```
+samtools faidx ReferenceGenome.fasta
+java -Xmx8g -jar picard-tools-2.4.1/CreateSequenceDictionary.jar R= ReferenceGenome.fasta O= ReferenceGenome.dict
+```
+
+We then call variants using [HaplotypeCaller](https://gatk.broadinstitute.org/hc/en-us/articles/360042913231-HaplotypeCaller). 
+```
+gatk-4.1.7.0/gatk --java-options "-Xmx16g" HaplotypeCaller \
+  -R ReferenceGenome.fasta
+  -I Sample1_0.bam \
+  -O Sample1_0.g.vcf \
+  -ERC GVCF
+```
+
+While performing variant calling, we create our cohort sample map that will be used for combine the gvcf files. All the steps up to this point are occuring for each sample (e.g., in a loop), but we have only been showing the step for a single individual (see function ```use-HaplotypeCaller```).
+```
+echo "Sample1$'\t'Sample1_0.g.vcf" >> cohort.sample_map_0
+## NOTE: We labeled this "cohort.sample_map_0" because it will be for the first iteration of variant calling (i.e., index 0)
+## NOTE: Again, this is for a single individual. this cohort map will contain all of the individuals used for variant calling
+## ----- Because we have two types of data used for variant calling (DNA and RNA), we created two different cohort maps.
+```
+
+We then create a variant database and select only SNPs using [GenomicsDBImport](https://gatk.broadinstitute.org/hc/en-us/articles/360042477052-GenomicsDBImport), [GenotypeGVCFs](https://gatk.broadinstitute.org/hc/en-us/articles/360042914991-GenotypeGVCFs), and [SelectVariants](https://gatk.broadinstitute.org/hc/en-us/articles/360042913071-SelectVariants) in the function ```get-just-SNPs```. During this process, we go from having a vcf for each sample (HaplotypeCaller uses the .bam file to create a .vcf for each individual) to a single .vcf for the full sample set (GenomicsDBImport creates a SNP database using all of the individuals, which is then used to create the .vcf with GenotypeGVCFs). 
+
+```
+# Combine GVCFs
+  gatk-4.1.7.0/gatk --java-options "-Xmx16g" GenomicsDBImport   --sample-name-map cohort.sample_map_0   --genomicsdb-workspace-path SNP_database_0   --reader-threads 5   --intervals genome.intervals
+# Joint genotyping
+  gatk-4.1.7.0/gatk --java-options "-Xmx16g" GenotypeGVCFs  -R ReferenceGenome.fasta   -V gendb://SNP_database_0   -O genotyped_0.vcf
+# Get SNPs
+  gatk-4.1.7.0/gatk --java-options "-Xmx16g" SelectVariants   -R ReferenceGenome.fasta   -V genotyped_0.vcf   --select-type-to-include SNP   -O JustSNPs_0.vcf
+```
+
+We then use [VariantFiltration](https://gatk.broadinstitute.org/hc/en-us/articles/360042477652-VariantFiltration) to select SNPs we identify with high confidence.
+
+```
+gatk-4.1.7.0/gatk --java-options "-Xmx16g" VariantFiltration \
+      -R ReferenceGenome.fasta \
+      -V $1" \
+      -O "$2"_Init.vcf \
+      --filter-name "SOR" \
+      --filter-expression "SOR > 3.0" \
+      --filter-name "QD" \
+      --filter-expression "QD < 2.0" \
+      --filter-name "MQ" \
+      --filter-expression "MQ < 40.0" \
+      --filter-name "MQRankSum" \
+      --filter-expression "MQRankSum < -12.5" \
+      --filter-name "FS" \
+      --filter-expression "FS > 60.0" \
+      --filter-name "ReadPosRankSum" \
+      --filter-expression "ReadPosRankSum < -5.0"
+```
 
 Next, we perform what GATK developers refer to as "bootstrapping" (not to be confused with statistical bootstrapping). The idea behind this suggestion is described in the screenshot below.
 
