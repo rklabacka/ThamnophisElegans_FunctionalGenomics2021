@@ -73,7 +73,11 @@ function performTrimmingPE {
    
 function performTrimmingSE {
   cd $WorkingDirectory/rawReads"$1"
-    java -jar /tools/trimmomatic-0.37/bin/trimmomatic.jar SE -phred33 "$i"_1.fastq.gz  /scratch/GarterSnake/RNAseq_2008Data/CleanedData/"$i"_cleaned.fastq.gz  LEADING:20 TRAILING:20 SLIDINGWINDOW:6:20 MINLEN:36
+    java -jar /tools/trimmomatic-0.37/bin/trimmomatic.jar \
+	    SE -phred33 \
+	    "$i"_1.fastq.gz  \
+	    /scratch/GarterSnake/RNAseq_2008Data/CleanedData/"$i"_cleaned.fastq.gz  \
+	    LEADING:20 TRAILING:20 SLIDINGWINDOW:6:20 MINLEN:36
   echo "RLK_report: SE TRIMMING COMPLETE"
 }
 
@@ -82,12 +86,11 @@ function copyRef-reads2vcf {
    cp /home/rlk0015/SeqCap/code/References/T_elegans_genome/latest_assembly_versions/GCF_009769535.1_rThaEle1.pri/GCF_009769535.1_rThaEle1.pri_genomic.gff.gz $WorkingDirectory/References/TelagGenome.gff.gz
    cd $WorkingDirectory/References
    gunzip TelagGenome.fasta.gz
-   index T. elegans genome
+   # index T. elegans genome
    cd $WorkingDirectory/References
    bwa index -p TelagGenome -a bwtsw TelagGenome.fasta
    gunzip TelagGenome.gff.gz
   echo "RLK_report: REF COPY COMPLETE"
-}
 }
 
 function mapReadsDNA {
@@ -119,7 +122,7 @@ function mapSEReadsRNA {
     extract_splice_sites.py $WorkingDirectory/References/TelagGenome.gtf > $WorkingDirectory/References/TelagGenome.ss
     extract_exons.py $WorkingDirectory/References/TelagGenome.gtf > $WorkingDirectory/References/TelagGenome.exon
   ###Create a HISAT2 index
-    hisat2-build --ss $WorkingDirectory/References/.ss --exon $WorkingDirectory/References/TelagGenome.exon $WorkingDirectory/References/TelagGenome.fasta TelagGenome_index
+    hisat2-build --ss $WorkingDirectory/References/TelagGenome.ss --exon $WorkingDirectory/References/TelagGenome.exon $WorkingDirectory/References/TelagGenome.fasta TelagGenome_index
   # Move to the 2008 SE data directory
     $WorkingDirectory/cleanReadsRNA
     wc -l *.fastq  >>  LineCount_Cleaned.txt

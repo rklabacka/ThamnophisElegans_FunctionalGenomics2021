@@ -93,7 +93,7 @@ Bioinformatic pipelines can be complex and complicated. Here I will describe the
     We begin with raw '.fastq' files which we received from the genomic sequencing company. We need to clean these reads to (A) remove the adapter sequence and (B) remove low-quality information that may be incorrect due to sequencing error. To do this, we first check the quality using the program [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/). 
 
 ```
-fastqc Read_R1.fastq.gz
+fastqc Sample_R1.fastq.gz
 ```
 
 This program provides information about our reads, including position-specific quality scores, read-wide quality scores, and adapter content. Below is an example of the position quality scores for our Seq-Cap reads 
@@ -107,8 +107,8 @@ You'll notice that the quality of each base call ([Phred score](https://en.wikip
      PE \
      -threads 6 \
      -phred33 \
-     Read_R1.fastq.gz \             # Forward raw read
-     Read_R2.fastq.gz \             # Reverse raw read
+     Sample_R1.fastq.gz \             # Forward raw read
+     Sample_R2.fastq.gz \             # Reverse raw read
      Cleaned_R1_paired.fastq.gz \   # Cleaned R1 read with pair found
      Cleaned_R1_unpaired.fastq.gz \ # Cleaned R1 read without pair found
      Cleaned_R2_paired.fastq.gz \   # Cleaned R1 read with pair found
@@ -120,37 +120,46 @@ You'll notice that the quality of each base call ([Phred score](https://en.wikip
      SE \
      -threads 6 \
      -phred33 \
-     Read_.fastq.gz  \
-     Read_cleaned.fastq.gz \
+     Sample_.fastq.gz  \
+     Sample_cleaned.fastq.gz \
      LEADING:20 TRAILING:20 SLIDINGWINDOW:6:20 MINLEN:36
 ```
 
 Following read cleaning, we check the read quality again using fastqc. This time our position quality scores for our Seq-Cap reads look much better
 ![Clean Read FastQC Quality](./Examining-Sequence-Variation/images/CleanReadsFastQC.png)
 
-After cleaning our reads, we are ready to map them to a reference. This can be challenging from a study design perspective; the decision for how to map can be a tricky one. If you have a reference genome for your focal taxon (which we luckily did), you can simply map to this. Alternatively, you can map to a transcriptome or the genome of a closely-related species. For our study, we mapped to a reference genome. We map our cleaned reads using two approaches:
+After cleaning our reads, we are ready to map them to a reference. This can be challenging from a study design perspective; the decision for how to map can be a tricky one. If you have a reference genome for your focal taxon, you can simply map to this. Alternatively, you can map to a transcriptome or the genome of a closely-related species. For our study, we mapped to a reference genome. We map our cleaned reads using two approaches:
 
 
 (1) for our reads from Seq-Cap, we mapped using the program [BWA](https://hpc.nih.gov/apps/bwa.html).
 ```
+# Index reference genome for bwa
+    bwa index -p ReferenceGenome -a bwtsw ReferenceGenome.fasta
 # Mapping DNA paired-end reads
     bwa mem \
 	-t 4 \
 	-M ReferenceGenome \
-        Read_R1_paired.fastq.gz \
-        Read_R2_paired.fastq.gz > \
-        Read_mapped.sam
+        Sample_R1_paired.fastq.gz \
+        Sample_R2_paired.fastq.gz > \
+        Sample_mapped.sam
 ```
 
 (2) for our reads from RNA-Seq, we used [HiSat2](http://daehwankimlab.github.io/hisat2/). This required preparing the reference (indexing, extracting splice sites, extracting exons)
 
 ```
-extract_splice_sites.py Reference.gtf > Reference.ss  # This is a python script within the hisat2 alignment toolkit
-extract_exons.py Reference.gtf > Reference.exon       # This is a python script within the hisat2 alignment toolkit
+extract_splice_sites.py ReferenceGenome.gtf > ReferenceGenome.ss  # This is a python script within the hisat2 alignment toolkit
+extract_exons.py ReferenceGenome.gtf > ReferenceGenome.exon       # This is a python script within the hisat2 alignment toolkit
 # Index reference
-hisat2-build -ss Reference.ss --exon Reference.exon Reference.fasta Reference_hisatIndex
+hisat2-build -ss ReferenceGenome.ss --exon ReferenceGenome.exon ReferenceGenome.fasta ReferenceGenome_hisatIndex
 # Map reads
-hisat2 -p 20 --dta -x Reference_hisatIndex -U Read_cleaned.fastq.gz -S Read_mapped.sam
+hisat2 -p 20 --dta -x ReferenceGenome_hisatIndex -U Sample_cleaned.fastq.gz -S Sample_mapped.sam
+```
+
+You can then compress and sort the .sam files to .bam files using [Samtools](https://www.htslib.org/)
+
+```
+samtools view -@ 2 -bS Sample_mapped.sam | samtools sort -@ 2 -o Sample_sorted.bam
+  
 ```
 
 
@@ -169,10 +178,10 @@ The approach you take depends on your nucleotide type and sequencing approach (e
 
 ![Analyze Covariates Plot 0](./Examining-Sequence-Variation/images/BootstrappingDefinition.png)
 
-We use our high-confidence SNPs to generate a recalibration table (table_0) with our .bam file using [BaseRecalibrator](https://gatk.broadinstitute.org/hc/en-us/articles/360042477672-BaseRecalibrator). We then perform base score recalibration to create a new .bam file using [ApplyBQSR](https://gatk.broadinstitute.org/hc/en-us/articles/360042476852-ApplyBQSR). With this new .bam file, we repeat the variant calling process described above (with the exception of variant filtration) and create another recalibration table (table_1). We then compare table_0 with table_1 using [AnalyzeCovariates](https://gatk.broadinstitute.org/hc/en-us/articles/360042911971-AnalyzeCovariates). This tool outputs a pdf that compares assigned quality scores and their accuracy between table_0 and table_1 within each individual. Here is an example of the exported plots:
+We use our high-confidence SNPs to generate a recalibration table (table_0) with our .bam file using [BaseRecalibrator](https://gatk.broadinstitute.org/hc/en-us/articles/360042477672-BaseRecalibrator). We then perform base score recalibration to create a new .bam file using [ApplyBQSR](https://gatk.broadinstitute.org/hc/en-us/articles/360042476852-ApplyBQSR). With this new .bam file, we repeat the variant calling process described above (with the exception of variant filtration) and create another recalibration table (table_1). We then compare table_0 with table_1 using [AnalyzeCovariates](https://gatk.broadinstitute.org/hc/en-us/articles/360042911971-AnalyzeCovariates). This tool outputs a pdf that compares assigned quality scores and their accuracy between table_0 and table_1 within each individual. Here is an example of the exported plots
 ![Analyze Covariates Plot 0](./Examining-Sequence-Variation/images/AnalyzeCovariates_0.png)
 
-    We repeat the above until it appears that that the scores converge. This process uses machine learning to model systematic (non-random) errors in Phred score assignment. Each iteration uses the high-confidence SNPs to update the scores within the .bam files. Ideally this would be done using a database of high-confidence SNPs previously collected. However, this is not an option for many non-model organisms (thus the "bootstrapping" suggestion by GATK). We performed this process for both Seq-Cap and RNA-Seq datasets independently, resulting in a vcf file for each. Here is what the plots will look like once convergence is reached:
+We repeat the above until it appears that that the scores converge. This process uses machine learning to model systematic (non-random) errors in Phred score assignment. Each iteration uses the high-confidence SNPs to update the scores within the .bam files. Ideally this would be done using a database of high-confidence SNPs previously collected. However, this is not an option for many non-model organisms (thus the "bootstrapping" suggestion by GATK). We performed this process for both Seq-Cap and RNA-Seq datasets independently, resulting in a vcf file for each. Here is what the plots will look like once convergence is reached
 ![Analyze Covariates Plot 1](./Examining-Sequence-Variation/images/AnalyzeCovariates_1.png)
 
 # <a name="variant-call-processing"></a>
