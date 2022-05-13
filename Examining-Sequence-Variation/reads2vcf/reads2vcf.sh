@@ -422,7 +422,7 @@ function prepForVariantCalling {
     while read i;
     do
     cd $WorkingDirectory/mappedReads"$1"
-    ###  remove duplicates  ###
+    ###  mark duplicates  ###
       java -Xmx8g -jar /tools/picard-tools-2.4.1/MarkDuplicates.jar \
           INPUT=$WorkingDirectory/mappedReads"$1"/"$i"_IDed.bam \
           OUTPUT=$WorkingDirectory/GATK"$1"/"$i"_0.bam \
@@ -953,10 +953,12 @@ function initial-VariantFiltration {
 	--filter-expression "FS > 60.0" \
 	--filter-name "ReadPosRankSum" \
 	--filter-expression "ReadPosRankSum < -5.0"
-  # don't do the following for filtered_0.vcf, just get rid of the Init suffix
-  awk '/^#/||$7=="PASS"' "$2"_Init.vcf > "$2".vcf
-  echo ""$2".vcf variants: $(grep -v "^#" "$2".vcf | wc -l)" >> Log.txt
 } 
+
+function RemoveFilteredSites {
+  awk '/^#/||$7=="PASS"' "$1"_Init.vcf > "$1".vcf
+  echo ""$1".vcf variants: $(grep -v "^#" "$1".vcf | wc -l)" >> Log.txt
+}
 
 function hard-VariantFiltration {
   # Step 1: Get rid of low-quality (mean) genotyping:
