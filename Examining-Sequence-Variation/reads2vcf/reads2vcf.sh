@@ -640,17 +640,6 @@ do
 done<$WorkingDirectory/mappedReads"$2"/samList
 }
 
-function use-AnalyzeCovariates {
-while read i
-do
-  /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" AnalyzeCovariates \
-    -before "$i"_recalibration_"$1".table \
-    -after "$i"_recalibration_"$2".table \
-    -plots "$i"_recalComparison_"$1".pdf \
-    -csv "$i"_recalComparison_"$1".csv
-done<$WorkingDirectory/mappedReads"$3"/samList
-}
-
 function use-BQSR {
 while read i
 do
@@ -659,6 +648,17 @@ do
     -I "$i"_"$1".bam \
     --bqsr-recal-file "$i"_recalibration_"$1".table \
     -O "$i"_"$2".bam
+done<$WorkingDirectory/mappedReads"$3"/samList
+}
+
+function use-AnalyzeCovariates {
+while read i
+do
+  /tools/gatk-4.1.7.0/gatk --java-options "-Xmx16g" AnalyzeCovariates \
+    -before "$i"_recalibration_"$1".table \
+    -after "$i"_recalibration_"$2".table \
+    -plots "$i"_recalComparison_"$1".pdf \
+    -csv "$i"_recalComparison_"$1".csv
 done<$WorkingDirectory/mappedReads"$3"/samList
 }
 

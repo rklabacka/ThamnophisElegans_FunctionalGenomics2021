@@ -168,15 +168,16 @@ We then create a variant database and select only SNPs using [GenomicsDBImport](
   gatk-4.1.7.0/gatk --java-options "-Xmx16g" GenotypeGVCFs  -R ReferenceGenome.fasta   -V gendb://SNP_database_0   -O genotyped_0.vcf
 # Get SNPs
   gatk-4.1.7.0/gatk --java-options "-Xmx16g" SelectVariants   -R ReferenceGenome.fasta   -V genotyped_0.vcf   --select-type-to-include SNP   -O JustSNPs_0.vcf
+## NOTE: We labeled this "JustSNPs_0" because it is the first iteration of variant calling (i.e., index 0)
 ```
 
-We then use [VariantFiltration](https://gatk.broadinstitute.org/hc/en-us/articles/360042477652-VariantFiltration) to select SNPs we identify with high confidence.
+We then use [VariantFiltration](https://gatk.broadinstitute.org/hc/en-us/articles/360042477652-VariantFiltration) to select SNPs we identify with high confidence (see function ```initial-VariantFiltration```.
 
 ```
 gatk-4.1.7.0/gatk --java-options "-Xmx16g" VariantFiltration \
       -R ReferenceGenome.fasta \
-      -V $1" \
-      -O "$2"_Init.vcf \
+      -V JustSNPs_0.vcf \
+      -O filtered_0.vcf \
       --filter-name "SOR" \
       --filter-expression "SOR > 3.0" \
       --filter-name "QD" \
@@ -189,13 +190,47 @@ gatk-4.1.7.0/gatk --java-options "-Xmx16g" VariantFiltration \
       --filter-expression "FS > 60.0" \
       --filter-name "ReadPosRankSum" \
       --filter-expression "ReadPosRankSum < -5.0"
+## NOTE: We labeled this "filtered_0.vcf" because it is the first iteration of variant calling (i.e., index 0)
 ```
 
 Next, we perform what GATK developers refer to as "bootstrapping" (not to be confused with statistical bootstrapping). The idea behind this suggestion is described in the screenshot below.
 
 ![Analyze Covariates Plot 0](./Examining-Sequence-Variation/images/BootstrappingDefinition.png)
 
-We use our high-confidence SNPs to generate a recalibration table (table_0) with our .bam file using [BaseRecalibrator](https://gatk.broadinstitute.org/hc/en-us/articles/360042477672-BaseRecalibrator). We then perform base score recalibration to create a new .bam file using [ApplyBQSR](https://gatk.broadinstitute.org/hc/en-us/articles/360042476852-ApplyBQSR). With this new .bam file, we repeat the variant calling process described above (with the exception of variant filtration) and create another recalibration table (table_1). We then compare table_0 with table_1 using [AnalyzeCovariates](https://gatk.broadinstitute.org/hc/en-us/articles/360042911971-AnalyzeCovariates). This tool outputs a pdf that compares assigned quality scores and their accuracy between table_0 and table_1 within each individual. Here is an example of the exported plots
+We use our high-confidence SNPs to generate a recalibration table (table_0) with our .bam file using [BaseRecalibrator](https://gatk.broadinstitute.org/hc/en-us/articles/360042477672-BaseRecalibrator). This is performed for each individual sample (see function ```use-BaseRecalibrator```).
+
+```
+gatk-4.1.7.0/gatk --java-options "-Xmx16g" BaseRecalibrator \
+  -R ReferenceGenome.fasta \
+  -I Sample1_0.bam \
+  --known-sites filtered_0.vcf \
+  -O Sample1_recalibration_0.table
+## NOTE: We labeled this "Sample1_recalibration_0.vcf" because it is the first iteration of recalibration (i.e., index 0)
+```
+
+We then perform base score recalibration for each individual sample to create a new .bam file using [ApplyBQSR](https://gatk.broadinstitute.org/hc/en-us/articles/360042476852-ApplyBQSR) (see function ```use-BQSR```). 
+
+```
+  gatk-4.1.7.0/gatk --java-options "-Xmx16g" ApplyBQSR \
+    -R ReferenceGenome.fasta \
+    -I Sample1_0.bam \
+    --bqsr-recal-file Sample1_recalibration_0.table \
+    -O Sample1_1.bam
+## NOTE: We labeled this output as "Sample1_1.bam" because it for the next iteration of variant calling (i.e., index 1, which is after index 0)
+```
+
+With this new .bam file, we repeat the variant calling process described above (with the exception of variant filtration) and create another recalibration table (table_1). We then compare table_0 with table_1 using [AnalyzeCovariates](https://gatk.broadinstitute.org/hc/en-us/articles/360042911971-AnalyzeCovariates). 
+
+```
+gatk-4.1.7.0/gatk --java-options "-Xmx16g" AnalyzeCovariates \
+  -before Sample1_recalibration_0.table \
+  -after Sample1_recalibration_1.table \
+  -plots Sample1_recalComparison_0.pdf \
+  -csv Sample1_recalComparison_0.csv
+## NOTE: We labeled these outputs as "Sample1_recalComparison_0" because they are from the first iteration table comparison (i.e., index 0)
+```
+
+This tool outputs a pdf that compares assigned quality scores and their accuracy between table_0 and table_1 within each individual. Here is an example of the exported plots
 ![Analyze Covariates Plot 0](./Examining-Sequence-Variation/images/AnalyzeCovariates_0.png)
 
 We repeat the above until it appears that that the scores converge. This process uses machine learning to model systematic (non-random) errors in Phred score assignment. Each iteration uses the high-confidence SNPs to update the scores within the .bam files. Ideally this would be done using a database of high-confidence SNPs previously collected. However, this is not an option for many non-model organisms (thus the "bootstrapping" suggestion by GATK). We performed this process for both Seq-Cap and RNA-Seq datasets independently, resulting in a vcf file for each. Here is what the plots will look like once convergence is reached
