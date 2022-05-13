@@ -270,7 +270,7 @@ function changeSeqCapNames {
   echo "RLK_report: BAM NAME CHANGE COMPLETE"
 }
 
-function readGroupsRNA {
+function AddReadGroupsRNA {
   cd $WorkingDirectory/mappedReadsDNA
   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF01_sorted.bam" O="ELF01_IDed.bam" RGPU="ELF" RGSM="ELF_54-38" RGPL="illumina" RGLB="SeqCap2012"
   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="ELF02_sorted.bam" O="ELF02_IDed.bam" RGPU="ELF" RGSM="ELF_RA607" RGPL="illumina" RGLB="SeqCap2012"
@@ -376,7 +376,7 @@ function readGroupsRNA {
   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SUM21_sorted.bam" O="SUM21_IDed.bam" RGPU="SUM" RGSM="SUM_RP53-4" RGPL="illumina" RGLB="SeqCap2012"
 }
 
-function readGroupsRNA {
+function AddReadGroupsRNA {
   cd $WorkingDirectory/mappedReadsRNA
   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629651_sorted.bam" O="SRR629651_IDed.bam" RGPU="MAR" RGSM="MAR627-1" RGPL="illumina" RGLB="RNASeq2012" 
   java -Xmx8g -jar /tools/picard-tools-2.4.1/picard.jar AddOrReplaceReadGroups I="SRR629599_sorted.bam" O="SRR629599_IDed.bam" RGPU="MAH" RGSM="MAH6372" RGPL="illumina" RGLB="RNASeq2012" 
