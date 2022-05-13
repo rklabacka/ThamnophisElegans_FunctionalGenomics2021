@@ -159,6 +159,8 @@ echo "Sample1$'\t'Sample1_0.g.vcf" >> cohort.sample_map_0
 ## ----- Because we have two types of data used for variant calling (DNA and RNA), we created two different cohort maps.
 ```
 
+### Create variant database
+
 We then create a variant database and select only SNPs using [GenomicsDBImport](https://gatk.broadinstitute.org/hc/en-us/articles/360042477052-GenomicsDBImport), [GenotypeGVCFs](https://gatk.broadinstitute.org/hc/en-us/articles/360042914991-GenotypeGVCFs), and [SelectVariants](https://gatk.broadinstitute.org/hc/en-us/articles/360042913071-SelectVariants) in the function ```get-just-SNPs```. During this process, we go from having a vcf for each sample (HaplotypeCaller uses the .bam file to create a .vcf for each individual) to a single .vcf for the full sample set (GenomicsDBImport creates a SNP database using all of the individuals, which is then used to create the .vcf with GenotypeGVCFs). 
 
 ```
@@ -170,6 +172,8 @@ We then create a variant database and select only SNPs using [GenomicsDBImport](
   gatk-4.1.7.0/gatk --java-options "-Xmx16g" SelectVariants   -R ReferenceGenome.fasta   -V genotyped_0.vcf   --select-type-to-include SNP   -O JustSNPs_0.vcf
 ## NOTE: We labeled this "JustSNPs_0" because it is the first iteration of variant calling (i.e., index 0)
 ```
+
+### Get high-confidence variants
 
 We then use [VariantFiltration](https://gatk.broadinstitute.org/hc/en-us/articles/360042477652-VariantFiltration) to select SNPs we identify with high confidence (see function ```initial-VariantFiltration```.
 
@@ -208,6 +212,8 @@ gatk-4.1.7.0/gatk --java-options "-Xmx16g" BaseRecalibrator \
 ## NOTE: We labeled this "Sample1_recalibration_0.vcf" because it is the first iteration of recalibration (i.e., index 0)
 ```
 
+### Recalibrate and compare
+
 We then perform base score recalibration for each individual sample to create a new .bam file using [ApplyBQSR](https://gatk.broadinstitute.org/hc/en-us/articles/360042476852-ApplyBQSR) (see function ```use-BQSR```). 
 
 ```
@@ -237,9 +243,48 @@ We repeat the above until it appears that that the scores converge. This process
 ![Analyze Covariates Plot 1](./images/AnalyzeCovariates_1.png)
 
 # <a name="variant-call-processing"></a>
-3.  Variant Call Processing & Filtration 
+##  Variant Call Processing & Filtration 
 
-    With .vcf files for both Seq-Cap and RNA-Seq datasets, we are now ready to merge these files. We do this using the 'merge' utility within the software package (bcftools)[https://samtools.github.io/bcftools/bcftools.html]. Using an abbreviated annotation file specific to our targeted genes (created using blast tools implemented in the function probes2gff within the reads2vcf.sh code file), we annotated and extracted the merged SNPs from our target genes using the bcftools 'annotate' utility and an awk command. We then performed variant filtration within the annotated .vcf using the software packages [GATK](https://gatk.broadinstitute.org), [vcftools](http://vcftools.sourceforge.net/) and [bcftools](https://samtools.github.io/bcftools/bcftools.html). Let's break these steps down:
+### Merge datasets
+
+With .vcf files from both Seq-Cap and RNA-Seq datasets, we are now ready to merge these files. We do this using the 'merge' utility within the software package (bcftools)[https://samtools.github.io/bcftools/bcftools.html] (see function ```combine-VCF```). 
+
+```
+bgzip JustSNPs_DNA.vcf  # This is the final vcf from Seq-Cap dataset after recalibration above 
+bgzip JustSNPs_RNA.vcf  # This is the final vcf from RNA-Seq datasets after recalibration above 
+bcftools index JustSNPs_converged.vcf.gz
+bcftools index JustSNPs_RNA.vcf.gz
+bcftools merge JustSNPs_DNA.vcf.gz JustSNPs_RNA.vcf.gz -O v -o Merged.vcf
+```
+
+### Annotate variants
+
+We created an abbreviated annotation file for our reference genome specific to our targeted genes using the function ```probes2gff```.
+
+```
+# Create genome database using BLAST
+  makeblastdb -in ReferenceGenome -parse_seqids -dbtype nucl -out ReferenceGenome.db
+# Use probeset to filter the genome database
+  blastn -db ReferenceGenome.db -query SeqCapProbes.fasta -outfmt "7 qseqid sseqid evalue qstart qend sstart send" -out BlastResults.txt
+# Copy blast results
+  cp BlastResults.txt BlastResults_original.txt
+# Delete un-needed lines from blast results
+  sed -i.bak '/^#/d' BlastResults.txt
+  sed -i.bak "s/ref|//" BlastResults.txt
+  sed -i.bak "s/|//" BlastResults.txt
+```
+
+Within this function, we then shrink the GFF to our targeted genes using a custom python script that outputs three gff files (with whole genic, exonic, and coding regions)
+
+```
+# Pull out targeted genes and create filtered gff
+  python $pythonScripts/shrinkGFF.py BlastResults.txt ReferenceGenome.gff CapturedGenes.gff CapturedExons.gff CapturedCDS.gff srhinkGFF_log.txt
+#NOTE: the pythonScripts directory is in the same directory as q.main.sh
+
+```
+
+
+Using an abbreviated annotation file specific to our targeted genes (created using blast tools implemented in the function ```probes2gff``` reads2vcf.sh code file), we annotated and extracted the merged SNPs from our target genes using the bcftools 'annotate' utility and an awk command. We then performed variant filtration within the annotated .vcf using the software packages [GATK](https://gatk.broadinstitute.org), [vcftools](http://vcftools.sourceforge.net/) and [bcftools](https://samtools.github.io/bcftools/bcftools.html). Let's break these steps down:
 
 * First we use the ```initial-VariantFiltration``` function to filter based on recommendations from the GATK best practices. This includes filtering out sites with SOR (estimated strand bias without penalizing reads that occur at the end of exons) > 3.0, QD (variant confidence divided by raw depth at a site) < 2.0, MQ (Root mean square mapping quality over all the reads at the site) < 40.0, MQRankSum (Compares mapping qualities of reads supporting the reference allele tot hose supporting the alternate allele) < -12.5, FS (Phred-scaled probability of strand bias) > 60.0, and ReadPosRankSum < -5.0. 
 
