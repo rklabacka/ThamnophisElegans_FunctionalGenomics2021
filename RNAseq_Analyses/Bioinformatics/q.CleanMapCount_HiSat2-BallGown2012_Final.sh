@@ -105,7 +105,7 @@ mkdir /scratch/tss0019/Telegans/Mapping/2012Data
 mkdir /scratch/schwartz_T_lab/GarterSnake/RNAseq_2012Data/RawData
 mkdir /scratch/schwartz_T_lab/GarterSnake/RNAseq_2012Data/CleanedData
 mkdir /scratch/schwartz_T_lab/GarterSnake/RNAseq_2012Data/FastQC_Quality
-mkdir /scratch/tss0019/Telegans/Mapping/2012Data
+mkdir /scratch/tss0019/Telegans/Mapping/2012Data/Results
 
 	## Define Directories
 DATADIR=/scratch/schwartz_T_lab/GarterSnake/RNAseq_2012Data/RawData
@@ -116,7 +116,7 @@ DATADIR_QUALITY=/scratch/schwartz_T_lab/GarterSnake/RNAseq_2012Data/FastQC_Quali
 REFDIR=/scratch/tss0019/Telegans/Mapping/Genome2019_rThaEle1
 REF=TelagGenome
 
-OUTDIR=/scratch/tss0019/Telegans/Mapping/2012Data
+OUTDIR=/scratch/tss0019/Telegans/Mapping/2012Data/Results
 
 
 
@@ -227,4 +227,11 @@ stringtie -p 20 -e -B -G "$REFDIR"/"$REF".gtf -o ballgown/"$i"/"$i".gtf  -l "$i"
 
 done<list
 
+###################  Prepare the Data for Differential Gene Expression Analysis with EdgeR/Limma
+### The PrepDE.py is a python script that converts the files in your ballgown folder to a count matrix in .csv format
+# move out a directory so this script can work on the output directory that contains all the Ballgown folders
+cd ..
+python /home/scripts/PrepDE.py $OUTDIR
+    ##  The final count matrix is a single .csv file containing counts for all individuals and all annotated genes.
+    ##  Use this file for DGE
 
