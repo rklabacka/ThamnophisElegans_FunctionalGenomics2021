@@ -1,0 +1,2011 @@
+---
+title: "R Notebook: Garter Snake, Heat Stress, MetaAnalysis of  Differential Gene Expression of RNAseq (2008 and 2012) mapped to the T.elegans Genome"
+output: html_notebook
+---
+Date: 2022-05-22
+Author: Tonia Schwartz
+
+Edited from:
+Law, C. W., Alhamdoosh, M., Su, S., Dong, X., Tian, L., Smyth, G. K., et al. (2018). RNA-seq analysis is easy as 1-2-3 with limma, Glimma and edgeR. F1000Res 5, 1408. doi:10.12688/f1000research.9005.3.
+
+# Set-up
+## Clear the workspace and set the directory
+```{r}
+rm()
+setwd("~/Box/SchwartzLab/Projects/TS_Lab_GarterSnakes/2020_GarterSnake_GeneExpression_SNPs_IIS/Analyses/GeneExpression_Analyses/To_Genome/3_DifferentialGeneExpresssion/2022-05-22_PrepPub")
+```
+
+## Install Packages
+#```{r}
+#Install packages
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install()
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+#BiocManager::install("limma", version = "3.8")
+BiocManager::install("limma")
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+#BiocManager::install("Glimma", version = "3.8")
+BiocManager::install("Glimma")
+
+## this installs other packages I need for this analyses.          #http://master.bioconductor.org/packages/release/workflows/html/RNAseq123.html
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+#BiocManager::install("RNAseq123", version = "3.8")
+BiocManager::install("RNAseq123")
+
+install.packages("DataCombine")
+
+#```
+
+# 2008 RNAseq DATASET
+## Import 2008 RNAseq Data for edgeR
+Read in the data table - this is the output of the PrepDE.py script run on the ballgown folder, after the from HiSat2-Stringtie pipeline.
+```{r}
+Data2008 <- read.delim("Input/2008_gene_count_matrix_ID.txt",row.names="Gene")
+dim(Data2008)
+head(Data2008)
+class(Data2008)
+```
+
+Make a DGEList object from the data table (MyData) 
+```{r}
+library(limma)
+library(edgeR)
+x_2008 <- DGEList(counts=Data2008)
+class(x_2008)
+x_2008
+```
+
+## Add grouping factors. 
+Treatment, C=Control, H-Heat Stress.  
+Ecotype, L=Lakeshore (fast-living), M=Meadow (slow-living)
+These are added in the same order as the samples
+```{r}
+Treatment <- as.factor(c("C",	"C",	"H",	"C",	"C",	"H",	"H",	"H",	"H",	"C",	"C", "H"))
+Ecotype <- as.factor(c("L", "L", "L", "M", "M", "L", "L", "M", "M", "M", "L", "M"))
+group <- (interaction (Treatment, Ecotype))
+x_2008 <- DGEList(counts=Data2008,group=group)
+#
+x_2008$samples
+x_2008$samples$lib.size
+x_2008
+```
+
+Make barplot of the libary sizes
+```{r}
+barplot(x_2008$samples$lib.size*1e-6, names=1:12, ylab="Library size (millions)")
+```
+
+## Calculate cpm and logcpm
+Calculate cpm (counts of reads per million of reads in the library (total number of reads)), and log-counts per million for each library. Then count how many genes have read counts of 0
+```{r}
+cpm <- cpm(x_2008)
+lcpm <- cpm(x_2008, log=TRUE)
+  #count number of gene with no reads mapped (TRUE)
+table(rowSums(x_2008$counts==0)==12)
+```
+
+4541 genes have 0 read counts.
+
+## Filtering No and Low Expressed Genes
+Here, a CPM value of 1 means that a gene is “expressed” if it has at least 20 counts in the sample library size ≈20 million. The last value is the number of individuals that has to have atleast that many counts.
+
+Note that subsetting the entire DGEList-object removes both the counts as well as the associated gene information.
+For now keep all in so match up during metanalysis
+```{r}
+keep.exprs08 <- rowSums(cpm>1)>=3
+x_filtered_cpm1_3 <- x_2008[keep.exprs08, keep.lib.sizes=FALSE]
+dim(x_filtered_cpm1_3)
+x2_2008<-x_filtered_cpm1_3
+```
+
+## Normalization the whole dataset with TMM method (edgeR).
+```{r}
+x2_2008norm <- calcNormFactors(x2_2008, method = "TMM")
+x2_2008norm$samples$norm.factors
+x2_2008norm
+```
+
+MDS plot
+```{r}
+# To create the MDS plots, we assign different colours to the factors of interest. Dimensions 1 and 2 are examined using the colour grouping defined by cell types.
+library(RColorBrewer)
+
+lcpm <- cpm(x2_2008norm, log=TRUE)
+par(mfrow=c(1,1))
+col.group <- Treatment
+levels(col.group) <- brewer.pal(nlevels(col.group), "Set1")
+col.group <- as.character(col.group)
+plotMDS(lcpm, labels=Treatment, col=col.group)
+title(main="A. Treatments")
+
+lcpm <- cpm(x2_2008norm, log=TRUE)
+par(mfrow=c(1,1))
+col.group <- Ecotype
+levels(col.group) <- brewer.pal(nlevels(col.group), "Set2")
+col.group <- as.character(col.group)
+plotMDS(lcpm, labels=Ecotype, col=col.group)
+title(main="A. Ecotypes")
+```
+
+```{r}
+x2_2008norm$samples
+plotMDS(x2_2008, col = as.numeric(group))
+```
+
+## Model: Interaction, Treatment*Ecotype
+Here switch to: https://ucdavis-bioinformatics-training.github.io/2018-June-RNA-Seq-Workshop/thursday/DE.html  Section 3. Voom transformation and calculation of variance weights
+
+Specify the two-factor model to be fitted. We are specifying that model includes effects for Temperature Treatment, Ecotype, and the Treatment by Ecotype interaction, where each coefficient corresponds to a group mean
+
+Create model matrix:
+Testing for Interaction between Treatment and Ecotype (~Treatment*Ecotype)
+```{r}
+mmI_2008 <- model.matrix(~Treatment*Ecotype)
+colnames(mmI_2008)
+```
+
+### Voom transformation
+Voom uses variances of the model residuals (observed - fitted). Do Voom transformation of the normalized data.
+```{r}
+y_2008 <- voom(x2_2008norm, mmI_2008, plot = F)
+```
+
+### Limma, fit linear model
+Section 4. Fitting linear models in limma
+lmFit fits a linear model using weighted least squares for each gene
+```{r}
+fit <- lmFit(y_2008, mmI_2008)
+head(coef(fit))
+```
+
+-The coefficient Temperature represents the difference in mean expression between Heat and the control. So a positive value is upregulated in the heat treatment
+-The coefficient Ecotype represents the difference in mean expression between Meadow and Lakeshore
+-The coefficient TreatmentH:EcotypeM is the difference between Treatments of the differences between Ecotypes  (interaction effect)
+
+Comparisons between groups (log fold-changes) are obtained as contrasts of these fitted linear models:
+Estimate contrast for each gene. 
+
+Empirical Bayes smoothing of standard errors (shrinks standard errors that are much larger or smaller than those from other genes towards the average standard error) (see https://www.degruyter.com/doi/10.2202/1544-6115.1027)
+
+### Contrast: Interaction
+```{r}
+tmp_I_2008 <- contrasts.fit(fit, coef = 4) #  TreatmentH:EcotypeM
+tmp_I_2008 <- eBayes(tmp_I_2008)
+```
+
+What genes are most differentially expressed?
+```{r}
+top.table_I_2008 <- topTable(tmp_I_2008, sort.by = "P", n = Inf)
+head(top.table_I_2008, 30)
+```
+
+How many DE genes are there?
+```{r}
+length(which(top.table_I_2008$adj.P.Val < 0.05))
+length(which(top.table_I_2008$adj.P.Val < 0.1))
+length(which(top.table_I_2008$P.Value < 0.01)) 
+```
+
+Print the table of results & make MD plot
+```{r}
+top.table_I_2008$Gene <- rownames(top.table_I_2008)
+top.table_I_2008 <- top.table_I_2008[,c("Gene", names(top.table_I_2008)[1:6])]
+write.table(top.table_I_2008, file = "OutputFiles/HS2008_Interaction.txt", row.names = F, sep = "\t", quote = F)
+  # Make a MD plot
+et_I_2008 <- decideTests(tmp_I_2008) 
+summary(et_I_2008)
+plotMD(tmp_I_2008, column=1, status=et_I_2008[,1], main=colnames(tmp_I_2008)[1], xlim=c(-0.1,20))
+```
+
+While I have the groups split by Treatment and Ecotype, test for effects within those groups
+```{r}
+group <- (interaction (Treatment, Ecotype))
+mm_2008 <- model.matrix(~0 + group)
+
+# 4. Fitting linear models in limma
+# lmFit fits a linear model using weighted least squares for each gene:
+fit <- lmFit(y_2008, mm_2008)
+head(coef(fit))
+```
+
+### Contrast: Treatment_H-C in Fast-living
+H.L = Heat group in Lake (fast living); C.L = Control group in lake (fast-living)
+```{r}
+contr <- makeContrasts(groupH.L - groupC.L, levels = colnames(coef(fit)))
+tmp_C_Lake08 <- contrasts.fit(fit, contr)
+tmp_C_Lake08 <- eBayes(tmp_C_Lake08)
+top.table_HC_Lake08<- topTable(tmp_C_Lake08, sort.by = "P", n = Inf)
+head(top.table_HC_Lake08, 20)
+  # How many significant Genes
+length(which(top.table_HC_Lake08$adj.P.Val < 0.05))
+length(which(top.table_HC_Lake08$adj.P.Val < 0.1))
+length(which(top.table_HC_Lake08$P.Value < 0.01))
+  #Print Output File
+top.table_HC_Lake08$Gene <- rownames(top.table_HC_Lake08)
+top.table_HC_Lake08 <- top.table_HC_Lake08[,c("Gene", names(top.table_HC_Lake08)[1:6])]
+write.table(top.table_HC_Lake08, file = "OutputFiles/HS2008_Treatment_H-C in Fast-living.txt", row.names = F, sep = "\t", quote = F)
+  # Make MD plot
+et_C_Lake08 <- decideTests(tmp_C_Lake08)
+summary(et_C_Lake08)
+plotMD(tmp_C_Lake08, column=1, status=et_C_Lake08[,1], main=colnames(tmp_C_Lake08)[1], xlim=c(-0.1,20))
+```
+
+### Contrast: Treatment H-C in Slow-living
+Group H.M = Heat in Meadow, Group C.M = control in Meadow (slow-living)
+```{r}
+contr <- makeContrasts(groupH.M - groupC.M, levels = colnames(coef(fit)))
+tmp_C_Med08 <- contrasts.fit(fit, contr)
+tmp_C_Med08 <- eBayes(tmp_C_Med08)
+top.table_HC_Med08<- topTable(tmp_C_Med08, sort.by = "P", n = Inf)
+head(top.table_HC_Med08, 20)
+length(which(top.table_HC_Med08$adj.P.Val < 0.05))
+length(which(top.table_HC_Med08$adj.P.Val < 0.1))
+length(which(top.table_HC_Med08$P.Value < 0.01))
+
+top.table_HC_Med08$Gene <- rownames(top.table_HC_Med08)
+top.table_HC_Med08 <- top.table_HC_Med08[,c("Gene", names(top.table_HC_Med08)[1:6])]
+write.table(top.table_HC_Med08, file = "OutputFiles/HS2008_Treatment_H-C in Slow-living.txt", row.names = F, sep = "\t", quote = F)
+
+et_C_Med08 <- decideTests(tmp_C_Med08)
+summary(et_C_Med08)
+plotMD(tmp_C_Med08, column=1, status=et_C_Med08[,1], main=colnames(tmp_C_Med08)[1], xlim=c(-0.1,20))
+
+```
+
+### Contrast: Ecotypes_Slow(Meadow)-Fast(Lake) in Control
+```{r}
+contr08 <- makeContrasts(groupC.M - groupC.L, levels = colnames(coef(fit)))
+  # M = meadow, slow-living  L=lake, fast-living
+tmp_C_Ecotypes08 <- contrasts.fit(fit, contr08)
+tmp_C_Ecotypes08 <- eBayes(tmp_C_Ecotypes08)
+top.table_C_Ecotypes08<- topTable(tmp_C_Ecotypes08, sort.by = "P", n = Inf)
+head(top.table_C_Ecotypes08, 20)
+length(which(top.table_C_Ecotypes08$adj.P.Val < 0.05))
+length(which(top.table_C_Ecotypes08$adj.P.Val < 0.1))
+length(which(top.table_C_Ecotypes08$P.Value < 0.01))
+
+top.table_C_Ecotypes08$Gene <- rownames(top.table_C_Ecotypes08)
+top.table_C_Ecotypes08 <- top.table_C_Ecotypes08[,c("Gene", names(top.table_C_Ecotypes08)[1:6])]
+write.table(top.table_C_Ecotypes08, file = "OutputFiles/HS2008_Ecotypes_S-F within Controls.txt", row.names = F, sep = "\t", quote = F)
+
+et_C_Ecotypes08 <- decideTests(tmp_C_Ecotypes08)
+summary(et_C_Ecotypes08)
+plotMD(tmp_C_Ecotypes08, column=1, status=et_C_Ecotypes08[,1], main=colnames(tmp_C_Ecotypes08)[1], xlim=c(-8,13))
+
+```
+
+### Contrast: Ecotypes_Slow(Meadow)-Fast(Lake) in Heat
+```{r}
+Eheat08 <- makeContrasts(groupH.M - groupH.L, levels = colnames(coef(fit)))
+tmp_H_Ecotypes08 <- contrasts.fit(fit, Eheat08)
+tmp_H_Ecotypes08 <- eBayes(tmp_H_Ecotypes08)
+top.table_H_Ecotypes08<- topTable(tmp_H_Ecotypes08, sort.by = "P", n = Inf)
+head(top.table_H_Ecotypes08, 20)
+length(which(top.table_H_Ecotypes08$adj.P.Val < 0.05))
+length(which(top.table_H_Ecotypes08$adj.P.Val < 0.1))
+length(which(top.table_H_Ecotypes08$P.Value < 0.01))
+
+top.table_H_Ecotypes08$Gene <- rownames(top.table_H_Ecotypes08)
+top.table_H_Ecotypes08 <- top.table_H_Ecotypes08[,c("Gene", names(top.table_H_Ecotypes08)[1:6])]
+write.table(top.table_H_Ecotypes08, file = "OutputFiles/HS2008_Ecotypes_S-F in Heat.txt", row.names = F, sep = "\t", quote = F)
+
+et_H_Ecotypes08 <- decideTests(tmp_H_Ecotypes08)
+summary(et_H_Ecotypes08)
+plotMD(tmp_H_Ecotypes08, column=1, status=et_H_Ecotypes08[,1], main=colnames(tmp_H_Ecotypes08)[1], xlim=c(-8,13))
+```
+
+
+## Model: Treatment Main Effect
+Specifies a model where each coefficient corresponds to a group mean
+```{r}
+x2_2008norm ### These are the filtered, normalized data
+x2_2008norm$samples
+
+x3_2008 <- x2_2008norm
+group=Treatment
+x3_2008 <- DGEList(x3_2008, group=Treatment)
+x3_2008$samples
+dim(x3_2008)
+x3_2008$samples$norm.factors  ### Why are the norm factors back to one? Redo the normalization again.
+
+x3_2008 <- calcNormFactors(x3_2008, method = "TMM")
+  ## I need to do this normalization again here because for some reason I lose the normalazion factors when I do the grouping even when I start with x2_2002norm. The normalization factors seem the same as before.
+x2_2008norm$samples$norm.factors
+x3_2008$samples$norm.factors
+  #The normalization factors are the same as before.
+
+#Create the model for effect of heat treatment
+mm_heat_2008 <- model.matrix(~0 + group)
+mm_heat_2008
+```
+
+### Voom transformation
+```{r}
+yH2008 <- voom(x3_2008, mm_heat_2008, plot = T)
+yH2008
+```
+### Limma, Fitting linear models
+lmFit fits a linear model using weighted least squares for each gene:
+```{r}
+fit <- lmFit(yH2008, mm_heat_2008)
+head(coef(fit))
+```
+
+Comparisons between groups (log fold-changes) are obtained as contrasts of these fitted linear models:
+###  Contrast: Heat to control
+```{r}
+contrH08 <- makeContrasts(groupH - groupC, levels = colnames(coef(fit)))
+contrH08
+```
+
+Estimate contrast for each gene
+```{r}
+tmp_Heat08 <- contrasts.fit(fit, contrH08)
+tmp_Heat08 <- eBayes(tmp_Heat08)
+top.table_Heat08<- topTable(tmp_Heat08, sort.by = "P", n = Inf)
+head(top.table_Heat08, 20)
+length(which(top.table_Heat08$adj.P.Val < 0.05))
+length(which(top.table_Heat08$adj.P.Val < 0.1))
+length(which(top.table_Heat08$P.Value < 0.01))
+
+top.table_Heat08$Gene <- rownames(top.table_Heat08)
+top.table_Heat08 <- top.table_Heat08[,c("Gene", names(top.table_Heat08)[1:6])]
+write.table(top.table_Heat08, file = "Outputfiles/HS2008_Heat.txt", row.names = F, sep = "\t", quote = F)
+
+et_Heat08 <- decideTests(tmp_Heat08)
+summary(et_Heat08)
+plotMD(tmp_Heat08, column=1, status=et_Heat08[,1], main=colnames(tmp_Heat08)[1], xlim=c(-0.1,20))
+
+```
+
+## Model: Ecotype Main Effect 
+```{r}
+x2_2008norm ## these are the filtered genes
+x2_2008norm$samples
+
+x4_2008 <- x2_2008norm
+group=Ecotype
+x4_2008 <- DGEList(x4_2008, group=Ecotype)
+x4_2008$samples
+dim(x4_2008)
+x4_2008 <- calcNormFactors(x4_2008, method = "TMM")
+x4_2008$samples$norm.factors
+x2_2008norm$samples$norm.factors #check they are the same as before
+x4_2008$samples
+
+#Specifies a model where each coefficient corresponds to a group mean
+mm_Eco08 <- model.matrix(~0 + group)
+mm_Eco08
+```
+
+### Voom transformation
+```{r}
+yE08 <- voom(x4_2008, mm_Eco08, plot = T)
+yE08
+```
+
+###Limma, Fit linear models
+lmFit fits a linear model using weighted least squares for each gene:
+```{r}
+fit <- lmFit(yE08, mm_Eco08)
+head(coef(fit))
+
+```
+
+### Contrast: Ecotypes
+Comparisons between groups (log fold-changes) are obtained as contrasts of these fitted linear models:
+Specify which groups to compare:
+Compare control samples to understand effect of ecotype under control conditions
+```{r}
+contr_E08 <- makeContrasts(groupM - groupL, levels = colnames(coef(fit)))
+contr_E08
+
+# Estimate contrast for each gene
+tmp_Eco08 <- contrasts.fit(fit, contr_E08)
+tmp_Eco08 <- eBayes(tmp_Eco08)
+top.table_Eco08<- topTable(tmp_Eco08, sort.by = "P", n = Inf)
+head(top.table_Eco08, 20)
+length(which(top.table_Eco08$adj.P.Val < 0.05))
+length(which(top.table_Eco08$adj.P.Val < 0.1))
+length(which(top.table_Eco08$P.Value < 0.01))
+
+top.table_Eco08$Gene <- rownames(top.table_Eco08)
+top.table_Eco08 <- top.table_Eco08[,c("Gene", names(top.table_Eco08)[1:6])]
+write.table(top.table_Eco08, file = "OutputFiles/HS2008_Ecotype_S-F.txt", row.names = F, sep = "\t", quote = F)
+
+et_Eco08 <- decideTests(tmp_Eco08)
+summary(et_Eco08)
+plotMD(tmp_Eco08, column=1, status=et_Eco08[,1], main=colnames(tmp_Eco08)[1], xlim=c(-8,13))
+```
+
+    
+##############################
+
+# 2012 RNAsea DATASET
+
+#############################
+
+## Import 2012 RNAseq Data for edgeR
+the column sums of the counts. For classic edgeR the data.frame samples must also contain a column group, 
+```{r}
+### read in your data table - this is the output of the PrepDE.py script run on the ballgown folder (from HiSat2-Stringtie pipeline)
+Data2012 <- read.delim("Input/2012_gene_count_matrix_ID.txt",row.names="Gene")
+dim(Data2012)
+head(Data2012)
+class(Data2012)
+```
+
+Make a DGEList object from the data table (MyData) 
+```{r}
+library(limma)
+library(edgeR)
+x_2012 <- DGEList(counts=Data2012)
+class(x_2012)
+x_2012
+```
+
+## Add grouping factors. Treatment, C=Control, H-Heat Stress.  Ecotype, L=Lakeshore, M=Meadow
+These are added in the same order as the samples
+```{r}
+Treatment <- as.factor(c("C",	"H",	"C",	"H",	"C",	"H",	"C",	"H",	"C",	"H",	"H",	"C",	"C",	"C",	"H",	"C",	"H",	"C",	"H",	"H"))
+Ecotype <- as.factor(c("M",	"L",	"M",	"L",	"L",	"L",	"M",	"L",	"M",	"L",	"M",	"M",	"L",	"L",	"M",	"L",	"M",	"L",	"M",	"M"))
+group <- (interaction (Treatment, Ecotype))
+x_2012 <- DGEList(counts=Data2012,group=group)
+#
+x_2012$samples
+x_2012$samples$lib.size
+x_2012
+```
+
+## Filtering No and Low Expressed Genes
+First, make barplot of the libary sizes
+```{r}
+barplot(x_2012$samples$lib.size*1e-6, names=1:20, ylab="Library size (millions)")
+```
+
+## Calculate cpm and log-cpm
+cpm (counts of reads per million of reads in the library (total number of reads)), and log-counts per million for each library. Then count how many genes have read counts of 0
+```{r}
+cpm <- cpm(x_2012)
+lcpm <- cpm(x_2012, log=TRUE)
+table(rowSums(x_2012$counts==0)==12)
+```
+
+## Filter out lowly expressed genes.
+
+Here, a CPM value of 1 means that a gene is “expressed” if it has at least 20 counts in the sample with library size ≈20 million) or at least 76 counts in the sample with the greatest sequencing depth.
+
+Note that subsetting the entire DGEList-object removes both the counts as well as the associated gene information.
+```{r}
+keep.exprs12 <- rowSums(cpm>0.5)>=4
+x_filtered_cpm0.5_4 <- x_2012[keep.exprs12, keep.lib.sizes=FALSE]
+dim(x_filtered_cpm0.5_4)
+
+x2_2012<-x_filtered_cpm0.5_4
+
+```
+#
+
+## Normalize whole dataset with edgeR using the TMM method.
+```{r}
+x2_2012norm <- calcNormFactors(x2_2012, method = "TMM")
+x2_2012norm$samples$norm.factors
+x2_2012norm
+```
+
+
+MDS plot
+```{r}
+# To create the MDS plots, we assign different colours to the factors of interest. Dimensions 1 and 2 are examined using
+# the colour grouping defined by cell types.
+library(RColorBrewer)
+
+lcpm <- cpm(x2_2012, log=TRUE)
+par(mfrow=c(1,1))
+col.group <- Treatment
+levels(col.group) <- brewer.pal(nlevels(col.group), "Set1")
+col.group <- as.character(col.group)
+plotMDS(lcpm, labels=Treatment, col=col.group)
+title(main="A. Treatments")
+
+lcpm <- cpm(x2_2012norm, log=TRUE)
+par(mfrow=c(1,1))
+col.group <- Ecotype
+levels(col.group) <- brewer.pal(nlevels(col.group), "Set2")
+col.group <- as.character(col.group)
+plotMDS(lcpm, labels=Ecotype, col=col.group)
+title(main="A. Ecotypes")
+```
+
+```{r}
+x2_2012norm$samples
+plotMDS(x2_2012norm, col = as.numeric(group))
+```
+
+
+Here switch to: https://ucdavis-bioinformatics-training.github.io/2018-June-RNA-Seq-Workshop/thursday/DE.html
+
+Section 3. Voom transformation and calculation of variance weights
+Specify the two-factor model to be fitted. We are specifying that model includes effects for Temperature Treatment, Ecotype, and the Treatment by Ecotype interaction, where each coefficient corresponds to a group mean
+
+## Model: Interaction (Treatment * Ecotype
+Create model matrix:
+```{r}
+mmI_2012 <- model.matrix(~Treatment*Ecotype)
+colnames(mmI_2012)
+```
+
+###Voom Transformation
+Voom uses variances of the model residuals (observed - fitted)
+```{r}
+y_2012 <- voom(x2_2012norm, mmI_2012, plot = F)
+y_2012
+```
+
+## Limma, Fitting linear models
+lmFit fits a linear model using weighted least squares for each gene
+```{r}
+fit <- lmFit(y_2012, mmI_2012)
+head(coef(fit))
+```
+
+-The coefficient Temperature represents the difference in mean expression between Heat and the control. So a positive value is upregulated in the heat treatment
+-The coefficient Ecotype represents the difference in mean expression between Meadow and Lakeshore
+-The coefficient TreatmentH:EcotypeM is the difference between Treatments of the differences between Ecotypes  (interaction effect)
+
+
+Comparisons between groups (log fold-changes) are obtained as contrasts of these fitted linear models:
+Estimate contrast for each gene. 
+Empirical Bayes smoothing of standard errors (shrinks standard errors that are much larger or smaller than those from other genes towards the average standard error) (see https://www.degruyter.com/doi/10.2202/1544-6115.1027)
+### Contrast: Interaction
+```{r}
+tmp_I_2012 <- contrasts.fit(fit, coef = 4) #  TreatmentH:EcotypeM
+tmp_I_2012 <- eBayes(tmp_I_2012)
+```
+
+What genes are most differentially expressed?
+```{r}
+top.table_I_2012 <- topTable(tmp_I_2012, sort.by = "P", n = Inf)
+head(top.table_I_2012, 30)
+```
+
+How many DE genes are there?
+```{r}
+length(which(top.table_I_2012$adj.P.Val < 0.05))
+length(which(top.table_I_2012$adj.P.Val < 0.1))
+length(which(top.table_I_2012$P.Value < 0.01)) 
+```
+
+Print the table of results
+```{r}
+top.table_I_2012$Gene <- rownames(top.table_I_2012)
+top.table_I_2012 <- top.table_I_2012[,c("Gene", names(top.table_I_2012)[1:6])]
+write.table(top.table_I_2012, file = "OutputFiles/HS2012_Interaction.txt", row.names = F, sep = "\t", quote = F)
+
+et_I_2012 <- decideTests(tmp_I_2012) # see if edit to show p.value <0.01
+summary(et_I_2012)
+plotMD(tmp_I_2012, column=1, status=et_I_2012[,1], main=colnames(tmp_I_2012)[1], xlim=c(-0.1,20))
+```
+
+While I have the groups split by Treatment and Ecotype, test for effects withing those groups
+
+```{r}
+group <- (interaction (Treatment, Ecotype))
+mm_2012 <- model.matrix(~0 + group)
+# 4. Fitting linear models in limma
+#lmFit fits a linear model using weighted least squares for each gene:
+fit <- lmFit(y_2012, mm_2012)
+head(coef(fit))
+```
+
+### Contrast: Heat vs Control in Fast-living (Lake) ecotype
+```{r}
+contr <- makeContrasts(groupH.L - groupC.L, levels = colnames(coef(fit)))
+tmp_C_Lake12 <- contrasts.fit(fit, contr)
+tmp_C_Lake12 <- eBayes(tmp_C_Lake12)
+top.table_HC_Lake12<- topTable(tmp_C_Lake12, sort.by = "P", n = Inf)
+head(top.table_HC_Lake12, 20)
+length(which(top.table_HC_Lake12$adj.P.Val < 0.05))
+length(which(top.table_HC_Lake12$adj.P.Val < 0.1))
+length(which(top.table_HC_Lake12$P.Value < 0.01))
+
+top.table_HC_Lake12$Gene <- rownames(top.table_HC_Lake12)
+top.table_HC_Lake12 <- top.table_HC_Lake12[,c("Gene", names(top.table_HC_Lake12)[1:6])]
+write.table(top.table_HC_Lake12, file = "OutputFiles/HS2012_Treatment_H-C in Fast-living.txt", row.names = F, sep = "\t", quote = F)
+
+et_C_Lake12 <- decideTests(tmp_C_Lake12)
+summary(et_C_Lake12)
+plotMD(tmp_C_Lake12, column=1, status=et_C_Lake12[,1], main=colnames(tmp_C_Lake12)[1], xlim=c(-0.1,20))
+```
+
+### Contrast: Treatment_H-C in Slow-living (Meadow)
+```{r}
+contr <- makeContrasts(groupH.M - groupC.M, levels = colnames(coef(fit)))
+tmp_C_Med12 <- contrasts.fit(fit, contr)
+tmp_C_Med12 <- eBayes(tmp_C_Med12)
+top.table_HC_Med12<- topTable(tmp_C_Med12, sort.by = "P", n = Inf)
+head(top.table_HC_Med12, 20)
+length(which(top.table_HC_Med12$adj.P.Val < 0.05))
+length(which(top.table_HC_Med12$adj.P.Val < 0.1))
+length(which(top.table_HC_Med12$P.Value < 0.01))
+
+top.table_HC_Med12$Gene <- rownames(top.table_HC_Med12)
+top.table_HC_Med12 <- top.table_HC_Med12[,c("Gene", names(top.table_HC_Med12)[1:6])]
+write.table(top.table_HC_Med12, file = "OutputFiles/HS2012_Treatment_H-C in Slow-living.txt", row.names = F, sep = "\t", quote = F)
+
+et_C_Med12 <- decideTests(tmp_C_Med12)
+summary(et_C_Med12)
+plotMD(tmp_C_Med12, column=1, status=et_C_Med12[,1], main=colnames(tmp_C_Med12)[1], xlim=c(-0.1,20))
+```
+
+### Contrast: Ecotypes_S-F in Controls
+```{r}
+contr12 <- makeContrasts(groupC.M - groupC.L, levels = colnames(coef(fit)))
+tmp_C_Ecotypes12 <- contrasts.fit(fit, contr12)
+tmp_C_Ecotypes12 <- eBayes(tmp_C_Ecotypes12)
+top.table_C_Ecotypes12<- topTable(tmp_C_Ecotypes12, sort.by = "P", n = Inf)
+head(top.table_C_Ecotypes12, 20)
+length(which(top.table_C_Ecotypes12$adj.P.Val < 0.05))
+length(which(top.table_C_Ecotypes12$adj.P.Val < 0.1))
+length(which(top.table_C_Ecotypes12$P.Value < 0.01))
+
+top.table_C_Ecotypes12$Gene <- rownames(top.table_C_Ecotypes12)
+top.table_C_Ecotypes12 <- top.table_C_Ecotypes12[,c("Gene", names(top.table_C_Ecotypes12)[1:6])]
+write.table(top.table_C_Ecotypes12, file = "OutputFiles/HS2012_Ecotypes_S-F in Controls.txt", row.names = F, sep = "\t", quote = F)
+
+et_C_Ecotypes12 <- decideTests(tmp_C_Ecotypes12)
+summary(et_C_Ecotypes12)
+plotMD(tmp_C_Ecotypes12, column=1, status=et_C_Ecotypes12[,1], main=colnames(tmp_C_Ecotypes12)[1], xlim=c(-8,13))
+
+```
+
+### Contrast: Ecotypes_S-F in Heat
+```{r}
+Eheat12 <- makeContrasts(groupH.M - groupH.L, levels = colnames(coef(fit)))
+tmp_H_Ecotypes12 <- contrasts.fit(fit, Eheat12)
+tmp_H_Ecotypes12 <- eBayes(tmp_H_Ecotypes12)
+top.table_H_Ecotypes12<- topTable(tmp_H_Ecotypes12, sort.by = "P", n = Inf)
+head(top.table_H_Ecotypes12, 20)
+length(which(top.table_H_Ecotypes12$adj.P.Val < 0.05))
+length(which(top.table_H_Ecotypes12$adj.P.Val < 0.1))
+length(which(top.table_H_Ecotypes12$P.Value < 0.01))
+
+top.table_H_Ecotypes12$Gene <- rownames(top.table_H_Ecotypes12)
+top.table_H_Ecotypes12 <- top.table_H_Ecotypes12[,c("Gene", names(top.table_H_Ecotypes12)[1:6])]
+write.table(top.table_H_Ecotypes12, file = "OutputFiles/HS2012_EcotypesS-F in Heat.txt", row.names = F, sep = "\t", quote = F)
+
+et_H_Ecotypes12 <- decideTests(tmp_H_Ecotypes12)
+summary(et_H_Ecotypes12)
+plotMD(tmp_H_Ecotypes12, column=1, status=et_C_Ecotypes12[,1], main=colnames(tmp_H_Ecotypes12)[1], xlim=c(-8,13))
+
+```
+
+## Model: Heat as Main Effect
+Specifies a model where each coefficient corresponds to a group mean
+### Normalization
+```{r}
+x2_2012 ## These are the filtered genes
+x2_2012$samples
+x3_2012 <- x2_2012
+group=Treatment
+x3_2012 <- DGEList(x3_2012, group=Treatment)
+#x3_2012$samples$norm
+dim(x3_2012)
+x3_2012 <- calcNormFactors(x3_2012, method = "TMM")
+  ## I need to do this normalization again here because for some reason I lose the normalizion factors when I do the grouping even when I start with x2_2012norm
+x3_2012$samples$norm.factors
+x3_2012
+
+mm_heat_2012 <- model.matrix(~0 + group)
+mm_heat_2012
+```
+
+### Voom Transformation
+```{r}
+yH2012 <- voom(x3_2012, mm_heat_2012, plot = T)
+yH2012
+```
+
+### Limma, Fit linear model
+lmFit fits a linear model using weighted least squares for each gene:
+```{r}
+fit <- lmFit(yH2012, mm_heat_2012)
+head(coef(fit))
+```
+
+Comparisons between groups (log fold-changes) are obtained as contrasts of these fitted linear models:
+### Contrast: Treatment, heat to control 
+samples to understand effect of Heat overall 
+```{r}
+contrH12 <- makeContrasts(groupH - groupC, levels = colnames(coef(fit)))
+contrH12
+```
+
+Estimate contrast for each gene
+```{r}
+tmp_Heat12 <- contrasts.fit(fit, contrH12)
+tmp_Heat12 <- eBayes(tmp_Heat12)
+top.table_Heat12<- topTable(tmp_Heat12, sort.by = "P", n = Inf)
+head(top.table_Heat12, 20)
+length(which(top.table_Heat12$adj.P.Val < 0.05))
+length(which(top.table_Heat12$adj.P.Val < 0.1))
+length(which(top.table_Heat12$P.Value < 0.01))
+
+top.table_Heat12$Gene <- rownames(top.table_Heat12)
+top.table_Heat12 <- top.table_Heat12[,c("Gene", names(top.table_Heat12)[1:6])]
+write.table(top.table_Heat12, file = "OutputFiles/HS2012_Treatment_H-C.txt", row.names = F, sep = "\t", quote = F)
+
+et_Heat12 <- decideTests(tmp_Heat12)
+summary(et_Heat12)
+plotMD(tmp_Heat12, column=1, status=et_Heat12[,1], main=colnames(tmp_Heat12)[1], xlim=c(-0.1,20))
+
+```
+
+## Model: Ecotypes as Main Effect
+### Normalization
+```{r}
+x2_2012 ## These are the filtered genes
+#x2_2012$samples
+x4_2012 <- x2_2012norm
+group=Ecotype
+x4_2012 <- DGEList(x4_2012, group=Ecotype)
+#x4_2012$samples$norm.factors
+dim(x4_2012)
+x4_2012 <- calcNormFactors(x4_2012, method = "TMM")
+## I need to do this again here because for some reason I lose the normalization factores
+x4_2012$samples$norm.factors
+x4_2012$samples
+
+# Specifies a model where each coefficient corresponds to a group mean
+mm_Eco12 <- model.matrix(~0 + group)
+mm_Eco12
+```
+
+### Voom transformation
+```{r}
+yE12 <- voom(x4_2012, mm_Eco12, plot = T)
+yE12
+```
+
+### Limma, Fit linear model
+lmFit fits a linear model using weighted least squares for each gene:
+
+```{r}
+fit <- lmFit(yE12, mm_Eco12)
+head(coef(fit))
+```
+
+Comparisons between groups (log fold-changes) are obtained as contrasts of these fitted linear models:
+Specify which groups to compare:
+### Contrast: Ecotype_Slow-living-Fast-living 
+Compare control samples to understand effect of ecotype under control conditions
+```{r}
+contr_E12 <- makeContrasts(groupM - groupL, levels = colnames(coef(fit)))
+contr_E12
+
+# Estimate contrast for each gene
+tmp_Eco12 <- contrasts.fit(fit, contr_E12)
+tmp_Eco12 <- eBayes(tmp_Eco12)
+top.table_Eco12<- topTable(tmp_Eco12, sort.by = "P", n = Inf)
+head(top.table_Eco12, 20)
+length(which(top.table_Eco12$adj.P.Val < 0.05))
+length(which(top.table_Eco12$adj.P.Val < 0.1))
+length(which(top.table_Eco12$P.Value < 0.01))
+
+top.table_Eco12$Gene <- rownames(top.table_Eco12)
+top.table_Eco12 <- top.table_Eco12[,c("Gene", names(top.table_Eco12)[1:6])]
+write.table(top.table_Eco12, file = "OutputFiles/HS2012_EcotypeS-F.txt", row.names = F, sep = "\t", quote = F)
+
+et_Eco12 <- decideTests(tmp_Eco12)
+summary(et_Eco12)
+plotMD(tmp_Eco12, column=1, status=et_Eco12[,1], main=colnames(tmp_Eco12)[1], xlim=c(-8,13))
+```
+          
+
+#######################################
+# Start the Meta-Analysis
+
+  # packages metaRNAseq
+  # Marot et al October 9, 2020
+  
+#####################################
+Libraries needed for Meta-analysis
+library(plyr)
+library(metaRNASeq)
+library(data.table)
+#####
+Libraries needed for Upset plot
+  https://cran.r-project.org/web/packages/UpSetR/vignettes/basic.usage.html
+library(UpSetR)
+library(ggplot2)
+
+##  Main Effect of Heat Meta-Analysis
+ first get the data ready
+```{r}
+#Merge top tables results for each dataset - keep the genes in common ~13000
+library(plyr)
+top.table_H_intersect <- merge(top.table_Heat08,top.table_Heat12,by="Gene",all.x = FALSE, suffixes = c(".08", ".12"))
+dim(top.table_H_intersect)
+summary(top.table_H_intersect)
+head(top.table_H_intersect)
+
+#Put p-value and Fold changes results in lists
+H_rawpval <- list("pvalue_08"=top.table_H_intersect[["P.Value.08"]], "pvalue_12"=top.table_H_intersect[["P.Value.12"]])
+summary(H_rawpval)
+H_adjpval <- list("adjpvalue_08"=top.table_H_intersect[["adj.P.Val.08"]], "adjpvalue_12"=top.table_H_intersect[["adj.P.Val.12"]])
+summary(H_adjpval)
+H_FC <- list("H_FC_08"=top.table_H_intersect[["logFC.08"]], "H_FC_12"=top.table_H_intersect[["logFC.12"]])
+summary(H_FC)
+
+#make matrix: 1 for genes DE at adjpval of 0.05, and 0 for not.
+DE<- mapply(H_adjpval, FUN=function(x) ifelse(x <= 0.05, 1, 0))
+studies <-c("2008Dataset", "2012Dataset")
+colnames(DE)=paste("DE", studies,sep=".")
+rownames(DE)=paste(top.table_H_intersect$"Gene")
+#DE<-cbind(top.table_H_intersect$"Gene", DE)
+summary(DE)
+head(DE)
+dim(DE)
+
+#Check for normal distributions
+par(mfrow = c(1,2))
+hist(H_rawpval[[1]], breaks=100, col="grey", main="2008 Dataset", xlab="Raw p-values")
+hist(H_rawpval[[2]], breaks=100, col="grey", main="2012 Dataset", xlab="Raw p-values")
+
+```
+
+### Heat: Calculate the meta-analysis p-value 
+```{r}
+library(metaRNASeq)
+# P-value combination using Fisher method 
+fishcomb <- fishercomb(H_rawpval, BHth = 0.05)
+summary(fishcomb)
+hist(fishcomb$rawpval, breaks=100, col="grey", main="Fisher Method", xlab = "Raw p-values (meta-analysis)")
+# P-value combination using inverse normal method method 
+invnormcomb <- invnorm(H_rawpval, nrep=c(12,20), BHth=0.05)
+summary(invnormcomb)
+head(invnormcomb)
+hist(invnormcomb$rawpval, breaks=100, col="grey", main="Inverse normal method", xlab = "Raw p-values (meta-analysis)")
+
+## Summarize the results. DE are the results from the original analyses of the datasets individually.
+# add meta-analysis p-values
+H_results_metastats <- data.frame(DE, "DE.fishercomb_adjP"=fishcomb$adjpval, "DE.invnorm_adj_P"=invnormcomb$adjpval)
+library(data.table)
+setDT(H_results_metastats, keep.rownames = "Gene")  # make the rownames a part of the dataframe with column name "Gene"
+head(H_results_metastats)
+# Make columns that give 1 for significant or 0 for not significant
+H_results <- data.frame(DE, "DE.fishercomb"=ifelse(fishcomb$adjpval<=0.05,1,0), "DE.invnorm"=ifelse(invnormcomb$adjpval<=0.05,1,0))
+head(H_results)
+```
+
+```{r}
+
+## Dealing with conflicts in the sign of differential expression 
+signsFC <- mapply(H_FC, FUN=function(x) sign(x))
+sumsigns <- apply(signsFC,1,sum)
+commonsngFC <- ifelse(abs(sumsigns)==dim(signsFC)[2], sign(sumsigns), 0)
+  # this produced only 1155 genes
+unionDE <- unique(c(fishcomb$DEindices, invnormcomb$DEindicies))
+head(unionDE)
+#This keeps only the ones that are significant for either fishcomb or invnormcomb and adds the Signs columns
+FC.selecDE <- data.frame(H_results[unionDE,], do.call(cbind,H_FC) [unionDE,], signFC=commonsngFC[unionDE], DE=DE[unionDE])
+head(FC.selecDE)
+  # This is the subset of genes  that don't have a conflict (1 or -1)
+keepDE <- FC.selecDE[which(abs(FC.selecDE$signFC)==1),]
+  # these are the genes with conflicting signs between HS2008 and HS2012
+conflictDE <- FC.selecDE[which(FC.selecDE$signFC==0),]
+head(keepDE)
+dim(keepDE)
+head(conflictDE)
+dim(conflictDE)
+
+table(FC.selecDE$DE.invnorm)
+table(keepDE$DE.invnorm)
+
+```
+
+```{r}
+### Merge results and write to  a files
+setDT(FC.selecDE, keep.rownames = "Gene")
+head(FC.selecDE)
+head(H_results_metastats)
+
+# merge top.tables from HS2008 and 2012 - all genes that were not originally filtered otu.
+dim(top.table_Heat08)
+dim(top.table_Heat12)
+top.table.H_All<- merge(top.table_Heat08,top.table_Heat12,by="Gene",all.x = TRUE, all.y=TRUE, suffixes = c(".08", ".12"))
+dim(top.table.H_All)
+
+  #merge original results with results from meta-analysis
+Heat_results <- merge(top.table.H_All, FC.selecDE, all.x = TRUE)
+Heat_results2 <- merge(Heat_results, H_results_metastats, all.x = TRUE)
+head(Heat_results2)
+write.table(Heat_results2, file = "OutputFiles/Meta_Heat.txt", row.names = F, sep = "\t", quote = F)
+```
+
+### Make summary tables
+Heat as main effect
+```{r}
+## Make a table of results
+fishcomb_de <- rownames(keepDE)[which(keepDE[,"DE.fishercomb"]==1)]
+invnorm_de <- rownames(keepDE)[which(keepDE[,"DE.invnorm"]==1)]
+indstudy_de <- list(rownames(keepDE)[which(keepDE[,"DE.2008Dataset"]==1)],rownames(keepDE)[which(keepDE[,"DE.2012Dataset"]==1)])
+IDD.IRR(fishcomb_de,indstudy_de)
+IDD.IRR(invnorm_de, indstudy_de)
+
+
+### Venn Diagram  - this was not used; used upset plot instead
+#if (require("VennDiagram", quietly = TRUE)) {
+#venn.plot<-venn.diagram(x = list(Dataset2008=which(keepDE[,"DE.2008Dataset"]==1), Dataset2012=which(keepDE[,"DE.2012Dataset"]==1),
+#invnorm=which(keepDE[,"DE.invnorm"]==1)),
+#filename = NULL, col = "black",
+#fill = c("blue", "red","green"),
+#margin=0.05, alpha = 0.5)
+#jpeg("OutputGraphs/venn_Heat.jpg");
+#grid.draw(venn.plot);
+#dev.off();
+#}
+```
+
+### Make Upset plot Treatment
+https://cran.r-project.org/web/packages/UpSetR/vignettes/basic.usage.html
+```{r}
+## upload packages
+library(UpSetR)
+library(ggplot2)
+```
+UpSet Plot
+```{r}
+# Heat Treatment 2008
+  #Subset the top.tables to only contain the rows where "adj.P.Val <=0.05
+UP_Heat08_top <- top.table_Heat08[which(top.table_Heat08$adj.P.Val<=0.05), ]
+dim(UP_Heat08_top)
+  # converting column of "Gene" in dataframe column into vector by passing as index
+Treatment_HS2008 = UP_Heat08_top[['Gene']]
+# Heat Treatment 2012
+  #Subset the top.tables to only contain the rows where "adj.P.Val <=0.05
+UP_Heat12_top <- top.table_Heat12[which(top.table_Heat12$adj.P.Val<=0.05), ]
+dim(UP_Heat12_top)
+  #converting column of "Gene" in dataframe column into vector by passing as index
+Treatment_HS2012 = UP_Heat12_top[['Gene']]
+# Heat MetaAnalysis
+## Keep the genes from the meta-analysis that have invernorm adjusted p-value <= 0.05 and the log fold change is going in the same direction in both analyses
+UP_MetaA <- Heat_results2[which(Heat_results2$DE.invnorm_adj_P<=0.05), ]
+UP_MetaB <- UP_MetaA[which(abs(UP_MetaA$signFC)==1),]
+dim(UP_MetaB)
+  #converting column of "Gene" in dataframe column into vector by passing as index
+Treatment_Meta = UP_MetaB[['Gene']]
+
+listHeat <- list(HS2008 = Treatment_HS2008, HS2012 = Treatment_HS2012, MetaAnalysis = Treatment_Meta)
+
+# Make upset put and save as a .pdf file
+pdf("OutputGraphs/Upset_Treatment.pdf")
+  #make plot
+upset(fromList(listHeat), mainbar.y.label = "Number of Differentially Expressed Genes (adjusted p-value=0.05)", sets.x.label = "DEGs",order.by = "freq")
+dev.off()
+```
+
+
+~~~~~
+##  Main Effect of Ecotype Meta-Analysis
+
+```{r}
+#Merge top tables results for each dataset - keep the genes in common ~13000
+library(plyr)
+top.table_E_intersect <- merge(top.table_Eco08,top.table_Eco12,by="Gene",all.x = FALSE, suffixes = c(".08", ".12"))
+dim(top.table_E_intersect)
+summary(top.table_E_intersect)
+dim(top.table_E_intersect)
+head(top.table_E_intersect)
+
+#Put p-value and Fold changes results in lists
+E_rawpval <- list("pvalue_08"=top.table_E_intersect[["P.Value.08"]], "pvalue_12"=top.table_E_intersect[["P.Value.12"]])
+summary(E_rawpval)
+E_adjpval <- list("adjpvalue_08"=top.table_E_intersect[["adj.P.Val.08"]], "adjpvalue_12"=top.table_E_intersect[["adj.P.Val.12"]])
+summary(E_adjpval)
+E_FC <- list("E_FC_08"=top.table_E_intersect[["logFC.08"]], "E_FC_12"=top.table_E_intersect[["logFC.12"]])
+summary(E_FC)
+
+#make matrix of 1 for genes DE and 0 for not.
+DE<- mapply(E_adjpval, FUN=function(x) ifelse(x <= 0.05, 1, 0))
+studies <-c("2008Dataset", "2012Dataset")
+colnames(DE)=paste("DE", studies,sep=".")
+rownames(DE)=paste(top.table_E_intersect$"Gene")
+#DE<-cbind(top.table_H_intersect$"Gene", DE)
+summary(DE)
+head(DE)
+dim(DE)
+
+#Check for normal distributions
+par(mfrow = c(1,2))
+hist(E_rawpval[[1]], breaks=100, col="grey", main="2008 Dataset", xlab="Raw p-values")
+hist(E_rawpval[[2]], breaks=100, col="grey", main="2012 Dataset", xlab="Raw p-values")
+
+```
+
+### Ecotype: Calculate the meta-analysis p-value
+```{r}
+library(metaRNASeq)
+# P-value combination using Fisher method 
+fishcomb <- fishercomb(E_rawpval, BHth = 0.05)
+summary(fishcomb)
+hist(fishcomb$rawpval, breaks=100, col="grey", main="Fisher Method", xlab = "Raw p-values Ecotype (meta-analysis)")
+# P-value combination using inverse nomral method method 
+invnormcomb <- invnorm(E_rawpval, nrep=c(12,20), BHth=0.05)
+summary(invnormcomb)
+head(invnormcomb)
+hist(invnormcomb$rawpval, breaks=100, col="grey", main="Inverse normal method", xlab = "Raw p-values Ecotype (meta-analysis)")
+
+## Summarize the results. DE are the results from the original anlayses of the datasets individually.
+E_results_metastats <- data.frame(DE, "DE.fishercomb_adjP"=fishcomb$adjpval, "DE.invnorm_adj_P"=invnormcomb$adjpval)
+library(data.table)
+setDT(E_results_metastats, keep.rownames = "Gene")  # make the rownames a part of the dataframe with column name "Gene"
+head(E_results_metastats)
+E_results <- data.frame(DE, "DE.fishercomb"=ifelse(fishcomb$adjpval<=0.05,1,0), "DE.invnorm"=ifelse(invnormcomb$adjpval<=0.05,1,0))
+head(E_results)
+
+## Dealing with conflicts in the sign of differential expression 
+signsFC <- mapply(E_FC, FUN=function(x) sign(x))
+sumsigns <- apply(signsFC,1,sum)
+commonsngFC <- ifelse(abs(sumsigns)==dim(signsFC)[2], sign(sumsigns), 0)
+unionDE <- unique(c(fishcomb$DEindices, invnormcomb$DEindicies))
+FC.selecDE <- data.frame(E_results[unionDE,], do.call(cbind,E_FC) [unionDE,], signFC=commonsngFC[unionDE], DE=DE[unionDE])
+dim(FC.selecDE)
+  # keep the ones that don't have a conflict (1 or -1)
+keepDE <- FC.selecDE[which(abs(FC.selecDE$signFC)==1),]
+dim(keepDE)
+conflictDE <- FC.selecDE[which(FC.selecDE$signFC==0),]
+dim(conflictDE)
+head(FC.selecDE)  # the ones with conflict = 0
+head(keepDE)
+head(conflictDE)
+table(conflictDE$DE)
+
+### Merge results and write to  a file
+setDT(FC.selecDE, keep.rownames = "Gene")
+head(FC.selecDE)
+head(top.table_E_intersect)
+head(E_results_metastats)
+
+# merge top.tables from HS2008 and 2012 - all genes that were not originally filtered otu.
+dim(top.table_Eco08)
+dim(top.table_Eco12)
+top.table.E_All<- merge(top.table_Eco08,top.table_Eco12,by="Gene",all.x = TRUE, all.y=TRUE, suffixes = c(".08", ".12"))
+dim(top.table.E_All)
+
+  #merge original results with results from meta-analysis
+Ecotype_results <- merge(top.table.E_All,FC.selecDE, all.x = TRUE)
+Ecotype_results2 <- merge(Ecotype_results, E_results_metastats, all.x = TRUE)
+head(Ecotype_results2)
+write.table(Ecotype_results2, file = "OutputFiles/Meta_Ecotype.txt", row.names = F, sep = "\t", quote = F)
+```
+
+### Make summary tables and Upset plot
+Ecotype as main effect
+```{r}
+## Make a table of results
+fishcomb_de <- rownames(keepDE)[which(keepDE[,"DE.fishercomb"]==1)]
+invnorm_de <- rownames(keepDE)[which(keepDE[,"DE.invnorm"]==1)]
+indstudy_de <- list(rownames(keepDE)[which(keepDE[,"DE.2008Dataset"]==1)],rownames(keepDE)[which(keepDE[,"DE.2012Dataset"]==1)])
+IDD.IRR(fishcomb_de,indstudy_de)
+IDD.IRR(invnorm_de, indstudy_de)
+```
+
+### Make Upset Plot Ecotype
+```{r}
+# Ecotype  2008
+  #Subset the top.tables to only contain the rows where "adj.P.Val <=0.05
+UP_Eco08_top <- top.table_Eco08[which(top.table_Eco08$adj.P.Val<=0.05), ]
+dim(UP_Eco08_top)
+  # converting column of "Gene" in dataframe column into vector by passing as index
+Ecotype_HS2008 = UP_Eco08_top[['Gene']]
+#  HS2012
+  #Subset the top.tables to only contain the rows where "adj.P.Val <=0.05
+UP_Eco12_top <- top.table_Eco12[which(top.table_Eco12$adj.P.Val<=0.05), ]
+dim(UP_Eco12_top)
+  #converting column of "Gene" in dataframe column into vector by passing as index
+Ecotype_HS2012 = UP_Eco12_top[['Gene']]
+#MetaAnalysis
+## Keep the genes from the meta-analysis that have invernorm adjusted p-value <= 0.05 and the log fold change is going in the same direction in both analyses
+UP_MetaA <- Ecotype_results2[which(Ecotype_results2$DE.invnorm_adj_P<=0.05), ]
+UP_MetaB <- UP_MetaA[which(abs(UP_MetaA$signFC)==1),]
+dim(UP_MetaB)
+  #converting column of "Gene" in dataframe column into vector by passing as index
+Ecotype_Meta = UP_MetaB[['Gene']]
+
+listEcotype <- list(HS2008 = Ecotype_HS2008, HS2012 = Ecotype_HS2012, MetaAnalysis = Ecotype_Meta)
+
+# Make upset put and save as a .pdf file
+pdf("OutputGraphs/Upset_Ecotype.pdf")
+  #make plot
+upset(fromList(listEcotype), mainbar.y.label = "Number of Differentially Expressed Genes (adjusted p-value=0.05)", sets.x.label = "DEGs",order.by = "freq")
+dev.off()
+```
+
+
+~~~~~
+##  Interaction between Treatment and Ecotype
+first get the data ready
+```{r}
+#Merge top tables results for each dataset - keep the genes in common ~13000
+library(plyr)
+top.table_I_intersect <- merge(top.table_I_2008,top.table_I_2012,by="Gene",all.x = FALSE, suffixes = c(".08", ".12"))
+dim(top.table_I_intersect)
+summary(top.table_I_intersect)
+dim(top.table_I_intersect)
+head(top.table_I_intersect)
+
+#Put p-value and Fold changes results in lists
+I_rawpval <- list("pvalue_08"=top.table_I_intersect[["P.Value.08"]], "pvalue_12"=top.table_I_intersect[["P.Value.12"]])
+summary(I_rawpval)
+I_adjpval <- list("adjpvalue_08"=top.table_I_intersect[["adj.P.Val.08"]], "adjpvalue_12"=top.table_I_intersect[["adj.P.Val.12"]])
+summary(I_adjpval)
+I_FC <- list("I_FC_08"=top.table_I_intersect[["logFC.08"]], "I_FC_12"=top.table_I_intersect[["logFC.12"]])
+summary(I_FC)
+
+#make matrix of 1 for genes DE and 0 for not.
+DE<- mapply(I_adjpval, FUN=function(x) ifelse(x <= 0.05, 1, 0))
+studies <-c("2008Dataset", "2012Dataset")
+colnames(DE)=paste("DE", studies,sep=".")
+rownames(DE)=paste(top.table_I_intersect$"Gene")
+#DE<-cbind(top.table_H_intersect$"Gene", DE)
+summary(DE)
+head(DE)
+dim(DE)
+
+#Check for normal distributions
+par(mfrow = c(1,2))
+hist(I_rawpval[[1]], breaks=100, col="grey", main="2008 Dataset", xlab="Raw p-values")
+hist(I_rawpval[[2]], breaks=100, col="grey", main="2012 Dataset", xlab="Raw p-values")
+
+```
+
+### Interaction: Calculate the meta-analysis p-value 
+Interaction between treatment and ecotype
+```{r}
+library(metaRNASeq)
+# P-value combination using Fisher method 
+fishcomb <- fishercomb(I_rawpval, BHth = 0.05)
+summary(fishcomb)
+hist(fishcomb$rawpval, breaks=100, col="grey", main="Fisher Method", xlab = "Raw p-values Interaction (meta-analysis)")
+# P-value combination using inverse nomral method method 
+invnormcomb <- invnorm(I_rawpval, nrep=c(12,20), BHth=0.05)
+summary(invnormcomb)
+head(invnormcomb)
+hist(invnormcomb$rawpval, breaks=100, col="grey", main="Inverse normal method", xlab = "Raw p-values Interaction (meta-analysis)")
+
+## Summarize the results. DE are the results from the original anlayses of the datasets individually.
+I_results_metastats <- data.frame(DE, "DE.fishercomb_adjP"=fishcomb$adjpval, "DE.invnorm_adj_P"=invnormcomb$adjpval)
+library(data.table)
+setDT(I_results_metastats, keep.rownames = "Gene")  # make the rownames a part of the dataframe with column name "Gene"
+head(I_results_metastats)
+I_results <- data.frame(DE, "DE.fishercomb"=ifelse(fishcomb$adjpval<=0.05,1,0), "DE.invnorm"=ifelse(invnormcomb$adjpval<=0.05,1,0))
+head(I_results)
+
+## Dealing with conflicts in the sign of differential expression 
+signsFC <- mapply(I_FC, FUN=function(x) sign(x))
+sumsigns <- apply(signsFC,1,sum)
+commonsngFC <- ifelse(abs(sumsigns)==dim(signsFC)[2], sign(sumsigns), 0)
+unionDE <- unique(c(fishcomb$DEindices, invnormcomb$DEindicies))
+FC.selecDE <- data.frame(I_results[unionDE,], do.call(cbind,I_FC) [unionDE,], signFC=commonsngFC[unionDE], DE=DE[unionDE])
+  # keep the ones that don't have a conflict (1 or -1)
+keepDE <- FC.selecDE[which(abs(FC.selecDE$signFC)==1),]
+conflictDE <- FC.selecDE[which(FC.selecDE$signFC==0),]
+head(FC.selecDE)  # the ones with conflict = 0
+head(keepDE)
+head(conflictDE)
+table(conflictDE$DE)
+
+### Merge results and write to  a file
+setDT(FC.selecDE, keep.rownames = "Gene")
+head(FC.selecDE)
+head(I_results_metastats)
+```
+
+```{r}
+# merge top.tables from HS2008 and 2012 - all genes that were not originally filtered otu.
+dim(top.table_I_2008)
+dim(top.table_I_2012)
+top.table.I_All<- merge(top.table_I_2008,top.table_I_2012,by="Gene",all.x = TRUE, all.y=TRUE, suffixes = c(".08", ".12"))
+dim(top.table.I_All)
+# merge with metanalysis
+Interaction_results <- merge(top.table.I_All,FC.selecDE, all.x = TRUE)
+Interaction_results2 <- merge(Interaction_results, I_results_metastats, all.x = TRUE)
+head(Interaction_results2)
+write.table(Interaction_results2, file = "OutputFiles/Meta_Interection.txt", row.names = F, sep = "\t", quote = F)
+```
+
+### Make summary tables
+Interaction between treatment and ecotype
+```{r}
+## Make a table of results
+fishcomb_de <- rownames(keepDE)[which(keepDE[,"DE.fishercomb"]==1)]
+invnorm_de <- rownames(keepDE)[which(keepDE[,"DE.invnorm"]==1)]
+indstudy_de <- list(rownames(keepDE)[which(keepDE[,"DE.2008Dataset"]==1)],rownames(keepDE)[which(keepDE[,"DE.2012Dataset"]==1)])
+IDD.IRR(fishcomb_de,indstudy_de)
+IDD.IRR(invnorm_de, indstudy_de)
+```
+
+### Make UpsetPlot Interaction
+```{r}
+# Interaction 2008
+  #Subset the top.tables to only contain the rows where "adj.P.Val <=0.05
+UP_I_08_top <- top.table_I_2008[which(top.table_I_2008$adj.P.Val<=0.05), ]
+dim(UP_I_08_top)
+  # converting column of "Gene" in dataframe column into vector by passing as index
+Interaction_HS2008 = UP_I_08_top[['Gene']]
+# Interaction 2012
+  #Subset the top.tables to only contain the rows where "adj.P.Val <=0.05
+UP_I_12_top <- top.table_I_2012[which(top.table_I_2012$adj.P.Val<=0.05), ]
+dim(UP_I_12_top)
+  #converting column of "Gene" in dataframe column into vector by passing as index
+Interaction_HS2012 = UP_I_12_top[['Gene']]
+# Heat MetaAnalysis
+## Keep the genes from the meta-analysis that have invernorm adjusted p-value <= 0.05 and the log fold change is going in the same direction in both analyses
+UP_MetaA <- Interaction_results2[which(Interaction_results2$DE.invnorm_adj_P<=0.05), ]
+UP_MetaB <- UP_MetaA[which(abs(UP_MetaA$signFC)==1),]
+dim(UP_MetaB)
+  #converting column of "Gene" in dataframe column into vector by passing as index
+Interaction_Meta = UP_MetaB[['Gene']]
+
+listInteraction <- list(HS2008 = Interaction_HS2008, HS2012 = Interaction_HS2012, MetaAnalysis = Interaction_Meta)
+
+### No significant genes for the Interaction so don't need to make upset plot
+# Make upset put and save as a .pdf file
+#pdf("OutputGraphs/Upset_Interaction.pdf")
+  #make plot
+#upset(fromList(listInteraction), mainbar.y.label = "Number of Genes Differentially expressed genes (adjusted p-value=0.05)", sets.x.label = "DEGs",order.by = "freq")
+#dev.off()
+```
+
+~~~~~~~~~~~~~~~~~~~
+## Ecotype in Control Meta-Analysis
+first get the data ready
+```{r}
+#Merge top tables results for each dataset - keep the genes in common ~13000
+library(plyr)
+top.table_EC_intersect <- merge(top.table_C_Ecotypes08,top.table_C_Ecotypes12,by="Gene",all.x = FALSE, suffixes = c(".08", ".12"))
+dim(top.table_EC_intersect)
+summary(top.table_EC_intersect)
+head(top.table_EC_intersect)
+
+#Put p-value and Fold changes results in lists
+EC_rawpval <- list("pvalue_08"=top.table_EC_intersect[["P.Value.08"]], "pvalue_12"=top.table_EC_intersect[["P.Value.12"]])
+summary(EC_rawpval)
+EC_adjpval <- list("adjpvalue_08"=top.table_EC_intersect[["adj.P.Val.08"]], "adjpvalue_12"=top.table_EC_intersect[["adj.P.Val.12"]])
+summary(EC_adjpval)
+EC_FC <- list("E_FC_08"=top.table_EC_intersect[["logFC.08"]], "E_FC_12"=top.table_EC_intersect[["logFC.12"]])
+summary(EC_FC)
+
+#make matrix of 1 for genes DE and 0 for not.
+DE<- mapply(EC_adjpval, FUN=function(x) ifelse(x <= 0.05, 1, 0))
+studies <-c("2008Dataset", "2012Dataset")
+colnames(DE)=paste("DE", studies,sep=".")
+rownames(DE)=paste(top.table_EC_intersect$"Gene")
+#DE<-cbind(top.table_H_intersect$"Gene", DE)
+summary(DE)
+head(DE)
+dim(DE)
+
+#Check for normal distributions
+par(mfrow = c(1,2))
+hist(EC_rawpval[[1]], breaks=100, col="grey", main="2008 Dataset", xlab="Raw p-values")
+hist(EC_rawpval[[2]], breaks=100, col="grey", main="2012 Dataset", xlab="Raw p-values")
+
+```
+
+### Calculate the meta-analysis p-value 
+Ecotype in Control
+```{r}
+library(metaRNASeq)
+# P-value combination using Fisher method 
+fishcomb <- fishercomb(EC_rawpval, BHth = 0.05)
+summary(fishcomb)
+hist(fishcomb$rawpval, breaks=100, col="grey", main="Fisher Method", xlab = "Raw p-values Ecotype in Control (meta-analysis)")
+# P-value combination using inverse nomral method method 
+invnormcomb <- invnorm(EC_rawpval, nrep=c(12,20), BHth=0.05)
+summary(invnormcomb)
+head(invnormcomb)
+hist(invnormcomb$rawpval, breaks=100, col="grey", main="Inverse normal method", xlab = "Raw p-values Ecotype in Control (meta-analysis)")
+
+## Summarize the results. DE are the results from the original analyses of the datasets individually.
+EC_results_metastats <- data.frame(DE, "DE.fishercomb_adjP"=fishcomb$adjpval, "DE.invnorm_adj_P"=invnormcomb$adjpval)
+library(data.table)
+setDT(EC_results_metastats, keep.rownames = "Gene")  # make the rownames a part of the dataframe with column name "Gene"
+head(EC_results_metastats)
+EC_results <- data.frame(DE, "DE.fishercomb"=ifelse(fishcomb$adjpval<=0.05,1,0), "DE.invnorm"=ifelse(invnormcomb$adjpval<=0.05,1,0))
+head(EC_results)
+
+## Dealing with conflicts in the sign of differential expression 
+signsFC <- mapply(EC_FC, FUN=function(x) sign(x))
+sumsigns <- apply(signsFC,1,sum)
+commonsngFC <- ifelse(abs(sumsigns)==dim(signsFC)[2], sign(sumsigns), 0)
+unionDE <- unique(c(fishcomb$DEindices, invnormcomb$DEindicies))
+FC.selecDE <- data.frame(EC_results[unionDE,], do.call(cbind,EC_FC) [unionDE,], signFC=commonsngFC[unionDE], DE=DE[unionDE])
+  # keep the ones that don't have a conflict (1 or -1)
+keepDE <- FC.selecDE[which(abs(FC.selecDE$signFC)==1),]
+conflictDE <- FC.selecDE[which(FC.selecDE$signFC==0),]
+head(FC.selecDE)  # the ones with conflict = 0
+head(keepDE)
+head(conflictDE)
+table(conflictDE$DE)
+```
+
+```{r}
+### Merge results and write to  a file
+setDT(FC.selecDE, keep.rownames = "Gene")
+head(FC.selecDE)
+head(EC_results_metastats)
+
+# merge top.tables from HS2008 and 2012 - all genes that were not originally filtered otu.
+dim(top.table_C_Ecotypes08)
+dim(top.table_C_Ecotypes12)
+top.table.EC_All<- merge(top.table_C_Ecotypes08,top.table_C_Ecotypes12,by="Gene",all.x = TRUE, all.y=TRUE, suffixes = c(".08", ".12"))
+dim(top.table.EC_All)
+# merge with metanalysis
+
+EcotypeControl_results <- merge(top.table.EC_All,FC.selecDE, all.x = TRUE)
+EcotypeControl_results2 <- merge(EcotypeControl_results, EC_results_metastats, all.x = TRUE)
+head(EcotypeControl_results2)
+write.table(EcotypeControl_results2, file = "OutputFiles/Meta_EcotypesControl.txt", row.names = F, sep = "\t", quote = F)
+```
+
+### Make summary tables
+Ecotype in Control
+```{r}
+## Make a table of results
+fishcomb_de <- rownames(keepDE)[which(keepDE[,"DE.fishercomb"]==1)]
+invnorm_de <- rownames(keepDE)[which(keepDE[,"DE.invnorm"]==1)]
+indstudy_de <- list(rownames(keepDE)[which(keepDE[,"DE.2008Dataset"]==1)],rownames(keepDE)[which(keepDE[,"DE.2012Dataset"]==1)])
+IDD.IRR(fishcomb_de,indstudy_de)
+IDD.IRR(invnorm_de, indstudy_de)
+```
+
+### Make Upset Plot, Ecotype in Control
+```{r}
+  #Subset the top.tables to only contain the rows where "adj.P.Val <=0.05
+UP_EC08_top <- top.table_C_Ecotypes08[which(top.table_C_Ecotypes08$adj.P.Val<=0.05), ]
+dim(UP_EC08_top)
+  # converting column of "Gene" in dataframe column into vector by passing as index
+Ecotypes_Control_HS2008 = UP_EC08_top[['Gene']]
+# Heat Treatment 2012
+  #Subset the top.tables to only contain the rows where "adj.P.Val <=0.05
+UP_EC12_top <- top.table_C_Ecotypes12[which(top.table_C_Ecotypes12$adj.P.Val<=0.05), ]
+dim(UP_EC12_top)
+  #converting column of "Gene" in dataframe column into vector by passing as index
+Ecotypes_Control_HS2012 = UP_EC12_top[['Gene']]
+# MetaAnalysis
+## Keep the genes from the meta-analysis that have invernorm adjusted p-value <= 0.05 and the log fold change is going in the same direction in both analyses
+UP_MetaA <- EcotypeControl_results2[which(EcotypeControl_results2$DE.invnorm_adj_P<=0.05), ]
+UP_MetaB <- UP_MetaA[which(abs(UP_MetaA$signFC)==1),]
+dim(UP_MetaB)
+  #converting column of "Gene" in dataframe column into vector by passing as index
+EcotypeControl_Meta = UP_MetaB[['Gene']]
+
+list <- list(HS2008 = Ecotypes_Control_HS2008, HS2012 = Ecotypes_Control_HS2012, MetaAnalysis = EcotypeControl_Meta)
+
+### No significant genes for the Interaction so don't need to make upset plot
+# Make upset put and save as a .pdf file
+#pdf("OutputGraphs/Upset_EcotypeControl.pdf")
+  #make plot
+#upset(fromList(list), mainbar.y.label = "Number of Genes Differentially expressed genes (adjusted p-value=0.05)", sets.x.label = "DEGs",order.by = "freq")
+#dev.off()
+```
+
+~~~~~~~~~~~~~~~~~~~
+##   Ecotype in Heat treatment
+first get the data ready
+```{r}
+#Merge top tables results for each dataset - keep the genes in common ~13000
+library(plyr)
+top.table_EH_intersect <- merge(top.table_H_Ecotypes08,top.table_H_Ecotypes12,by="Gene",all.x = FALSE, suffixes = c(".08", ".12"))
+dim(top.table_EH_intersect)
+summary(top.table_EH_intersect)
+head(top.table_EH_intersect)
+
+#Put p-value and Fold changes results in lists
+EH_rawpval <- list("pvalue_08"=top.table_EH_intersect[["P.Value.08"]], "pvalue_12"=top.table_EH_intersect[["P.Value.12"]])
+summary(EH_rawpval)
+EH_adjpval <- list("adjpvalue_08"=top.table_EH_intersect[["adj.P.Val.08"]], "adjpvalue_12"=top.table_EH_intersect[["adj.P.Val.12"]])
+summary(EH_adjpval)
+EH_FC <- list("EH_FC_08"=top.table_EH_intersect[["logFC.08"]], "EH_FC_12"=top.table_EH_intersect[["logFC.12"]])
+summary(EH_FC)
+
+# make matrix of 1 for genes DE and 0 for not.
+DE<- mapply(EH_adjpval, FUN=function(x) ifelse(x <= 0.05, 1, 0))
+studies <-c("2008Dataset", "2012Dataset")
+colnames(DE)=paste("DE", studies,sep=".")
+rownames(DE)=paste(top.table_EH_intersect$"Gene")
+#DE<-cbind(top.table_H_intersect$"Gene", DE)
+summary(DE)
+head(DE)
+dim(DE)
+
+#Check for normal distributions
+par(mfrow = c(1,2))
+hist(EH_rawpval[[1]], breaks=100, col="grey", main="2008 Dataset", xlab="Raw p-values")
+hist(EH_rawpval[[2]], breaks=100, col="grey", main="2012 Dataset", xlab="Raw p-values")
+
+```
+
+### Calculate the meta-analysis p-value
+Ecotype in Heat
+```{r}
+library(metaRNASeq)
+# P-value combination using Fisher method 
+fishcomb <- fishercomb(EH_rawpval, BHth = 0.05)
+summary(fishcomb)
+hist(fishcomb$rawpval, breaks=100, col="grey", main="Fisher Method", xlab = "Raw p-values Ecotype in Heat (meta-analysis)")
+# P-value combination using inverse nomral method method 
+invnormcomb <- invnorm(EH_rawpval, nrep=c(12,20), BHth=0.05)
+summary(invnormcomb)
+head(invnormcomb)
+hist(invnormcomb$rawpval, breaks=100, col="grey", main="Inverse normal method", xlab = "Raw p-values Ecotype in Heat (meta-analysis)")
+
+## Summarize the results. DE are the results from the original anlayses of the datasets individually.
+EH_results_metastats <- data.frame(DE, "DE.fishercomb_adjP"=fishcomb$adjpval, "DE.invnorm_adj_P"=invnormcomb$adjpval)
+library(data.table)
+setDT(EH_results_metastats, keep.rownames = "Gene")  # make the rownames a part of the dataframe with column name "Gene"
+head(EH_results_metastats)
+EH_results <- data.frame(DE, "DE.fishercomb"=ifelse(fishcomb$adjpval<=0.05,1,0), "DE.invnorm"=ifelse(invnormcomb$adjpval<=0.05,1,0))
+head(EH_results)
+
+## Dealing with conflicts in the sign of differential expression 
+signsFC <- mapply(EH_FC, FUN=function(x) sign(x))
+sumsigns <- apply(signsFC,1,sum)
+commonsngFC <- ifelse(abs(sumsigns)==dim(signsFC)[2], sign(sumsigns), 0)
+unionDE <- unique(c(fishcomb$DEindices, invnormcomb$DEindicies))
+FC.selecDE <- data.frame(EH_results[unionDE,], do.call(cbind,EH_FC) [unionDE,], signFC=commonsngFC[unionDE], DE=DE[unionDE])
+  # keep the ones that don't have a conflict (1 or -1)
+keepDE <- FC.selecDE[which(abs(FC.selecDE$signFC)==1),]
+conflictDE <- FC.selecDE[which(FC.selecDE$signFC==0),]
+head(FC.selecDE)  # the ones with conflict = 0
+head(keepDE)
+head(conflictDE)
+table(conflictDE$DE)
+
+### Merge results and write to  a file
+setDT(FC.selecDE, keep.rownames = "Gene")
+head(FC.selecDE)
+head(top.table_EH_intersect)
+head(EH_results_metastats)
+#Heat_results <- merge(top.table_H_intersect,FC.selecDE, H_results_metastats, by.x = "Gene", all.x = TRUE)
+EcotypeHeat_results <- merge(top.table_EH_intersect,FC.selecDE, all.x = TRUE)
+EcotypeHeat_results2 <- merge(EcotypeHeat_results, EH_results_metastats, all.x = TRUE)
+head(EcotypeHeat_results2)
+write.table(EcotypeHeat_results2, file = "OutputFiles/Meta_EcotypeHeat.txt", row.names = F, sep = "\t", quote = F)
+```
+
+### Make summary tables
+Ecotype in Heat
+```{r}
+## Make a table of results
+fishcomb_de <- rownames(keepDE)[which(keepDE[,"DE.fishercomb"]==1)]
+invnorm_de <- rownames(keepDE)[which(keepDE[,"DE.invnorm"]==1)]
+indstudy_de <- list(rownames(keepDE)[which(keepDE[,"DE.2008Dataset"]==1)],rownames(keepDE)[which(keepDE[,"DE.2012Dataset"]==1)])
+IDD.IRR(fishcomb_de,indstudy_de)
+IDD.IRR(invnorm_de, indstudy_de)
+
+```
+
+### Make Upset Plot, Ecotype in Heat
+```{r}
+# Ecotype in Heat Treatment 2008
+  #Subset the top.tables to only contain the rows where "adj.P.Val <=0.05
+UP_EH08_top <- top.table_H_Ecotypes08[which(top.table_H_Ecotypes08$adj.P.Val<=0.05), ]
+dim(UP_EC08_top)
+  # converting column of "Gene" in dataframe column into vector by passing as index
+EH_HS2008 = UP_EH08_top[['Gene']]
+# Ecotype in Heat Treatment 2012
+  #Subset the top.tables to only contain the rows where "adj.P.Val <=0.05
+UP_EH12_top <- top.table_H_Ecotypes12[which(top.table_H_Ecotypes12$adj.P.Val<=0.05), ]
+dim(UP_EH12_top)
+  #converting column of "Gene" in dataframe column into vector by passing as index
+EH_HS2012 = UP_EH12_top[['Gene']]
+# Ecotypes in Heat MetaAnalysis
+## Keep the genes from the meta-analysis that have invernorm adjusted p-value <= 0.05 and the log fold change is going in the same direction in both analyses
+UP_MetaA <- EcotypeHeat_results2[which(EcotypeHeat_results2$DE.invnorm_adj_P<=0.05), ]
+UP_MetaB <- UP_MetaA[which(abs(UP_MetaA$signFC)==1),]
+dim(UP_MetaB)
+  #converting column of "Gene" in dataframe column into vector by passing as index
+Ecotypes_Heat_Meta = UP_MetaB[['Gene']]
+
+listEcoHeat <- list(HS2008 = EH_HS2008, HS2012 = EH_HS2012, MetaAnalysis = Ecotypes_Heat_Meta)
+
+### No significant genes for the Interaction so don't need to make upset plot
+# Make upset put and save as a .pdf file
+#pdf("OutputGraphs/Upset_EcotypesInHeat.pdf")
+  #make plot
+#upset(fromList(listEcoHeat), mainbar.y.label = "Number of Genes in Intersection", sets.x.label = "Differentially expressed genes (adjusted p-value=0.05)",order.by = "freq")
+#dev.off()
+```
+
+~~~~~~~~~~~~~~~~~~
+##  Heat vs Control in Lake (fast-living) ecotype Meta-analysis
+first get the data ready
+```{r}
+#Merge top tables results for each dataset - keep the genes in common ~13000
+library(plyr)
+top.table_HC_Lake <- merge(top.table_HC_Lake08,top.table_HC_Lake12,by="Gene",all.x = FALSE, suffixes = c(".08", ".12"))
+dim(top.table_HC_Lake)
+summary(top.table_HC_Lake)
+head(top.table_HC_Lake)
+
+#Put p-value and Fold changes results in lists
+HC_Lake_rawpval <- list("pvalue_08"=top.table_HC_Lake[["P.Value.08"]], "pvalue_12"=top.table_HC_Lake[["P.Value.12"]])
+summary(HC_Lake_rawpval)
+HC_Lake_adjpval <- list("adjpvalue_08"=top.table_HC_Lake[["adj.P.Val.08"]], "adjpvalue_12"=top.table_HC_Lake[["adj.P.Val.12"]])
+summary(HC_Lake_adjpval)
+HC_Lake_FC <- list("HC_Lake_FC_08"=top.table_HC_Lake[["logFC.08"]], "HC_Lake_FC_12"=top.table_HC_Lake[["logFC.12"]])
+summary(HC_Lake_FC)
+
+#make matrix of 1 for genes DE and 0 for not.
+DE<- mapply(HC_Lake_adjpval, FUN=function(x) ifelse(x <= 0.05, 1, 0))
+studies <-c("2008Dataset", "2012Dataset")
+colnames(DE)=paste("DE", studies,sep=".")
+rownames(DE)=paste(top.table_HC_Lake$"Gene")
+#DE<-cbind(top.table_HC-Lakee$"Gene", DE)
+summary(DE)
+head(DE)
+dim(DE)
+
+#Check for normal distributions
+par(mfrow = c(1,2))
+hist(HC_Lake_rawpval[[1]], breaks=100, col="grey", main="2008 Dataset", xlab="Raw p-values")
+hist(HC_Lake_rawpval[[2]], breaks=100, col="grey", main="2012 Dataset", xlab="Raw p-values")
+```
+
+
+### Calculate the meta-analysis p-value
+Heat vs Control in Lake (fast-living) ecotype
+```{r}
+library(metaRNASeq)
+# P-value combination using Fisher method 
+fishcomb <- fishercomb(HC_Lake_rawpval, BHth = 0.05)
+summary(fishcomb)
+hist(fishcomb$rawpval, breaks=100, col="grey", main="Fisher Method", xlab = "Raw p-values (meta-analysis)")
+# P-value combination using inverse nomral method method 
+invnormcomb <- invnorm(HC_Lake_rawpval, nrep=c(12,20), BHth=0.05)
+summary(invnormcomb)
+head(invnormcomb)
+hist(invnormcomb$rawpval, breaks=100, col="grey", main="Inverse normal method", xlab = "Raw p-values (meta-analysis)")
+
+## Summarize the results. DE are the results from the original anlayses of the datasets individually.
+HC_Lake_results_metastats <- data.frame(DE, "DE.fishercomb_adjP"=fishcomb$adjpval, "DE.invnorm_adj_P"=invnormcomb$adjpval)
+library(data.table)
+setDT(HC_Lake_results_metastats, keep.rownames = "Gene")  # make the rownames a part of the dataframe with column name "Gene"
+head(HC_Lake_results_metastats)
+HC_Lake_results <- data.frame(DE, "DE.fishercomb"=ifelse(fishcomb$adjpval<=0.05,1,0), "DE.invnorm"=ifelse(invnormcomb$adjpval<=0.05,1,0))
+head(HC_Lake_results)
+
+## Dealing with conflicts in the sign of differential expression 
+signsFC <- mapply(HC_Lake_FC, FUN=function(x) sign(x))
+sumsigns <- apply(signsFC,1,sum)
+commonsngFC <- ifelse(abs(sumsigns)==dim(signsFC)[2], sign(sumsigns), 0)
+unionDE <- unique(c(fishcomb$DEindices, invnormcomb$DEindicies))
+FC.selecDE <- data.frame(HC_Lake_results[unionDE,], do.call(cbind,HC_Lake_FC) [unionDE,], signFC=commonsngFC[unionDE], DE=DE[unionDE])
+  # keep the ones that don't have a conflict (1 or -1)
+keepDE <- FC.selecDE[which(abs(FC.selecDE$signFC)==1),]
+conflictDE <- FC.selecDE[which(FC.selecDE$signFC==0),]
+head(FC.selecDE)  # the ones with conflict = 0
+head(keepDE)
+head(conflictDE)
+table(conflictDE$DE)
+
+### Merge results and write to  a file
+setDT(FC.selecDE, keep.rownames = "Gene")
+head(FC.selecDE)
+head(top.table_HC_Lake)
+head(HC_Lake_results_metastats)
+#Heat_results <- merge(top.table_H_intersect,FC.selecDE, H_results_metastats, by.x = "Gene", all.x = TRUE)
+HeatLake_results <- merge(top.table_HC_Lake,FC.selecDE, all.x = TRUE)
+HeatLake_results2 <- merge(HeatLake_results, HC_Lake_results_metastats, all.x = TRUE)
+head(HeatLake_results2)
+write.table(HeatLake_results2, file = "OutputFiles/Meta_Heat-Control_Lake.txt", row.names = F, sep = "\t", quote = F)
+```
+
+### Make summary tables
+Heat vs Control in Lake ecotype
+```{r}
+## Make a table of results
+fishcomb_de <- rownames(keepDE)[which(keepDE[,"DE.fishercomb"]==1)]
+invnorm_de <- rownames(keepDE)[which(keepDE[,"DE.invnorm"]==1)]
+indstudy_de <- list(rownames(keepDE)[which(keepDE[,"DE.2008Dataset"]==1)],rownames(keepDE)[which(keepDE[,"DE.2012Dataset"]==1)])
+IDD.IRR(fishcomb_de,indstudy_de)
+IDD.IRR(invnorm_de, indstudy_de)
+```
+
+### Make Upset Plot, Treatment in Fast-living
+```{r}
+# Heat Control in Lake  2008
+  #Subset the top.tables to only contain the rows where "adj.P.Val <=0.05
+UP_HC_Lake08_top <- top.table_HC_Lake08[which(top.table_HC_Lake08$adj.P.Val<=0.05), ]
+dim(UP_HC_Lake08_top)
+  # converting column of "Gene" in dataframe column into vector by passing as index
+HC_Lake_HS2008 = UP_HC_Lake08_top[['Gene']]
+# Heat Control in Lake 2012
+  #Subset the top.tables to only contain the rows where "adj.P.Val <=0.05
+UP_HC_Lake12_top <- top.table_HC_Lake12[which(top.table_HC_Lake12$adj.P.Val<=0.05), ]
+dim(UP_HC_Lake12_top)
+  #converting column of "Gene" in dataframe column into vector by passing as index
+HC_Lake_HS2012 = UP_HC_Lake12_top[['Gene']]
+# Heat MetaAnalysis
+## Keep the genes from the meta-analysis that have invernorm adjusted p-value <= 0.05 and the log fold change is going in the same direction in both analyses
+UP_MetaA <- HeatLake_results2[which(HeatLake_results2$DE.invnorm_adj_P<=0.05), ]
+UP_MetaB <- UP_MetaA[which(abs(UP_MetaA$signFC)==1),]
+dim(UP_MetaB)
+  #converting column of "Gene" in dataframe column into vector by passing as index
+HC_Lake_Meta = UP_MetaB[['Gene']]
+
+listHC_Lake <- list(HS2008 = HC_Lake_HS2008, HS2012 = HC_Lake_HS2012, MetaAnalysis = HC_Lake_Meta)
+
+# Make upset put and save as a .pdf file
+pdf("OutputGraphs/Upset_HeatControl_Lake.pdf")
+  #make plot
+upset(fromList(listHC_Lake), mainbar.y.label = "Number of Genes in Intersection", sets.x.label = "Differentially expressed genes (adjusted p-value=0.05)",order.by = "freq")
+dev.off()
+```
+
+~~~~~~~~~~~~~~~~~~
+## Heat vs Control in Meadow (slow-living) ecotype MetaAnalysis
+ first get the data ready
+```{r}
+#Merge top tables results for each dataset - keep the genes in common ~13000
+library(plyr)
+top.table_HC_Meadow <- merge(top.table_HC_Med08,top.table_HC_Med12,by="Gene",all.x = FALSE, suffixes = c(".08", ".12"))
+dim(top.table_HC_Meadow)
+summary(top.table_HC_Meadow)
+dim(top.table_HC_Meadow)
+head(top.table_HC_Meadow)
+
+#Put p-value and Fold changes results in lists
+HC_Meadow_rawpval <- list("pvalue_08"=top.table_HC_Meadow[["P.Value.08"]], "pvalue_12"=top.table_HC_Meadow[["P.Value.12"]])
+summary(HC_Meadow_rawpval)
+HC_Meadow_adjpval <- list("adjpvalue_08"=top.table_HC_Meadow[["adj.P.Val.08"]], "adjpvalue_12"=top.table_HC_Meadow[["adj.P.Val.12"]])
+summary(HC_Meadow_adjpval)
+HC_Meadow_FC <- list("HM_FC_08"=top.table_HC_Meadow[["logFC.08"]], "HC_Meadow_FC_12"=top.table_HC_Meadow[["logFC.12"]])
+summary(HC_Meadow_FC)
+
+#make matrix of 1 for genes DE and 0 for not.
+DE<- mapply(HC_Meadow_adjpval, FUN=function(x) ifelse(x <= 0.05, 1, 0))
+studies <-c("2008Dataset", "2012Dataset")
+colnames(DE)=paste("DE", studies,sep=".")
+rownames(DE)=paste(top.table_HC_Meadow$"Gene")
+#DE<-cbind(top.table_HC-Lake$"Gene", DE)
+summary(DE)
+head(DE)
+dim(DE)
+
+#Check for normal distributions
+par(mfrow = c(1,2))
+hist(HC_Meadow_rawpval[[1]], breaks=100, col="grey", main="2008 Dataset", xlab="Raw p-values")
+hist(HC_Meadow_rawpval[[2]], breaks=100, col="grey", main="2012 Dataset", xlab="Raw p-values")
+
+```
+
+
+### Calculate the meta-analysis p-value
+Heat vs Control in Meadow (slow-living) ecotype
+```{r}
+library(metaRNASeq)
+# P-value combination using Fisher method 
+fishcomb <- fishercomb(HC_Meadow_rawpval, BHth = 0.05)
+summary(fishcomb)
+hist(fishcomb$rawpval, breaks=100, col="grey", main="Fisher Method", xlab = "Raw p-values (meta-analysis)")
+# P-value combination using inverse nomral method method 
+invnormcomb <- invnorm(HC_Meadow_rawpval, nrep=c(12,20), BHth=0.05)
+summary(invnormcomb)
+head(invnormcomb)
+hist(invnormcomb$rawpval, breaks=100, col="grey", main="Inverse normal method", xlab = "Raw p-values (meta-analysis)")
+
+## Summarize the results. DE are the results from the original anlayses of the datasets individually.
+HC_Meadow_results_metastats <- data.frame(DE, "DE.fishercomb_adjP"=fishcomb$adjpval, "DE.invnorm_adj_P"=invnormcomb$adjpval)
+library(data.table)
+setDT(HC_Meadow_results_metastats, keep.rownames = "Gene")  # make the rownames a part of the dataframe with column name "Gene"
+head(HC_Meadow_results_metastats)
+HC_Meadow_results <- data.frame(DE, "DE.fishercomb"=ifelse(fishcomb$adjpval<=0.05,1,0), "DE.invnorm"=ifelse(invnormcomb$adjpval<=0.05,1,0))
+head(HC_Meadow_results)
+
+## Dealing with conflicts in the sign of differential expression 
+signsFC <- mapply(HC_Meadow_FC, FUN=function(x) sign(x))
+sumsigns <- apply(signsFC,1,sum)
+commonsngFC <- ifelse(abs(sumsigns)==dim(signsFC)[2], sign(sumsigns), 0)
+unionDE <- unique(c(fishcomb$DEindices, invnormcomb$DEindicies))
+FC.selecDE <- data.frame(HC_Meadow_results[unionDE,], do.call(cbind,HC_Meadow_FC) [unionDE,], signFC=commonsngFC[unionDE], DE=DE[unionDE])
+  # keep the ones that don't have a conflict (1 or -1)
+keepDE <- FC.selecDE[which(abs(FC.selecDE$signFC)==1),]
+conflictDE <- FC.selecDE[which(FC.selecDE$signFC==0),]
+head(FC.selecDE)  # the ones with conflict = 0
+head(keepDE)
+head(conflictDE)
+table(conflictDE$DE)
+
+### Merge results and write to  a file
+setDT(FC.selecDE, keep.rownames = "Gene")
+head(FC.selecDE)
+head(top.table_HC_Meadow)
+head(HC_Meadow_results_metastats)
+#Heat_results <- merge(top.table_H_intersect,FC.selecDE, H_results_metastats, by.x = "Gene", all.x = TRUE)
+HeatMeadow_results <- merge(top.table_HC_Meadow,FC.selecDE, all.x = TRUE)
+HeatMeadow_results2 <- merge(HeatMeadow_results, HC_Meadow_results_metastats, all.x = TRUE)
+head(HeatMeadow_results2)
+write.table(HeatMeadow_results2, file = "OutputFiles/Meta_Heat-Control_Meadow.txt", row.names = F, sep = "\t", quote = F)
+
+
+```
+
+###  Make summary tables
+Heat vs Control in Meadow (slow-living) ecotype
+```{r}
+## Make a table of results
+fishcomb_de <- rownames(keepDE)[which(keepDE[,"DE.fishercomb"]==1)]
+invnorm_de <- rownames(keepDE)[which(keepDE[,"DE.invnorm"]==1)]
+indstudy_de <- list(rownames(keepDE)[which(keepDE[,"DE.2008Dataset"]==1)],rownames(keepDE)[which(keepDE[,"DE.2012Dataset"]==1)])
+IDD.IRR(fishcomb_de,indstudy_de)
+IDD.IRR(invnorm_de, indstudy_de)
+
+```
+
+### Make Upset Plot, Treatment in Slow-living
+```{r}
+# Heat Treatment 2008
+  #Subset the top.tables to only contain the rows where "adj.P.Val <=0.05
+UP_HC_Meadow08_top <- top.table_HC_Med08[which(top.table_HC_Med08$adj.P.Val<=0.05), ]
+dim(UP_HC_Meadow08_top)
+  # converting column of "Gene" in dataframe column into vector by passing as index
+HC_Meadow_HS2008 = UP_HC_Meadow08_top[['Gene']]
+# Heat Treatment 2012
+  #Subset the top.tables to only contain the rows where "adj.P.Val <=0.05
+UP_HC_Meadow12_top <- top.table_HC_Med12[which(top.table_HC_Med12$adj.P.Val<=0.05), ]
+dim(UP_HC_Meadow12_top)
+  #converting column of "Gene" in dataframe column into vector by passing as index
+HC_Meadow_HS2012 = UP_HC_Meadow12_top[['Gene']]
+# Heat MetaAnalysis
+## Keep the genes from the meta-analysis that have invernorm adjusted p-value <= 0.05 and the log fold change is going in the same direction in both analyses
+UP_MetaA <- HeatMeadow_results2[which(HeatMeadow_results2$DE.invnorm_adj_P<=0.05), ]
+UP_MetaB <- UP_MetaA[which(abs(UP_MetaA$signFC)==1),]
+dim(UP_MetaB)
+  #converting column of "Gene" in dataframe column into vector by passing as index
+HC_Meadow_Meta = UP_MetaB[['Gene']]
+
+listHC_Meadow <- list(HS2008 = HC_Meadow_HS2008, HS2012 = HC_Meadow_HS2012, MetaAnalysis = HC_Meadow_Meta)
+
+# Make upset put and save as a .pdf file
+pdf("OutputGraphs/Upset_Heat-Control_Meadow.pdf")
+  #make plot
+upset(fromList(listHC_Meadow), mainbar.y.label = "Number of Genes in Intersection", sets.x.label = "Differentially expressed genes (adjusted p-value=0.05)",order.by = "freq")
+dev.off()
+```
+
+# Merge top tables results, Categories, GSEA calculations
+
+MetaAnalysis Results files:
+  Heat_results2
+  Ecotype_results2
+  Interaction_results2
+  HeatLake_results2
+  HeatMeadow_results2
+  EcotypeControl_results2
+  EcotypeHeat_results2
+
+```{r}
+#Libraries needed for this section
+library(plyr)
+library(data.table)
+library(DataCombine)
+```
+
+## Pull in Categories from Sequence Capure
+```{r}
+categories <- as.data.frame(read.csv("Input/Information/SeqCapGene_Categories_NewManuscript.csv"))
+head(categories)
+dim(categories)
+```
+
+## Make log counts per million to eventually merge incase need it for downstream enrichment analysis 
+```{r}
+logcpm2012 <- cpm(x2_2012, log=TRUE)
+logcpm2012 <- as.data.frame(logcpm2012)
+logcpm2012$Gene<-rownames(logcpm2012)
+```
+
+## Heat Results
+### Calculate GSEA Rank for HS0012 dataset
+```{r}
+top.table_Heat12_SignRank <-  within(top.table_Heat12, rank <- sign(logFC) * -log10(P.Value))
+dim(top.table_Heat12_SignRank)
+```
+
+### Merge All results: HS2008, HS2012 with Rank, MetaAnalysis
+```{r}
+top.table_H_Both <- merge(top.table_Heat08,top.table_Heat12_SignRank,by="Gene",all.x = TRUE, all.y=TRUE, suffixes = c(".HS2008", ".HS2012"))
+dim(top.table_H_Both)
+top.table_H_BothMeta <- merge(top.table_H_Both, Heat_results2,by="Gene",all.x = TRUE, all.y=TRUE, suffixes = c(".IND", ",META"))
+dim(top.table_H_BothMeta)
+# Merge the SeqCap Categories for Seq-cap to the Results files of the Gene Expression 
+Heat_results_Cats <- merge(categories, top.table_H_BothMeta, all.x=TRUE, all.y=TRUE)
+dim(Heat_results_Cats)
+# Merge all results 
+All_GE_Heat_Results <- merge(Heat_results_Cats, logcpm2012, by="Gene", all.x=TRUE, all.y=TRUE)
+dim(All_GE_Heat_Results)
+head(All_GE_Heat_Results)
+
+# Write the file for all results, tab delimited
+write.table(as.data.frame(All_GE_Heat_Results), file="OutputFiles/All_GE_Heat_Results.txt", sep="\t", quote = FALSE) 
+
+## subset the results so only rank column for import to GSEA. 
+# Only keep genes with names (no LOC loci) and only genes with a rank (not NA)
+GSEA_Rank_Heat_HS2012 = subset(All_GE_Heat_Results, select = c(Gene,rank) )
+dim(GSEA_Rank_Heat_HS2012)
+#remove rows with NS in Rank
+GSEA_Rank_Heat_HS2012 <- GSEA_Rank_Heat_HS2012[!(is.na(GSEA_Rank_Heat_HS2012$rank)), ]
+dim(GSEA_Rank_Heat_HS2012)
+# remove rows with "LOC gene names that have no match in GSEA database
+GSEA_Rank_Heat_HS2012 <- grepl.sub(data = GSEA_Rank_Heat_HS2012, pattern = "LOC1165*", Var = "Gene", keep.found = FALSE)
+dim(GSEA_Rank_Heat_HS2012)
+# Write the file as a tab delimited file with .rnk for import into GSEA
+write.table(as.data.frame(GSEA_Rank_Heat_HS2012), file="OutputFiles/GSEA_Rank_Heat_HS2012.rnk", sep="\t", quote = FALSE, row.names = FALSE) 
+```
+
+
+## Ecotype Results
+### Calculate GSEA Rank for HS0012 dataset
+```{r}
+top.table_Ecotype12_SignRank <-  within(top.table_Eco12, rank <- sign(logFC) * -log10(P.Value))
+dim(top.table_Ecotype12_SignRank)
+```
+### Merge All results: HS2008, HS2012 with Rank, MetaAnalysis
+```{r}
+top.table_E_Both <- merge(top.table_Eco08,top.table_Ecotype12_SignRank,by="Gene",all.x = TRUE, all.y=TRUE, suffixes = c(".HS2008", ".HS2012"))
+dim(top.table_E_Both)
+top.table_E_BothMeta <- merge(top.table_E_Both, Ecotype_results2,by="Gene",all.x = TRUE, all.y=TRUE, suffixes = c(".IND", ",META"))
+dim(top.table_E_BothMeta)
+# Merge the SeqCap Categories for Seq-cap to the Results files of the Gene Expression 
+Ecotype_results_Cats <- merge(categories, top.table_E_BothMeta, all.x=TRUE, all.y=TRUE)
+dim(Ecotype_results_Cats)
+# Merge all results 
+All_GE_Ecotype_Results <- merge(Ecotype_results_Cats, logcpm2012, by="Gene", all.x=TRUE, all.y=TRUE)
+dim(All_GE_Ecotype_Results)
+
+# Write the file for all results, tab delimited
+write.table(as.data.frame(All_GE_Ecotype_Results), file="OutputFiles/All_GE_Ecotype_Results.txt", sep="\t", quote = FALSE) 
+
+## subset the results so only rank column for inport to GSEA
+GSEA_Rank_Ecotype_HS2012 = subset(All_GE_Ecotype_Results, select = c(Gene,rank) )
+dim(GSEA_Rank_Ecotype_HS2012)
+#remove rows with NA in Rank
+GSEA_Rank_Ecotype_HS2012 <- GSEA_Rank_Ecotype_HS2012[!(is.na(GSEA_Rank_Ecotype_HS2012$rank)), ]
+dim(GSEA_Rank_Ecotype_HS2012)
+# remove rows with "LOC gene names that have no match in GSEA database
+GSEA_Rank_Ecotype_HS2012 <- grepl.sub(data = GSEA_Rank_Ecotype_HS2012, pattern = "LOC1165*", Var = "Gene", keep.found = FALSE)
+dim(GSEA_Rank_Ecotype_HS2012)
+# Write the file as a tab delimited file with .rnk for import into GSEA
+write.table(as.data.frame(GSEA_Rank_Ecotype_HS2012), file="OutputFiles/GSEA_Rank_Ecotype_HS2012.rnk", sep="\t", quote = FALSE, row.names = FALSE) 
+```
+
+
+## Interaction Results
+### Calculate GSEA Rank for HS0012 dataset
+```{r}
+top.table_I_2012_SignRank <-  within(top.table_I_2012, rank <- sign(logFC) * -log10(P.Value))
+dim(top.table_I_2012_SignRank)
+```
+### Merge All results: HS2008, HS2012 with Rank, MetaAnalysis
+```{r}
+top.table_I_Both <- merge(top.table_I_2008,top.table_I_2012_SignRank,by="Gene",all.x = TRUE, all.y=TRUE, suffixes = c(".HS2008", ".HS2012"))
+dim(top.table_I_Both)
+top.table_I_BothMeta <- merge(top.table_I_Both, Interaction_results2,by="Gene",all.x = TRUE, all.y=TRUE, suffixes = c(".IND", ",META"))
+dim(top.table_I_BothMeta)
+# Merge the SeqCap Categories for Seq-cap to the Results files of the Gene Expression 
+Interaction_results_Cats <- merge(categories, top.table_I_BothMeta, all.x=TRUE, all.y=TRUE)
+dim(Interaction_results_Cats)
+# Merge all results 
+All_GE_Interaction_Results <- merge(Interaction_results_Cats, logcpm2012, by="Gene", all.x=TRUE, all.y=TRUE)
+dim(All_GE_Interaction_Results)
+
+# Write the file for all results, tab delimited
+write.table(as.data.frame(All_GE_Interaction_Results), file="OutputFiles/All_GE_Interaction_Results.txt", sep="\t", quote = FALSE) 
+
+## subset the results so only rank column for inport to GSEA
+GSEA_Rank_Interaction_HS2012 = subset(All_GE_Interaction_Results, select = c(Gene,rank) )
+dim(GSEA_Rank_Interaction_HS2012)
+#remove rows with NA in Rank
+GSEA_Rank_Interaction_HS2012 <- GSEA_Rank_Interaction_HS2012[!(is.na(GSEA_Rank_Interaction_HS2012$rank)), ]
+dim(GSEA_Rank_Interaction_HS2012)
+# remove rows with "LOC gene names that have no match in GSEA database
+GSEA_Rank_Interaction_HS2012 <- grepl.sub(data = GSEA_Rank_Interaction_HS2012, pattern = "LOC1165*", Var = "Gene", keep.found = FALSE)
+dim(GSEA_Rank_Interaction_HS2012)
+
+# Write the file as a tab delimited file with .rnk for import into GSEA
+write.table(as.data.frame(GSEA_Rank_Interaction_HS2012), file="OutputFiles/GSEA_Rank_Interaction_HS2012.rnk", sep="\t", quote = FALSE, row.names = FALSE) 
+```
+
+
+## Heat-Control_Lake Results
+### Calculate GSEA Rank for HS0012 dataset
+```{r}
+top.table_HC_Lake12_SignRank <-  within(top.table_HC_Lake12, rank <- sign(logFC) * -log10(P.Value))
+dim(top.table_HC_Lake12_SignRank)
+```
+### Merge All results: HS2008, HS2012 with Rank, MetaAnalysis
+```{r}
+top.table_HC_Lake_Both <- merge(top.table_HC_Lake08,top.table_HC_Lake12_SignRank,by="Gene",all.x = TRUE, all.y=TRUE, suffixes = c(".HS2008", ".HS2012"))
+dim(top.table_HC_Lake_Both)
+top.table_HC_Lake_BothMeta <- merge(top.table_HC_Lake_Both, HeatLake_results2,by="Gene",all.x = TRUE, all.y=TRUE, suffixes = c(".IND", ",META"))
+dim(top.table_HC_Lake_BothMeta)
+# Merge the SeqCap Categories for Seq-cap to the Results files of the Gene Expression 
+HC_Lake_results_Cats <- merge(categories, top.table_HC_Lake_BothMeta, all.x=TRUE, all.y=TRUE)
+dim(HC_Lake_results_Cats)
+# Merge all results 
+All_GE_HeatControl_Lake_Results <- merge(HC_Lake_results_Cats, logcpm2012, by="Gene", all.x=TRUE, all.y=TRUE)
+dim(All_GE_HeatControl_Lake_Results)
+
+# Write the file for all results, tab delimited
+write.table(as.data.frame(All_GE_HeatControl_Lake_Results), file="OutputFiles/All_GE_Heat-Control_Lake_Results.txt", sep="\t", quote = FALSE) 
+
+## subset the results so only rank column for import to GSEA
+GSEA_Rank_HeatControl_Lake_HS2012 = subset(All_GE_HeatControl_Lake_Results, select = c(Gene,rank) )
+dim(GSEA_Rank_HeatControl_Lake_HS2012)
+#remove rows with NA in Rank
+GSEA_Rank_HeatControl_Lake_HS2012 <- GSEA_Rank_HeatControl_Lake_HS2012[!(is.na(GSEA_Rank_HeatControl_Lake_HS2012$rank)), ]
+dim(GSEA_Rank_HeatControl_Lake_HS2012)
+# remove rows with "LOC gene names that have no match in GSEA database
+GSEA_Rank_HeatControl_Lake_HS2012 <- grepl.sub(data = GSEA_Rank_HeatControl_Lake_HS2012, pattern = "LOC1165*", Var = "Gene", keep.found = FALSE)
+dim(GSEA_Rank_HeatControl_Lake_HS2012)
+
+# Write the file as a tab delimited file with .rnk for import into GSEA
+write.table(as.data.frame(GSEA_Rank_HeatControl_Lake_HS2012), file="OutputFiles/GSEA_Rank_HeatControl_Lake_HS2012.rnk", sep="\t", quote = FALSE, row.names = FALSE) 
+```
+
+
+## Heat-Control_Meadow Results
+### Calculate GSEA Rank for HS0012 dataset
+```{r}
+top.table_HC_Med12_SignRank <-  within(top.table_HC_Med12, rank <- sign(logFC) * -log10(P.Value))
+dim(top.table_HC_Med12_SignRank)
+```
+### Merge All results: HS2008, HS2012 with Rank, MetaAnalysis
+```{r}
+top.table_HC_Meadow_Both <- merge(top.table_HC_Med08,top.table_HC_Med12_SignRank,by="Gene",all.x = TRUE, all.y=TRUE, suffixes = c(".HS2008", ".HS2012"))
+dim(top.table_HC_Meadow_Both)
+top.table_HC_Meadow_BothMeta <- merge(top.table_HC_Meadow_Both, HeatMeadow_results2,by="Gene",all.x = TRUE, all.y = TRUE, suffixes = c(".IND", ",META"))
+dim(top.table_HC_Meadow_BothMeta)
+# Merge the SeqCap Categories for Seq-cap to the Results files of the Gene Expression 
+HC_Meadow_results_Cats <- merge(categories, top.table_HC_Meadow_BothMeta, all.x=TRUE, all.y=TRUE)
+dim(HC_Meadow_results_Cats)
+# Merge all results 
+All_GE_HeatControl_Meadow_Results <- merge(HC_Meadow_results_Cats, logcpm2012, by="Gene", all.x=TRUE, all.y=TRUE)
+dim(All_GE_HeatControl_Meadow_Results)
+
+# Write the file for all results, tab delimited
+write.table(as.data.frame(All_GE_HeatControl_Meadow_Results), file="OutputFiles/All_GE_Heat-Control_Meadow_Results.txt", sep="\t", quote = FALSE) 
+
+## subset the results so only rank column for import to GSEA
+GSEA_Rank_HeatControl_Meadow_HS2012 = subset(All_GE_HeatControl_Meadow_Results, select = c(Gene,rank) )
+dim(GSEA_Rank_HeatControl_Meadow_HS2012)
+#remove rows with NS in Rank
+GSEA_Rank_HeatControl_Meadow_HS2012 <- GSEA_Rank_HeatControl_Meadow_HS2012[!(is.na(GSEA_Rank_HeatControl_Meadow_HS2012$rank)), ]
+dim(GSEA_Rank_HeatControl_Meadow_HS2012)
+# remove rows with "LOC gene names that have no match in GSEA database
+GSEA_Rank_HeatControl_Meadow_HS2012 <- grepl.sub(data = GSEA_Rank_HeatControl_Meadow_HS2012, pattern = "LOC1165*", Var = "Gene", keep.found = FALSE)
+dim(GSEA_Rank_HeatControl_Meadow_HS2012)
+
+# Write the file as a tab delimited file with .rnk for import into GSEA
+write.table(as.data.frame(GSEA_Rank_HeatControl_Meadow_HS2012), file="OutputFiles/GSEA_Rank_HeatControl_Meadow_HS2012.rnk", sep="\t", quote = FALSE, row.names = FALSE) 
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+
+
+
