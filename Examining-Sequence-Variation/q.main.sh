@@ -91,8 +91,8 @@ cd /home/rlk0015/projects/Thamnophis/ThamnophisElegans_FunctionalGenomics2021/Ex
 #+ COMPLETE  changeSeqCapNames
 #+ COMPLETE  
 #+ COMPLETE  # Add sequencing read group information to each sample
-#+ COMPLETE  readGroupsRNA 
-#+ COMPLETE  readGroupsDNA
+#+ COMPLETE  AddReadGroupsRNA 
+#+ COMPLETE  AddReadGroupsDNA
 #+ COMPLETE  
 #+ COMPLETE  # Prep for SNP calling and calculate mapping stats
 #+ COMPLETE  indexReference TelegansGenome.fasta
@@ -105,7 +105,8 @@ cd /home/rlk0015/projects/Thamnophis/ThamnophisElegans_FunctionalGenomics2021/Ex
 #+ COMPLETE  ## Replicate 1
 #+ COMPLETE    use-HaplotypeCaller 0 DNA TelagGenome.fasta
 #+ COMPLETE    get-just-SNPs 0 
-#+ COMPLETE    initial-VariantFiltration JustSNPs_0.vcf 0
+#+ COMPLETE    initial-VariantFiltration JustSNPs_0.vcf filtered_0 
+#+ COMPLETE    mv filtered_0_Init.vcf filtered_0.vcf
 #+ COMPLETE    use-BaseRecalibrator 0 DNA
 #+ COMPLETE    use-BQSR 0 1 DNA
 #+ COMPLETE    use-HaplotypeCaller 1 DNA TelagGenome.fasta
@@ -125,6 +126,7 @@ cd /home/rlk0015/projects/Thamnophis/ThamnophisElegans_FunctionalGenomics2021/Ex
 #+ COMPLETE    use-HaplotypeCaller 0 RNA TelagGenome.fasta
 #+ COMPLETE    get-just-SNPs 0
 #+ COMPLETE    initial-VariantFiltration JustSNPs_0.vcf 0
+#+ COMPLETE    mv filtered_0_Init.vcf filtered_0.vcf
 #+ COMPLETE    use-BaseRecalibrator 0 RNA
 #+ COMPLETE    use-BQSR 0 1 RNA
 #+ COMPLETE    use-HaplotypeCaller 1 RNA TelagGenome.fasta
@@ -147,6 +149,7 @@ cd /home/rlk0015/projects/Thamnophis/ThamnophisElegans_FunctionalGenomics2021/Ex
 #+ COMPLETE   annotateVariants Merged.vcf.gz SeqCap
 #+ COMPLETE   ## -- Initial Filter Variants
 #+ COMPLETE   initial-VariantFiltration SeqCap_Annotated.vcf SeqCap_InitialFiltered
+#+ COMPLETE   RemoveFilteredSites SeqCap_InitialFiltered
 #+ COMPLETE   ## -- Perform Hard Filtering
 #+ COMPLETE   hard-VariantFiltration SeqCap_InitialFiltered SeqCap
 #+ COMPLETE   ## -- Eliminate potential RNA editing sites

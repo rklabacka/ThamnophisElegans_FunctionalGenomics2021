@@ -1,0 +1,397 @@
+﻿Gene,HumanGeneSymbol,Category_0,Category_I,Category_2
+DNAJA1,DNAJA1,Macromolecule_Damage_Repair,DNA_repair,
+DNAJA3,DNAJA3,Macromolecule_Damage_Repair,DNA_repair,
+DNAJC22,DNAJC22,Macromolecule_Damage_Repair,DNA_repair,
+RAD51,RAD51,Macromolecule_Damage_Repair,DNA_repair,
+RAD51B,RAD51B,Macromolecule_Damage_Repair,DNA_repair,
+RAD51C,RAD51C,Macromolecule_Damage_Repair,DNA_repair,
+RAD54B,RAD54B,Macromolecule_Damage_Repair,DNA_repair,
+TERT,TERT,Macromolecule_Damage_Repair,DNA_repair,
+XRCC2,XRCC2,Macromolecule_Damage_Repair,DNA_repair,
+XRCC3,XRCC3,Macromolecule_Damage_Repair,DNA_repair,
+AIFM1,AIFM1,Macromolecule_Damage_Repair,oxidative_stress,
+AIFM2,AIFM2,Macromolecule_Damage_Repair,oxidative_stress,
+ALPK1,ALPK1,Macromolecule_Damage_Repair,oxidative_stress,
+ATF2,ATF2,Macromolecule_Damage_Repair,oxidative_stress,
+GDAP1,GDAP1,Macromolecule_Damage_Repair,oxidative_stress,
+HAGHL,HAGHL,Macromolecule_Damage_Repair,oxidative_stress,
+JUN,JUN,Macromolecule_Damage_Repair,oxidative_stress,
+LOC116505938,PLA2G4E,Macromolecule_Damage_Repair,oxidative_stress,
+LOC116514334,GSTO1,Macromolecule_Damage_Repair,oxidative_stress,
+LOC116516566,GSTT1,Macromolecule_Damage_Repair,oxidative_stress,
+LOC116517285,HAGH,Macromolecule_Damage_Repair,oxidative_stress,
+LOC116522295,MAP3K3,Macromolecule_Damage_Repair,oxidative_stress,
+MAPK11,MAPK11,Macromolecule_Damage_Repair,oxidative_stress,
+MAPK13,MAPK13,Macromolecule_Damage_Repair,oxidative_stress,
+MAPK8,MAPK8,Macromolecule_Damage_Repair,oxidative_stress,
+MAPK9,MAPK9,Macromolecule_Damage_Repair,oxidative_stress,
+MAPKAPK5,MAPKAPK5,Macromolecule_Damage_Repair,oxidative_stress,
+MAX,MAX,Macromolecule_Damage_Repair,oxidative_stress,
+MKNK1,MKNK1,Macromolecule_Damage_Repair,oxidative_stress,
+MKNK2,MKNK2,Macromolecule_Damage_Repair,oxidative_stress,
+MYC,MYC,Macromolecule_Damage_Repair,oxidative_stress,
+PLA2G4A,PLA2G4A,Macromolecule_Damage_Repair,oxidative_stress,
+PXMP2,PXMP2,Macromolecule_Damage_Repair,oxidative_stress,
+PYROXD1,PYROXD1,Macromolecule_Damage_Repair,oxidative_stress,
+PYROXD2,PYROXD2,Macromolecule_Damage_Repair,oxidative_stress,
+SOD2,SOD2,Macromolecule_Damage_Repair,oxidative_stress,
+CCS,CCS,Macromolecule_Damage_Repair,oxidative_stress,
+GPX1,GPX1,Macromolecule_Damage_Repair,oxidative_stress,
+GPX3,GPX3,Macromolecule_Damage_Repair,oxidative_stress,
+GPX4,GPX4,Macromolecule_Damage_Repair,oxidative_stress,
+GPX7,GPX7,Macromolecule_Damage_Repair,oxidative_stress,
+GPX8,GPX8,Macromolecule_Damage_Repair,oxidative_stress,
+GSTA1,GSTA1,Macromolecule_Damage_Repair,oxidative_stress,
+GSTP1,GSTP1,Macromolecule_Damage_Repair,oxidative_stress,
+LOC116507099,GSTA4,Macromolecule_Damage_Repair,oxidative_stress,
+LOC116507918,GSTA4,Macromolecule_Damage_Repair,oxidative_stress,
+LOC116508979,GSTM1,Macromolecule_Damage_Repair,oxidative_stress,
+LOC116514261,CAT,Macromolecule_Damage_Repair,oxidative_stress,
+LOC116520753,PON2,Macromolecule_Damage_Repair,oxidative_stress,
+MPO,MPO,Macromolecule_Damage_Repair,oxidative_stress,
+PRDX1,PRDX1,Macromolecule_Damage_Repair,oxidative_stress,
+PRDX2,PRDX2,Macromolecule_Damage_Repair,oxidative_stress,
+PRDX3,PRDX3,Macromolecule_Damage_Repair,oxidative_stress,
+PRDX4,PRDX4,Macromolecule_Damage_Repair,oxidative_stress,
+PRDX5,PRDX5,Macromolecule_Damage_Repair,oxidative_stress,
+PRDX6,PRDX6,Macromolecule_Damage_Repair,oxidative_stress,
+PXDN,PXDN,Macromolecule_Damage_Repair,oxidative_stress,
+SOD1,SOD1,Macromolecule_Damage_Repair,oxidative_stress,
+CASP3,CASP3,Macromolecule_Damage_Repair,p53,
+CASP9,CASP9,Macromolecule_Damage_Repair,p53,
+CDK1,CDK1,Macromolecule_Damage_Repair,p53,
+CDKN1A,CDKN1A,Macromolecule_Damage_Repair,p53,
+CHEK2,CHEK2,Macromolecule_Damage_Repair,p53,
+DDB2,DDB2,Macromolecule_Damage_Repair,p53,
+E2F6,E2F6,Macromolecule_Damage_Repair,p53,
+GABARAPL1,GABARAPL1,Macromolecule_Damage_Repair,p53,
+GADD45A,GADD45A,Macromolecule_Damage_Repair,p53,
+HDAC3,HDAC3,Macromolecule_Damage_Repair,p53,
+LOC116507565,PERP,Macromolecule_Damage_Repair,p53,
+LOC116523000,BAX,Macromolecule_Damage_Repair,p53,
+LOC116523426,TP53,Macromolecule_Damage_Repair,p53,
+MDM2,MDM2,Macromolecule_Damage_Repair,p53,
+MTA2,MTA2,Macromolecule_Damage_Repair,p53,
+PPM1D,PPM1D,Macromolecule_Damage_Repair,p53,
+RRM2B,RRM2B,Macromolecule_Damage_Repair,p53,
+TPM1,TPM1,Macromolecule_Damage_Repair,p53,
+WIPI2,WIPI2,Macromolecule_Damage_Repair,p53,
+WRN,WRN,Macromolecule_Damage_Repair,p53,
+CHEK1,CHEK1,Macromolecule_Damage_Repair,P53,
+GADD45B,GADD45B,Macromolecule_Damage_Repair,,
+GADD45G,GADD45G,Macromolecule_Damage_Repair,,
+MSRA,MSRA,Macromolecule_Damage_Repair,,
+MSRB3,MSRB3,Macromolecule_Damage_Repair,,
+AACS,AACS,Metabolic_function,Metabolism,Lipid_Metabolism
+DECR1,DECR1,Metabolic_function,Metabolism,Lipid_Metabolism
+LEPR,LEPR,Metabolic_function,Metabolism,Lipid_Metabolism
+LOC116502538,CYP4F22,Metabolic_function,Metabolism,Lipid_Metabolism
+LOC116507994,CYB5R4,Metabolic_function,Metabolism,Lipid_Metabolism
+LOC116509327,CYP4B1,Metabolic_function,Metabolism,Lipid_Metabolism
+LOC116513013,CYB5R2,Metabolic_function,Metabolism,Lipid_Metabolism
+LOC116515748,CYP2G1,Metabolic_function,Metabolism,Lipid_Metabolism
+LOC116515749,CYP2A13,Metabolic_function,Metabolism,Lipid_Metabolism
+LOC116517450,CYP2W1,Metabolic_function,Metabolism,Lipid_Metabolism
+LOC116519097,CYP1A1,Metabolic_function,Metabolism,Lipid_Metabolism
+LOC116505343,FADS1,Metabolic_function,Metabolism,Lipid_Metabolism
+LOC116509867,NDUFC2,Metabolic_function,oxidative_phosporylation,ETC complex i
+LOC116511712,NDUFA9,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFA10,NDUFA10,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFA11,NDUFA11,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFA13,NDUFA13,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFA2,NDUFA2,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFA3,NDUFA3,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFA4,NDUFA4,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFA5,NDUFA5,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFA7,NDUFA7,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFAF1,NDUFAF1,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFB1,NDUFB1,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFB10,NDUFB10,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFB11,NDUFB11,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFB2,NDUFB2,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFB3,NDUFB3,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFB4,NDUFB4,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFB5,NDUFB5,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFB6,NDUFB6,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFB7,NDUFB7,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFB9,NDUFB9,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFS1,NDUFS1,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFS2,NDUFS2,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFS3,NDUFS3,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFS4,NDUFS4,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFS5,NDUFS5,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFS6,NDUFS6,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFS8,NDUFS8,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFV1,NDUFV1,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFV2,NDUFV2,Metabolic_function,oxidative_phosporylation,ETC complex i
+NDUFV3,NDUFV3,Metabolic_function,oxidative_phosporylation,ETC complex i
+LOC116523446,SDHC,Metabolic_function,oxidative_phosporylation,ETC complex ii
+SDHA,SDHA,Metabolic_function,oxidative_phosporylation,ETC complex ii
+SDHB,SDHB,Metabolic_function,oxidative_phosporylation,ETC complex ii
+SDHD,SDHD,Metabolic_function,oxidative_phosporylation,ETC complex ii
+LOC116503820,UQCRC1,Metabolic_function,oxidative_phosporylation,ETC complex iii
+LOC116509003,UQCRH,Metabolic_function,oxidative_phosporylation,ETC complex iii
+LOC116512557,UQCRB,Metabolic_function,oxidative_phosporylation,ETC complex iii
+LOC116512786,CYC1,Metabolic_function,oxidative_phosporylation,ETC complex iii
+LOC116516714,UQCR10,Metabolic_function,oxidative_phosporylation,ETC complex iii
+LOC116517709,UQCRC2,Metabolic_function,oxidative_phosporylation,ETC complex iii
+LOC116518020,UQCRFS1,Metabolic_function,oxidative_phosporylation,ETC complex iii
+LOC116520028,UQCRQ,Metabolic_function,oxidative_phosporylation,ETC complex iii
+LOC116503018,COX11,Metabolic_function,oxidative_phosporylation,ETC complex iv
+LOC116506575,COX7C,Metabolic_function,oxidative_phosporylation,ETC complex iv
+LOC116506766,COX17,Metabolic_function,oxidative_phosporylation,ETC complex iv
+LOC116506963,COX7A2,Metabolic_function,oxidative_phosporylation,ETC complex iv
+LOC116507992,COX7A2L,Metabolic_function,oxidative_phosporylation,ETC complex iv
+LOC116512326,COX6C,Metabolic_function,oxidative_phosporylation,ETC complex iv
+LOC116514227,COX15,Metabolic_function,oxidative_phosporylation,ETC complex iv
+LOC116516211,COX6B1,Metabolic_function,oxidative_phosporylation,ETC complex iv
+LOC116516217,COX7B,Metabolic_function,oxidative_phosporylation,ETC complex iv
+LOC116517048,COX6A1,Metabolic_function,oxidative_phosporylation,ETC complex iv
+LOC116517973,COX4I1,Metabolic_function,oxidative_phosporylation,ETC complex iv
+LOC116519415,COX5A,Metabolic_function,oxidative_phosporylation,ETC complex iv
+LOC116520881,COX18,Metabolic_function,oxidative_phosporylation,ETC complex iv
+ATP5F1A,ATP5A1,Metabolic_function,oxidative_phosporylation,ETC complex v
+ATP5F1B,ATP5B,Metabolic_function,oxidative_phosporylation,ETC complex v
+ATP5F1C,ATP5C1,Metabolic_function,oxidative_phosporylation,ETC complex v
+ATP5F1D,ATP5D,Metabolic_function,oxidative_phosporylation,ETC complex v
+ATP5F1E,ATP5E,Metabolic_function,oxidative_phosporylation,ETC complex v
+ATP5MC2,ATP5G2,Metabolic_function,oxidative_phosporylation,ETC complex v
+ATP5ME,ATP5I,Metabolic_function,oxidative_phosporylation,ETC complex v
+ATP5MF,ATP5J2,Metabolic_function,oxidative_phosporylation,ETC complex v
+ATP5PB,ATP5F1,Metabolic_function,oxidative_phosporylation,ETC complex v
+ATP5PD,ATP5H,Metabolic_function,oxidative_phosporylation,ETC complex v
+ATP6AP1,ATP6AP1,Metabolic_function,oxidative_phosporylation,ETC complex v
+ATP6V1A,ATP6V1A,Metabolic_function,oxidative_phosporylation,ETC complex v
+ATP6V1B2,ATP6V1B2,Metabolic_function,oxidative_phosporylation,ETC complex v
+ATP6V1C1,ATP6V1C1,Metabolic_function,oxidative_phosporylation,ETC complex v
+ATP6V1E1,ATP6V1E1,Metabolic_function,oxidative_phosporylation,ETC complex v
+ATP6V1H,ATP6V1H,Metabolic_function,oxidative_phosporylation,ETC complex v
+ISCA1,ISCA1,Metabolic_function,oxidative_phosporylation,
+ISCA2,ISCA2,Metabolic_function,oxidative_phosporylation,
+SLC25A28,SLC25A28,Metabolic_function,oxidative_phosporylation,
+SLC25A37,SLC25A37,Metabolic_function,oxidative_phosporylation,
+LOC116509241,LBP,Metabolic_function,Metabolism,
+NUAK1,NUAK1,Metabolic_function,Metabolism,
+NUAK2,NUAK2,Metabolic_function,Metabolism,
+GAPDH,GAPDH,Metabolic_function,Metabolism,
+CCN2,CCN2,Metabolic_function,Nutrient_sensing,Core_IIS
+FOS,FOS,Metabolic_function,Nutrient_sensing,Core_IIS
+FOXA1,FOXA1,Metabolic_function,Nutrient_sensing,Core_IIS
+FOXA3,FOXA3,Metabolic_function,Nutrient_sensing,Core_IIS
+FOXF1,FOXF1,Metabolic_function,Nutrient_sensing,Core_IIS
+FOXJ1,FOXJ1,Metabolic_function,Nutrient_sensing,Core_IIS
+FOXJ2,FOXJ2,Metabolic_function,Nutrient_sensing,Core_IIS
+FOXN2,FOXN2,Metabolic_function,Nutrient_sensing,Core_IIS
+FOXN3,FOXN3,Metabolic_function,Nutrient_sensing,Core_IIS
+FOXO1,FOXO1,Metabolic_function,Nutrient_sensing,Core_IIS
+FOXO3,FOXO3,Metabolic_function,Nutrient_sensing,Core_IIS
+FOXO4,FOXO4,Metabolic_function,Nutrient_sensing,Core_IIS
+FOXP4,FOXP4,Metabolic_function,Nutrient_sensing,Core_IIS
+GSK3A,GSK3A,Metabolic_function,Nutrient_sensing,Core_IIS
+GSK3B,GSK3B,Metabolic_function,Nutrient_sensing,Core_IIS
+IRS4,IRS4,Metabolic_function,Nutrient_sensing,Core_IIS
+KL,KL,Metabolic_function,Nutrient_sensing,Core_IIS
+MAP2K1,MAP2K1,Metabolic_function,Nutrient_sensing,Core_IIS
+MAP2K3,MAP2K3,Metabolic_function,Nutrient_sensing,Core_IIS
+MAP3K1,MAP3K1,Metabolic_function,Nutrient_sensing,Core_IIS
+MDM4,MDM4,Metabolic_function,Nutrient_sensing,Core_IIS
+PDK2,PDK2,Metabolic_function,Nutrient_sensing,Core_IIS
+PDK3,PDK3,Metabolic_function,Nutrient_sensing,Core_IIS
+PDK4,PDK4,Metabolic_function,Nutrient_sensing,Core_IIS
+PDPK1,PDPK1,Metabolic_function,Nutrient_sensing,Core_IIS
+PIK3R5,PIK3R5,Metabolic_function,Nutrient_sensing,Core_IIS
+PIK3R6,PIK3R6,Metabolic_function,Nutrient_sensing,Core_IIS
+PTEN,PTEN,Metabolic_function,Nutrient_sensing,Core_IIS
+RAF1,RAF1,Metabolic_function,Nutrient_sensing,Core_IIS
+RASA1,RASA1,Metabolic_function,Nutrient_sensing,Core_IIS
+RPS6KA1,RPS6KA1,Metabolic_function,Nutrient_sensing,Core_IIS
+RPS6KA3,RPS6KA3,Metabolic_function,Nutrient_sensing,Core_IIS
+RPS6KA4,RPS6KA4,Metabolic_function,Nutrient_sensing,Core_IIS
+RPS6KA5,RPS6KA5,Metabolic_function,Nutrient_sensing,Core_IIS
+RPS6KA6,RPS6KA6,Metabolic_function,Nutrient_sensing,Core_IIS
+RPS6KB1,RPS6KB1,Metabolic_function,Nutrient_sensing,Core_IIS
+RPS6KB2,RPS6KB2,Metabolic_function,Nutrient_sensing,Core_IIS
+TSC1,TSC1,Metabolic_function,Nutrient_sensing,Core_IIS
+TSC2,TSC2,Metabolic_function,Nutrient_sensing,Core_IIS
+GHR,GHR,Metabolic_function,Nutrient_sensing,Top_IIS
+IGF1,IGF1,Metabolic_function,Nutrient_sensing,Top_IIS
+IGF1R,IGF1R,Metabolic_function,Nutrient_sensing,Top_IIS
+IGF2,IGF2,Metabolic_function,Nutrient_sensing,Top_IIS
+IGF2R,IGF2R,Metabolic_function,Nutrient_sensing,Top_IIS
+IGFBP1,IGFBP1,Metabolic_function,Nutrient_sensing,Top_IIS
+IGFBP2,IGFBP2,Metabolic_function,Nutrient_sensing,Top_IIS
+IGFBP3,IGFBP3,Metabolic_function,Nutrient_sensing,Top_IIS
+IGFBP4,IGFBP4,Metabolic_function,Nutrient_sensing,Top_IIS
+IGFBP7,IGFBP7,Metabolic_function,Nutrient_sensing,Top_IIS
+INSR,INSR,Metabolic_function,Nutrient_sensing,Top_IIS
+MTOR,MTOR,Metabolic_function,Nutrient_sensing,MTOR
+NRF1,NRF1,Metabolic_function,Nutrient_sensing,MTOR
+RHEB,RHEB,Metabolic_function,Nutrient_sensing,MTOR
+RPTOR,RPTOR,Metabolic_function,Nutrient_sensing,MTOR
+SIRT1,SIRT1,Metabolic_function,Nutrient_sensing,MTOR
+SIRT2,SIRT2,Metabolic_function,Nutrient_sensing,MTOR
+SIRT3,SIRT3,Metabolic_function,Nutrient_sensing,MTOR
+SIRT4,SIRT4,Metabolic_function,Nutrient_sensing,MTOR
+SIRT5,SIRT5,Metabolic_function,Nutrient_sensing,MTOR
+SIRT6,SIRT6,Metabolic_function,Nutrient_sensing,MTOR
+SIRT7,SIRT7,Metabolic_function,Nutrient_sensing,MTOR
+CCND1,CCND1,Metabolic_function,Nutrient_sensing,PI3K
+INPP5A,INPP5A,Metabolic_function,Nutrient_sensing,PI3K
+JAK1,JAK1,Metabolic_function,Nutrient_sensing,PI3K
+JAK2,JAK2,Metabolic_function,Nutrient_sensing,PI3K
+KRAS,KRAS,Metabolic_function,Nutrient_sensing,PI3K
+MRAS,MRAS,Metabolic_function,Nutrient_sensing,PI3K
+NRAS,NRAS,Metabolic_function,Nutrient_sensing,PI3K
+RIT1,RIT1,Metabolic_function,Nutrient_sensing,PI3K
+YWHAB,YWHAB,Metabolic_function,Nutrient_sensing,PI3K
+YWHAE,YWHAE,Metabolic_function,Nutrient_sensing,PI3K
+YWHAG,YWHAG,Metabolic_function,Nutrient_sensing,PI3K
+YWHAQ,YWHAQ,Metabolic_function,Nutrient_sensing,PI3K
+NR4A1,NR4A1,Metabolic_function,,
+NR4A2,NR4A2,Metabolic_function,,
+NR4A3,NR4A3,Metabolic_function,,
+SMAD6,SMAD6,Metabolic_function,,
+SMAD7,SMAD7,Metabolic_function,,
+ALCAM,ALCAM,Other,Background_Random,
+AMDHD1,AMDHD1,Other,Background_Random,
+B3GAT3,B3GAT3,Other,Background_Random,
+CA5A,CA5A,Other,Background_Random,
+CC2D1A,CC2D1A,Other,Background_Random,
+CTSL,CTSL,Other,Background_Random,
+D2HGDH,D2HGDH,Other,Background_Random,
+DHX29,DHX29,Other,Background_Random,
+EIF4H,EIF4H,Other,Background_Random,
+ELK3,ELK3,Other,Background_Random,
+FOXK1,FOXK1,Other,Background_Random,
+GIGYF2,GIGYF2,Other,Background_Random,
+GPATCH1,GPATCH1,Other,Background_Random,
+GRB2,GRB2,Other,Background_Random,
+HDAC10,HDAC10,Other,Background_Random,
+KLHL24,KLHL24,Other,Background_Random,
+KMT2C,KMT2C,Other,Background_Random,
+LIN7C,LIN7C,Other,Background_Random,
+LOC116503212,TUBA1B,Other,Background_Random,
+LOC116503736,H2AC1,Other,Background_Random,
+LOC116504544,Zfp160,Other,Background_Random,
+LOC116505849,CYP2K21,Other,Background_Random,
+LOC116508584,CTSZ,Other,Background_Random,
+LOC116514694,ARGLU1,Other,Background_Random,
+LOC116515224,AGO4,Other,Background_Random,
+LOC116521616,ZNF629,Other,Background_Random,
+LTBP1,LTBP1,Other,Background_Random,
+MAK,MAK,Other,Background_Random,
+MAP2K6,MAP2K6,Other,Background_Random,
+MAP3K11,MAP3K11,Other,Background_Random,
+MAPK1,MAPK1,Other,Background_Random,
+MPST,MPST,Other,Background_Random,
+NR0B2,NR0B2,Other,Background_Random,
+PODN,PODN,Other,Background_Random,
+PRKDC,PRKDC,Other,Background_Random,
+PRKG2,PRKG2,Other,Background_Random,
+PSAT1,PSAT1,Other,Background_Random,
+RAB3IP,RAB3IP,Other,Background_Random,
+RFX5,RFX5,Other,Background_Random,
+RNH1,RNH1,Other,Background_Random,
+RUVBL1,RUVBL1,Other,Background_Random,
+SLC20A1,SLC20A1,Other,Background_Random,
+SMG6,SMG6,Other,Background_Random,
+SNRPA1,SNRPA1,Other,Background_Random,
+SPATA20,SPATA20,Other,Background_Random,
+TBX18,TBX18,Other,Background_Random,
+TMEM184A,TMEM184A,Other,Background_Random,
+TRPC6,TRPC6,Other,Background_Random,
+WDR12,WDR12,Other,Background_Random,
+ADRB2,ADRB2,Other,behavior,
+AVPR2,AVPR2,Other,behavior,
+CCKAR,CCKAR,Other,behavior,
+DRD4,DRD4,Other,behavior,
+EDA,EDA,Other,behavior,
+LOC116510561,MAOA,Other,behavior,
+LOC116510618,MAOB,Other,behavior,
+SLC6A12,SLC6A12,Other,behavior,
+KITLG,KITLG,Other,color,
+LOC116516483,BCDO2,Other,color,
+MC1R,MC1R,Other,color,
+MITF,MITF,Other,color,
+OCA2,OCA2,Other,color,
+PMEL,PMEL,Other,color,
+POMC,POMC,Other,color,
+SOX10,SOX10,Other,color,
+TYRP1,TYRP1,Other,color,
+CFH,CFH,Other,Fast_Evolving,
+LOC116512145,NCR3LG1,Other,Fast_Evolving,
+LOC116516798,IGLL5,Other,Fast_Evolving,
+SV2A,SV2A,Other,Fast_Evolving,
+LOC116519949,MYO1E,Other,growth,
+TSHB,TSHB,Other,growth,
+TSHR,TSHR,Other,growth,
+VIPR1,VIPR1,Other,growth,
+LOC116503377,MR1,Other,immune,
+LOC116503386,MR1,Other,immune,
+LOC116503390,MR1,Other,immune,
+LOC116503394,MR1,Other,immune,
+LOC116503405,MR1,Other,immune,
+CD74,CD74,Other,immune,
+LOC116507754,FSHR,Other,reproduction,eggs
+DMRT1,DMRT1,Other,reproduction,Sex_determination_linked
+RBMX,RBMX,Other,reproduction,Sex_determination_linked
+SOX4,SOX4,Other,reproduction,Sex_determination_linked
+SOX9,SOX9,Other,reproduction,Sex_determination_linked
+USP24,USP24,Other,reproduction,Sex_determination_linked
+BTBD16,BTBD16,Other,reproduction,sperm
+CATSPER1,CATSPER1,Other,reproduction,sperm
+CATSPER2,CATSPER2,Other,reproduction,sperm
+CATSPER3,CATSPER3,Other,reproduction,sperm
+CATSPER4,CATSPER4,Other,reproduction,sperm
+CATSPERG,CATSPERG,Other,reproduction,sperm
+SPATA18,SPATA18,Other,reproduction,sperm
+SPATA22,SPATA22,Other,reproduction,sperm
+SYCP2,SYCP2,Other,reproduction,sperm
+TEX261,TEX261,Other,reproduction,sperm
+DDX4,DDX4,Other,reproduction,
+EIF4A3,EIF4A3,Other,reproduction,
+PGK1,PGK1,Other,reproduction,
+RBM15B,RBM15B,Other,reproduction,
+AKT1,AKT1,Stress_Adaptation,hypoxia,
+AKT2,AKT2,Stress_Adaptation,hypoxia,
+AKT3,AKT3,Stress_Adaptation,hypoxia,
+ARNT,ARNT,Stress_Adaptation,hypoxia,
+CREBBP,CREBBP,Stress_Adaptation,hypoxia,
+EP300,EP300,Stress_Adaptation,hypoxia,
+HIF1A,HIF1A,Stress_Adaptation,hypoxia,
+HIF1AN,HIF1AN,Stress_Adaptation,hypoxia,
+LOC116506478,TXN,Stress_Adaptation,hypoxia,
+LOC116506537,PIK3C3,Stress_Adaptation,hypoxia,
+LOC116510063,HBE1,Stress_Adaptation,hypoxia,
+LOC116512631,HBA2,Stress_Adaptation,hypoxia,
+PIK3C2A,PIK3C2A,Stress_Adaptation,hypoxia,
+PIK3C2B,PIK3C2B,Stress_Adaptation,hypoxia,
+PIK3CA,PIK3CA,Stress_Adaptation,hypoxia,
+PIK3CB,PIK3CB,Stress_Adaptation,hypoxia,
+PIK3CD,PIK3CD,Stress_Adaptation,hypoxia,
+PIK3R1,PIK3R1,Stress_Adaptation,hypoxia,
+PIK3R2,PIK3R2,Stress_Adaptation,hypoxia,
+RORC,RORC,Stress_Adaptation,hypoxia,
+TXN2,TXN2,Stress_Adaptation,hypoxia,
+VHL,VHL,Stress_Adaptation,hypoxia,
+HSP90AA1,HSP90AA1,Stress_Adaptation,Heat,
+HSP90B1,HSP90B1,Stress_Adaptation,Heat,
+HSPA13,HSPA13,Stress_Adaptation,Heat,
+HSPA2,HSPA2,Stress_Adaptation,Heat,
+HSPA4,HSPA4,Stress_Adaptation,Heat,
+HSPA5,HSPA5,Stress_Adaptation,Heat,
+HSPA9,HSPA9,Stress_Adaptation,Heat,
+HSPB1,HSPB1,Stress_Adaptation,Heat,
+HSPH1,HSPH1,Stress_Adaptation,Heat,
+LOC116515182,HSPA8,Stress_Adaptation,Heat,
+MAPKAPK2,MAPKAPK2,Stress_Adaptation,General_Stess,
+MOK,MOK,Stress_Adaptation,General_Stess,
+NFKB1,NFKB1,Stress_Adaptation,General_Stess,
+NFKBIA,NFKBIA,Stress_Adaptation,General_Stess,
+NFKBIB,NFKBIB,Stress_Adaptation,General_Stess,
+NUP88,NUP88,Stress_Adaptation,General_Stess,
+PPARA,PPARA,Stress_Adaptation,General_Stess,
+PPARD,PPARD,Stress_Adaptation,General_Stess,
+TRAP1,TRAP1,Stress_Adaptation,General_Stess,
+HSF1,HSF1,Stress_Adaptation,Heat,
+HSF2,HSF2,Stress_Adaptation,Heat,
