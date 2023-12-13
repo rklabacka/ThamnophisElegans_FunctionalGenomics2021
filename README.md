@@ -70,7 +70,7 @@ Summarize bioinformatics here
 #### Workflow
  Bioinformatioc processing of each RNAseq dataset. The script below process each dataset seperately, mapping to the T. elegans genome.  (methods)
 
--   [RNAseq 2008 ](#)
+-   [RNAseq 2008 ](#q.CleanMapCount_HiSat2-Ballgown_2008_Final.sh)
 
 # <a name="sequence-variation"></a>
 ### Sequence Variation
