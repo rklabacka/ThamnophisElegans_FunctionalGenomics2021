@@ -68,9 +68,21 @@ Summarize bioinformatics here
 ### Gene Expression via RNA-seq
 
 #### Workflow
- Bioinformatioc processing of each RNAseq dataset. The script below process each dataset seperately, mapping to the T. elegans genome.  (methods)
+ These data use two RNAseq datasets that can be found here:
 
--   [RNAseq 2008 ](#q.CleanMapCount_HiSat2-Ballgown_2008_Final.sh)
+ And map to this reference genome:
+ 
+ Bioinformatioc processing of each RNAseq dataset. The scripts below process each dataset seperately using these general steps:
+ 	1. Download the data from NCBI-SRA database
+  	2. Assessing the quality with Fastqc
+  	3. Cleaning the reads for qulaity using Trimmomatic
+   	4. Indexing the refernece genome with HiSat2
+    	6. Mapping the reads to the indexed genome using HiSat2
+     	7. Counting the transcripts to each annotated gene using StringTie
+      	8. Transforming the count data to be used in statistical analyses with python script. PrepDE.py
+
+-   This script will process the 2008 dataset: q.CleanMapCount_HiSat2-Ballgown_2008_Final.sh
+-   This script will process the 2012 dataset: q.CleanMapCount_HiSat2-Ballgown_2012_Final.sh
 
 # <a name="sequence-variation"></a>
 ### Sequence Variation
