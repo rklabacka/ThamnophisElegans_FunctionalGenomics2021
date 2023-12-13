@@ -93,36 +93,36 @@ For the differnetial gene expression we process the counts tables from each data
 	-  HS2008_Ecotype_S-F.txt				Results from differential gene expression comparing Slow-aging vs Fast-aging
  	-  HS2008_Ecotypes_S-F in Heat.txt			Results from differential gene expression with subset of animals exposed to heat, comparing Slow-aging vs Fast-aging
 	-  HS2008_Ecotypes_S-F within Controls.txt		Results from differential gene expression with subset of animals in control temperature, comparing Slow-aging vs Fast-aging
-    	-  HS2008_Heat.txt					Results from differential gene expression comparing Control vs. Heat Stress	
+ 	-  HS2008_Heat.txt					Results from differential gene expression comparing Control vs. Heat Stress	
 	-  HS2008_Interaction.txt				Results from differential gene expression testing for interaction between Heat Treatment (Control vs. Heat Stress) and Ecotype (Slow-aging vs. Fast-aging)
 	-  HS2008_Treatment_H-C in Fast-living.txt		Results from differential gene expression with subset of Fast-aging animals, comparing Control vs. Heat
 	-  HS2008_Treatment_H-C in Slow-living.txt		Results from differential gene expression with subset of Slow-aging animals, comparing Control vs. Heat
-		HS2012_EcotypeS-F.txt				Results from differential gene expression comparing Slow-aging vs Fast-aging	
-		HS2012_EcotypesS-F in Heat.txt			Results from differential gene expression with subset of animals exposed to heat, comparing Slow-aging vs Fast-aging
-		HS2012_Ecotypes_S-F in Controls.txt		Results from differential gene expression with subset of animals in control temperature, comparing Slow-aging vs Fast-aging
-		HS2012_Interaction.txt				Results from differential gene expression testing for interaction between Heat Treatment (Control vs. Heat Stress) and Ecotype (Slow-aging vs. Fast-aging)
-		HS2012_Treatment_H-C in Fast-living.txt		Results from differential gene expression with subset of Fast-aging animals, comparing Control vs. Heat
-		HS2012_Treatment_H-C in Slow-living.txt		Results from differential gene expression with subset of Slow-aging animals, comparing Control vs. Heat
-		HS2012_Treatment_H-C.txt			Results from differential gene expression comparing Control vs. Heat Stress
-		Meta_Ecotype.txt				Results from metanalysis across the differential gene expression results form 2008 and 2012 datasets comparing Slow-aging vs Fast-aging
-		Meta_EcotypeHeat.txt				Results from metanalysis across the differential gene expression with subset of animals in heat temperature, comparing Slow-aging vs Fast-aging
-		Meta_EcotypesControl.txt			Results from metanalysis across the differential gene expression with subset of animals in control temperature, comparing Slow-aging vs Fast-aging
-		Meta_Heat-Control_Lake.txt			Results from metanalysis across the differential gene expression with subset of Fast-aging animals, comparing Control vs. Heat
-		Meta_Heat-Control_Meadow.txt			Results from metanalysis across the differential gene expression with subset of Slow-aging animals, comparing Control vs. Heat
-		Meta_Heat.txt					Results from metanalysis across the differential gene expression comparing Control vs. Heat Stress
-		Meta_Interection.txt				Results from metanalysis across differential gene expression testing for interaction between Heat Treatment (Control vs. Heat Stress) and Ecotype (Slow-aging vs. Fast-aging)
+	-  HS2012_EcotypeS-F.txt				Results from differential gene expression comparing Slow-aging vs Fast-aging	
+	-  HS2012_EcotypesS-F in Heat.txt			Results from differential gene expression with subset of animals exposed to heat, comparing Slow-aging vs Fast-aging
+	-  HS2012_Ecotypes_S-F in Controls.txt		Results from differential gene expression with subset of animals in control temperature, comparing Slow-aging vs Fast-aging
+	-  HS2012_Interaction.txt				Results from differential gene expression testing for interaction between Heat Treatment (Control vs. Heat Stress) and Ecotype (Slow-aging vs. Fast-aging)
+	-  HS2012_Treatment_H-C in Fast-living.txt		Results from differential gene expression with subset of Fast-aging animals, comparing Control vs. Heat
+	-  HS2012_Treatment_H-C in Slow-living.txt		Results from differential gene expression with subset of Slow-aging animals, comparing Control vs. Heat
+	-  HS2012_Treatment_H-C.txt			Results from differential gene expression comparing Control vs. Heat Stress
+	-  Meta_Ecotype.txt				Results from metanalysis across the differential gene expression results form 2008 and 2012 datasets comparing Slow-aging vs Fast-aging
+	-  Meta_EcotypeHeat.txt				Results from metanalysis across the differential gene expression with subset of animals in heat temperature, comparing Slow-aging vs Fast-aging
+	-  Meta_EcotypesControl.txt			Results from metanalysis across the differential gene expression with subset of animals in control temperature, comparing Slow-aging vs Fast-aging
+	-  Meta_Heat-Control_Lake.txt			Results from metanalysis across the differential gene expression with subset of Fast-aging animals, comparing Control vs. Heat
+	-  Meta_Heat-Control_Meadow.txt			Results from metanalysis across the differential gene expression with subset of Slow-aging animals, comparing Control vs. Heat
+	-  Meta_Heat.txt					Results from metanalysis across the differential gene expression comparing Control vs. Heat Stress
+   	-  Meta_Interection.txt				Results from metanalysis across differential gene expression testing for interaction between Heat Treatment (Control vs. Heat Stress) and Ecotype (Slow-aging vs. Fast-aging)
   		
-    		All_GE_Ecotype_Results.txt
-		All_GE_Heat-Control_Lake_Results.txt
-		All_GE_Heat-Control_Meadow_Results.txt
-		All_GE_Heat_Results.txt
-		All_GE_Interaction_Results.txt
+    	-  All_GE_Ecotype_Results.txt
+	-  All_GE_Heat-Control_Lake_Results.txt
+	-  All_GE_Heat-Control_Meadow_Results.txt
+	-  All_GE_Heat_Results.txt
+	-  All_GE_Interaction_Results.txt
 
-		GSEA_Rank_Ecotype_HS2012.rnk
-		GSEA_Rank_HeatControl_Lake_HS2012.rnk
-		GSEA_Rank_HeatControl_Meadow_HS2012.rnk
-		GSEA_Rank_Heat_HS2012.rnk
-		GSEA_Rank_Interaction_HS2012.rnk
+	-  GSEA_Rank_Ecotype_HS2012.rnk
+	-  GSEA_Rank_HeatControl_Lake_HS2012.rnk
+	-  GSEA_Rank_HeatControl_Meadow_HS2012.rnk
+	-  GSEA_Rank_Heat_HS2012.rnk
+	-  GSEA_Rank_Interaction_HS2012.rnk
   
 ![image](https://github.com/rklabacka/ThamnophisElegans_FunctionalGenomics2021/assets/10161608/f1e0a849-93ba-4301-a1fc-022aeb7bacf4)
 
