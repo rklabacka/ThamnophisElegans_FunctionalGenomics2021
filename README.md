@@ -83,16 +83,16 @@ Summarize bioinformatics here
 
 -   This script will process the 2008 dataset: q.CleanMapCount_HiSat2-Ballgown_2008_Final.sh
 -   This script will process the 2012 dataset: q.CleanMapCount_HiSat2-Ballgown_2012_Final.sh
--   
+    
 #### Differential Gene Expression Workflow
 For the differnetial gene expression we process the counts tables from each dataset seperately, starting with the 2008 and then the 2012 dataset, then conduct a meta-analysis across both datasets to see which genes show consistant patterns. Finally, we produce Ranked lists for input for Gene Set Enrichment Analysis
 	Rnotebook: 	Rnotebook_GsnakesDGE_05-22-22.Rmd
 	Input files: 	2008_gene_count_matrix_ID.txt   and   2012_gene_count_matrix_ID.txt
  	Output files: 
-		HS2008_Ecotype_S-F.txt				Results from differential gene expression comparing Slow-aging vs Fast-aging		
-		HS2008_Ecotypes_S-F in Heat.txt			Results from differential gene expression with subset of animals exposed to heat, comparing Slow-aging vs Fast-aging
-		HS2008_Ecotypes_S-F within Controls.txt		Results from differential gene expression with subset of animals in control temperature, comparing Slow-aging vs Fast-aging
-		HS2008_Heat.txt					Results from differential gene expression comparing Control vs. Heat Stress	
+		- HS2008_Ecotype_S-F.txt				Results from differential gene expression comparing Slow-aging vs Fast-aging		
+		- HS2008_Ecotypes_S-F in Heat.txt			Results from differential gene expression with subset of animals exposed to heat, comparing Slow-aging vs Fast-aging
+		- HS2008_Ecotypes_S-F within Controls.txt		Results from differential gene expression with subset of animals in control temperature, comparing Slow-aging vs Fast-aging
+		- HS2008_Heat.txt					Results from differential gene expression comparing Control vs. Heat Stress	
 		HS2008_Interaction.txt				Results from differential gene expression testing for interaction between Heat Treatment (Control vs. Heat Stress) and Ecotype (Slow-aging vs. Fast-aging)
 		HS2008_Treatment_H-C in Fast-living.txt		Results from differential gene expression with subset of Fast-aging animals, comparing Control vs. Heat
 		HS2008_Treatment_H-C in Slow-living.txt		Results from differential gene expression with subset of Slow-aging animals, comparing Control vs. Heat
