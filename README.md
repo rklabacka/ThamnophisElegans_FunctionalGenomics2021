@@ -123,8 +123,6 @@ For the differnetial gene expression we process the counts tables from each data
 	-  GSEA_Rank_HeatControl_Meadow_HS2012.rnk
 	-  GSEA_Rank_Heat_HS2012.rnk
 	-  GSEA_Rank_Interaction_HS2012.rnk
-  
-![image](https://github.com/rklabacka/ThamnophisElegans_FunctionalGenomics2021/assets/10161608/f1e0a849-93ba-4301-a1fc-022aeb7bacf4)
 
 
 #### Gene Set Enrichment Analysis
