@@ -65,9 +65,12 @@ Summarize bioinformatics here
 -   [Sequence Variation](#sequence-variation)
 
 # <a name="gene-expression"></a>
-### Gene Expression
+### Gene Expression via RNA-seq
 
-Describe gene expression data processing and analyses here
+#### Workflow
+ Bioinformatioc processing of each RNAseq dataset. The script below process each dataset seperately, mapping to the T. elegans genome.  (methods)
+
+-   [RNAseq 2008 ](#)
 
 # <a name="sequence-variation"></a>
 ### Sequence Variation
