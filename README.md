@@ -126,6 +126,10 @@ For the differnetial gene expression we process the counts tables from each data
 
 
 #### Gene Set Enrichment Analysis
+The Gene Set Enrichment Analysis was conducted within the program GSEA using the RankList option and testing for enrichment in KEGG pathways
+The results are in this folder: RNAseq_Analyses/GSEA/GSEA_Summaries/
+	-  The Enriched pathways folder contains: 
+ 	-  The LeadingEdgeGenes_FocalPathways folder contains: 
 
 
 # <a name="sequence-variation"></a>
